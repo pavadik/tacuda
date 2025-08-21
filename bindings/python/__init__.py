@@ -3,8 +3,10 @@ Python bindings for tacuda via ctypes.
 Build the project first (shared library 'tacuda').
 """
 import ctypes
+import ctypes.util
 import os
 import sys
+
 
 def _load_lib():
     names = []
@@ -14,14 +16,54 @@ def _load_lib():
         names = ["libtacuda.dylib", "tacuda.dylib"]
     else:
         names = ["libtacuda.so", "tacuda.so"]
-    search_paths = [os.getcwd(), os.path.join(os.getcwd(), "build"), os.path.dirname(__file__),
-                    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "build"))]
+
+    # Environment variables for explicit locations
+    env_candidates = []
+    env = os.environ.get("TACUDA_LIBRARY")
+    if env:
+        env_candidates.append(env)
+    env_dir = os.environ.get("TACUDA_LIBRARY_PATH") or os.environ.get("TACUDA_LIBRARY_DIR")
+    if env_dir:
+        for n in names:
+            env_candidates.append(os.path.join(env_dir, n))
+    for candidate in env_candidates:
+        if candidate and os.path.exists(candidate):
+            try:
+                return ctypes.CDLL(candidate)
+            except OSError:
+                pass
+
+    # Try system paths via ctypes.util.find_library
+    libname = ctypes.util.find_library("tacuda")
+    if libname:
+        try:
+            return ctypes.CDLL(libname)
+        except OSError:
+            pass
+
+    # Fall back to package-relative locations
+    here = os.path.abspath(os.path.dirname(__file__))
+    root = os.path.abspath(os.path.join(here, "..", ".."))
+    search_paths = [
+        os.getcwd(),
+        os.path.join(os.getcwd(), "build"),
+        here,
+        os.path.join(here, "lib"),
+        root,
+        os.path.join(root, "lib"),
+        os.path.join(root, "build"),
+    ]
     for base in search_paths:
         for n in names:
             p = os.path.join(base, n)
             if os.path.exists(p):
-                return ctypes.CDLL(p)
-    raise OSError("tacuda library not found. Build the project first.")
+                try:
+                    return ctypes.CDLL(p)
+                except OSError:
+                    continue
+    raise OSError(
+        "tacuda library not found. Build the project first or set TACUDA_LIBRARY[_PATH]."
+    )
 
 _lib = _load_lib()
 
