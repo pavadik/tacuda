@@ -53,6 +53,12 @@ CTAPI_EXPORT ctStatus_t ct_stochastic(const float* host_high,
                                       int size,
                                       int kPeriod,
                                       int dPeriod);
+CTAPI_EXPORT ctStatus_t ct_cci(const float* host_high,
+                               const float* host_low,
+                               const float* host_close,
+                               float* host_output,
+                               int size,
+                               int period);
 
 #ifdef __cplusplus
 } // extern "C"

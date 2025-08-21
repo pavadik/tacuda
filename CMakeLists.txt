@@ -18,6 +18,7 @@ set(INDICATOR_SOURCES
     src/indicators/BBANDS.cu
     src/indicators/ATR.cu
     src/indicators/Stochastic.cu
+    src/indicators/CCI.cu
 )
 
 add_library(tacuda SHARED
@@ -33,7 +34,6 @@ target_include_directories(tacuda
 
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(tacuda PRIVATE CUDA::cudart)
-target_compile_features(tacuda PRIVATE cxx_std_17)
 target_compile_options(tacuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
 add_executable(example_app src/main.cpp)

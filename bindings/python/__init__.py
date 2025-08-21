@@ -86,6 +86,10 @@ _lib.ct_stochastic.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ct
                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_int]
 _lib.ct_stochastic.restype  = ctypes.c_int
+_lib.ct_cci.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.c_int, ctypes.c_int]
+_lib.ct_cci.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -185,3 +189,20 @@ def stochastic(high, low, close, k_period, d_period):
     if rc != 0:
         raise RuntimeError("ct_stochastic failed")
     return k, d
+
+def cci(high, low, close, period):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cci(ph, pl, pc, pout, close.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_cci failed")
+    return out
