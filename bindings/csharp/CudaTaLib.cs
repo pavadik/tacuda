@@ -20,7 +20,7 @@ namespace CudaTaLib
         public static extern int ct_momentum(float[] input, float[] output, int size, int period);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int ct_macd_line(float[] input, float[] output, int size, int fast, int slow, int signal);
+        public static extern int ct_macd_line(float[] input, float[] output, int size, int fast, int slow);
     }
 
     public class Example

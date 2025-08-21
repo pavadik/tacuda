@@ -46,8 +46,8 @@ int main() {
     }
 
     // MACD line smoke test — first `slowPeriod` samples should be NaN, rest finite
-    int fastP = 12, slowP = 26, signalP = 9;
-    rc = ct_macd_line(x.data(), out.data(), N, fastP, slowP, signalP);
+    int fastP = 12, slowP = 26;
+    rc = ct_macd_line(x.data(), out.data(), N, fastP, slowP);
     if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_macd_line failed\\n"; return 1; }
     for (int i=0;i<slowP;i++) {
         if (!std::isnan(out[i])) { std::cerr << "expected NaN at head " << i << "\\n"; return 1; }

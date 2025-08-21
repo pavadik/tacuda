@@ -26,7 +26,7 @@ CTAPI_EXPORT ctStatus_t ct_sma(const float* host_input, float* host_output, int 
 CTAPI_EXPORT ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, int period);
 // MACD line only (EMA_fast - EMA_slow)
 CTAPI_EXPORT ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
-                              int fastPeriod, int slowPeriod, int signalPeriod);
+                              int fastPeriod, int slowPeriod);
 
 #ifdef __cplusplus
 } // extern "C"

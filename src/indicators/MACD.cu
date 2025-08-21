@@ -15,7 +15,7 @@ __device__ float ema_at(const float* __restrict__ x, int idx, int period) {
 
 __global__ void macdKernel(const float* __restrict__ input,
                            float* __restrict__ macdOut,
-                           int fastP, int slowP, int signalP, int size) {
+                           int fastP, int slowP, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= slowP && idx < size) {
         float emaFast = ema_at(input, idx, fastP);
@@ -24,11 +24,11 @@ __global__ void macdKernel(const float* __restrict__ input,
     }
 }
 
-MACD::MACD(int fastPeriod, int slowPeriod, int signalPeriod)
-    : fastPeriod(fastPeriod), slowPeriod(slowPeriod), signalPeriod(signalPeriod) {}
+MACD::MACD(int fastPeriod, int slowPeriod)
+    : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
 void MACD::calculate(const float* input, float* output, int size) {
-    if (fastPeriod <= 0 || slowPeriod <= 0 || signalPeriod <= 0) {
+    if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }
     if (fastPeriod >= slowPeriod) {
@@ -41,7 +41,7 @@ void MACD::calculate(const float* input, float* output, int size) {
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    macdKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, signalPeriod, size);
+    macdKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 }

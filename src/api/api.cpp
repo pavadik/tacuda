@@ -65,8 +65,8 @@ ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, in
 }
 
 ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
-                 int fastPeriod, int slowPeriod, int signalPeriod) {
-    MACD macd(fastPeriod, slowPeriod, signalPeriod);
+                 int fastPeriod, int slowPeriod) {
+    MACD macd(fastPeriod, slowPeriod);
     return run_indicator(macd, host_input, host_output, size);
 }
 
