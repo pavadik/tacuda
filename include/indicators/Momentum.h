@@ -6,7 +6,7 @@
 class Momentum : public Indicator {
 public:
     explicit Momentum(int period);
-    void calculate(const float* input, float* output, int size) override;
+    void calculate(const float* input, float* output, int size) noexcept(false) override;
 private:
     int period;
 };

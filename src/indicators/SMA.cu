@@ -17,7 +17,7 @@ __global__ void smaKernelPrefix(const float* __restrict__ prefix,
 
 SMA::SMA(int period) : period(period) {}
 
-void SMA::calculate(const float* input, float* output, int size) {
+void SMA::calculate(const float* input, float* output, int size) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("SMA: invalid period");
     }

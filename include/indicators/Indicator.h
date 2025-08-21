@@ -3,8 +3,8 @@
 
 class Indicator {
 public:
-    virtual void calculate(const float* input, float* output, int size) = 0;
-    virtual ~Indicator() {};
+    virtual void calculate(const float* input, float* output, int size) noexcept(false) = 0;
+    virtual ~Indicator() = default;
 };
 
 #endif
