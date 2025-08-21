@@ -69,6 +69,8 @@ _lib = _load_lib()
 
 _lib.ct_sma.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
 _lib.ct_sma.restype  = ctypes.c_int
+_lib.ct_wma.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
+_lib.ct_wma.restype  = ctypes.c_int
 _lib.ct_momentum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
 _lib.ct_momentum.restype  = ctypes.c_int
 _lib.ct_macd_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int,
@@ -94,6 +96,17 @@ def sma(x, period):
     rc = _lib.ct_sma(pin, pout, x.size, int(period))
     if rc != 0:
         raise RuntimeError("ct_sma failed")
+    return out
+
+def wma(x, period):
+    import numpy as np
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    xin, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_wma(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_wma failed")
     return out
 
 def momentum(x, period):
