@@ -78,6 +78,10 @@ _lib.ct_macd_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(cty
 _lib.ct_macd_line.restype  = ctypes.c_int
 _lib.ct_rsi.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
 _lib.ct_rsi.restype  = ctypes.c_int
+_lib.ct_atr.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.c_int, ctypes.c_int, ctypes.c_float]
+_lib.ct_atr.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -140,4 +144,21 @@ def rsi(x, period):
     rc = _lib.ct_rsi(pin, pout, x.size, int(period))
     if rc != 0:
         raise RuntimeError("ct_rsi failed")
+    return out
+
+def atr(high, low, close, period, initial=0.0):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_atr(ph, pl, pc, pout, close.size, int(period), float(initial))
+    if rc != 0:
+        raise RuntimeError("ct_atr failed")
     return out
