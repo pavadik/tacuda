@@ -17,7 +17,7 @@ __global__ void macdKernel(const float* __restrict__ input,
                            float* __restrict__ macdOut,
                            int fastP, int slowP, int signalP, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < size) {
+    if (idx >= slowP && idx < size) {
         float emaFast = ema_at(input, idx, fastP);
         float emaSlow = ema_at(input, idx, slowP);
         macdOut[idx] = emaFast - emaSlow;
@@ -34,6 +34,11 @@ void MACD::calculate(const float* input, float* output, int size) {
     if (fastPeriod >= slowPeriod) {
         throw std::invalid_argument("MACD: fastPeriod must be < slowPeriod");
     }
+    // Warm-up region at the beginning should remain NaN. Initialize the
+    // entire output with NaNs and only compute values for indices beyond the
+    // slowPeriod.
+    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     macdKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, signalPeriod, size);

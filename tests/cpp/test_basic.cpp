@@ -31,6 +31,9 @@ int main() {
         ref[i] = s/p;
     }
     approx_equal(out, ref, 1e-3f);
+    for (int i=N-p+1;i<N;i++) {
+        if (!std::isnan(out[i])) { std::cerr << "expected NaN at tail " << i << "\n"; return 1; }
+    }
 
     // Momentum check
     std::fill(ref.begin(), ref.end(), 0.0f);
@@ -38,11 +41,20 @@ int main() {
     if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_momentum failed\\n"; return 1; }
     for (int i=0;i<N-p;i++) ref[i] = x[i+p]-x[i];
     approx_equal(out, ref, 1e-3f);
+    for (int i=N-p;i<N;i++) {
+        if (!std::isnan(out[i])) { std::cerr << "expected NaN at tail " << i << "\n"; return 1; }
+    }
 
-    // MACD line smoke test (can't exact-match recursive EMA easily) — ensure finite values
-    rc = ct_macd_line(x.data(), out.data(), N, 12, 26, 9);
+    // MACD line smoke test — first `slowPeriod` samples should be NaN, rest finite
+    int fastP = 12, slowP = 26, signalP = 9;
+    rc = ct_macd_line(x.data(), out.data(), N, fastP, slowP, signalP);
     if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_macd_line failed\\n"; return 1; }
-    for (int i=0;i<N;i++) { if (!std::isfinite(out[i])) { std::cerr << "nan at " << i << "\\n"; return 1; } }
+    for (int i=0;i<slowP;i++) {
+        if (!std::isnan(out[i])) { std::cerr << "expected NaN at head " << i << "\\n"; return 1; }
+    }
+    for (int i=slowP;i<N;i++) {
+        if (!std::isfinite(out[i])) { std::cerr << "nan at " << i << "\\n"; return 1; }
+    }
 
     std::cout << "All tests passed.\\n";
     return 0;

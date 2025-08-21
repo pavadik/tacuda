@@ -22,6 +22,10 @@ void SMA::calculate(const float* input, float* output, int size) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("SMA: invalid period");
     }
+    // Initialize the entire output array with NaNs so that any unwritten
+    // warm-up region retains the expected NaN semantics.
+    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     smaKernel<<<grid, block>>>(input, output, period, size);

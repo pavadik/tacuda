@@ -16,6 +16,10 @@ void Momentum::calculate(const float* input, float* output, int size) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("Momentum: invalid period");
     }
+    // Pre-fill the output buffer with NaNs so that the unwritten tail
+    // represents the warm-up region.
+    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     momentumKernel<<<grid, block>>>(input, output, period, size);
