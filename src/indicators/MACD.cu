@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <stdexcept>
-#include "../../include/indicators/MACD.h"
-#include "../../include/utils/CudaUtils.h"
+#include <indicators/MACD.h>
+#include <utils/CudaUtils.h>
 
 __device__ float ema_at(const float* __restrict__ x, int idx, int period) {
     float k = 2.0f / (period + 1.0f);

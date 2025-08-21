@@ -7,8 +7,6 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 option(BUILD_TESTING "Enable tests" ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 file(GLOB INDICATOR_SOURCES
     src/indicators/*.cu
 )
@@ -16,6 +14,12 @@ file(GLOB INDICATOR_SOURCES
 add_library(tacuda SHARED
     ${INDICATOR_SOURCES}
     src/api/api.cpp
+)
+
+target_include_directories(tacuda
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
 )
 
 find_package(CUDAToolkit REQUIRED)

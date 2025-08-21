@@ -1,5 +1,5 @@
-#include "../../include/indicators/Momentum.h"
-#include "../../include/utils/CudaUtils.h"
+#include <indicators/Momentum.h>
+#include <utils/CudaUtils.h>
 #include <stdexcept>
 
 __global__ void momentumKernel(const float* __restrict__ input, float* __restrict__ output,
