@@ -21,6 +21,9 @@ namespace CudaTaLib
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_macd_line(float[] input, float[] output, int size, int fast, int slow);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_rsi(float[] input, float[] output, int size, int period);
     }
 
     public class Example
