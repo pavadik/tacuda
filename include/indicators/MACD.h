@@ -6,7 +6,7 @@
 class MACD : public Indicator {
 public:
     MACD(int fastPeriod, int slowPeriod);
-    void calculate(const float* input, float* output, int size) override;
+    void calculate(const float* input, float* output, int size) noexcept(false) override;
 private:
     int fastPeriod;
     int slowPeriod;

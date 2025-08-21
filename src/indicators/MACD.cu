@@ -27,7 +27,7 @@ __global__ void macdKernel(const float* __restrict__ input,
 MACD::MACD(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void MACD::calculate(const float* input, float* output, int size) {
+void MACD::calculate(const float* input, float* output, int size) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }
