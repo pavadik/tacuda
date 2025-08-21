@@ -13,6 +13,7 @@ set(INDICATOR_SOURCES
     src/indicators/Momentum.cu
     src/indicators/SMA.cu
     src/indicators/EMA.cu
+    src/indicators/RSI.cu
 )
 
 add_library(tacuda SHARED

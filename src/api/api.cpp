@@ -9,6 +9,7 @@
 #include <indicators/Momentum.h>
 #include <indicators/MACD.h>
 #include <indicators/EMA.h>
+#include <indicators/RSI.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -68,6 +69,11 @@ ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, in
 ctStatus_t ct_ema(const float* host_input, float* host_output, int size, int period) {
     EMA ema(period);
     return run_indicator(ema, host_input, host_output, size);
+}
+
+ctStatus_t ct_rsi(const float* host_input, float* host_output, int size, int period) {
+    RSI rsi(period);
+    return run_indicator(rsi, host_input, host_output, size);
 }
 
 ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
