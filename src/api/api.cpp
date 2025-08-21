@@ -3,7 +3,7 @@
 #include <cstring>
 #include <cuda_runtime.h>
 
-#include "../../include/cuda_talib.h"
+#include "../../include/tacuda.h"
 #include "../../include/indicators/SMA.h"
 #include "../../include/indicators/Momentum.h"
 #include "../../include/indicators/MACD.h"

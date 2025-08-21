@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <cassert>
-#include "../../include/cuda_talib.h"
+#include "../../include/tacuda.h"
 
 static void approx_equal(const std::vector<float>& a, const std::vector<float>& b, float eps=1e-3f) {
     for (size_t i=0;i<a.size();++i) {
