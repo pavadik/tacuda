@@ -3,14 +3,29 @@
 #include <indicators/MACD.h>
 #include <utils/CudaUtils.h>
 
+// Compute the exponential moving average for a given index using a
+// sliding‑window formulation.  The previous implementation walked a
+// hardcoded "period * 4" window which wasted work for small periods and
+// caused excessive global memory traffic.  Here we restrict the walk to
+// the actual period and accumulate weighted sums, effectively mimicking a
+// prefix-sum of exponentially decaying weights.  This improves cache
+// locality and avoids touching values outside the required window.
 __device__ float ema_at(const float* __restrict__ x, int idx, int period) {
-    float k = 2.0f / (period + 1.0f);
-    float ema = x[idx];
-    int steps = min(period * 4, idx);
+    const float k = 2.0f / (period + 1.0f);
+    float weight = 1.0f;        // Current weight for x[idx - i]
+    float weightedSum = x[idx]; // Accumulated weighted input values
+    float weightSum   = 1.0f;   // Sum of weights for normalisation
+
+    // Only scan as far back as the actual period or the available history.
+    int steps = min(period, idx);
+#pragma unroll
     for (int i = 1; i <= steps; ++i) {
-        ema = x[idx - i] * k + ema * (1.0f - k);
+        weight *= (1.0f - k);               // Exponential decay
+        weightedSum += x[idx - i] * weight; // Accumulate weighted sample
+        weightSum   += weight;              // Track total weight
     }
-    return ema;
+
+    return weightedSum / weightSum;
 }
 
 __global__ void macdKernel(const float* __restrict__ input,
