@@ -7,8 +7,11 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 option(BUILD_TESTING "Enable tests" ON)
 
-file(GLOB INDICATOR_SOURCES
-    src/indicators/*.cu
+# Explicitly list indicator sources instead of globbing
+set(INDICATOR_SOURCES
+    src/indicators/MACD.cu
+    src/indicators/Momentum.cu
+    src/indicators/SMA.cu
 )
 
 add_library(tacuda SHARED
@@ -42,14 +45,22 @@ if (BUILD_TESTING)
   FetchContent_MakeAvailable(googletest)
 
   add_executable(test_basic tests/cpp/test_basic.cpp)
+  target_include_directories(test_basic PRIVATE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
   target_link_libraries(test_basic PRIVATE tacuda GTest::gtest_main)
   include(GoogleTest)
   gtest_discover_tests(test_basic)
 endif()
 
-# Install (optional)
-install(TARGETS tacuda example_app
+# Install and export
+install(TARGETS tacuda EXPORT tacudaTargets
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
+install(TARGETS example_app RUNTIME DESTINATION bin)
 install(DIRECTORY include/ DESTINATION include)
+install(EXPORT tacudaTargets
+        FILE tacudaTargets.cmake
+        NAMESPACE tacuda::
+        DESTINATION lib/cmake/tacuda)
+install(FILES cmake/tacudaConfig.cmake DESTINATION lib/cmake/tacuda)
