@@ -14,12 +14,18 @@
 extern "C" {
 #endif
 
+typedef enum ctStatus {
+    CT_STATUS_SUCCESS = 0,
+    CT_STATUS_ALLOC_FAILED = 1,
+    CT_STATUS_COPY_FAILED = 2,
+    CT_STATUS_KERNEL_FAILED = 3,
+} ctStatus_t;
+
 // All APIs copy host->device->host internally for ease of binding.
-// Returns 0 on success, non-zero on failure.
-CTAPI_EXPORT int ct_sma(const float* host_input, float* host_output, int size, int period);
-CTAPI_EXPORT int ct_momentum(const float* host_input, float* host_output, int size, int period);
+CTAPI_EXPORT ctStatus_t ct_sma(const float* host_input, float* host_output, int size, int period);
+CTAPI_EXPORT ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, int period);
 // MACD line only (EMA_fast - EMA_slow)
-CTAPI_EXPORT int ct_macd_line(const float* host_input, float* host_output, int size,
+CTAPI_EXPORT ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
                               int fastPeriod, int slowPeriod, int signalPeriod);
 
 #ifdef __cplusplus
