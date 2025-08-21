@@ -90,6 +90,10 @@ _lib.ct_cci.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_
                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                         ctypes.c_int, ctypes.c_int]
 _lib.ct_cci.restype  = ctypes.c_int
+_lib.ct_adx.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.c_int, ctypes.c_int]
+_lib.ct_adx.restype  = ctypes.c_int
 _lib.ct_obv.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_obv.restype  = ctypes.c_int
@@ -208,6 +212,23 @@ def cci(high, low, close, period):
     rc = _lib.ct_cci(ph, pl, pc, pout, close.size, int(period))
     if rc != 0:
         raise RuntimeError("ct_cci failed")
+    return out
+
+def adx(high, low, close, period):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_adx(ph, pl, pc, pout, close.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_adx failed")
     return out
 
 def obv(price, volume):
