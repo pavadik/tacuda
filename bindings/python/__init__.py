@@ -90,6 +90,9 @@ _lib.ct_cci.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_
                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                         ctypes.c_int, ctypes.c_int]
 _lib.ct_cci.restype  = ctypes.c_int
+_lib.ct_obv.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_obv.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -205,4 +208,19 @@ def cci(high, low, close, period):
     rc = _lib.ct_cci(ph, pl, pc, pout, close.size, int(period))
     if rc != 0:
         raise RuntimeError("ct_cci failed")
+    return out
+
+def obv(price, volume):
+    import numpy as np
+    price = np.asarray(price, dtype=np.float32)
+    volume = np.asarray(volume, dtype=np.float32)
+    if price.shape != volume.shape:
+        raise ValueError("price and volume must have same shape")
+    out = np.zeros_like(price)
+    _, pp = _as_float_ptr(price)
+    _, pv = _as_float_ptr(volume)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_obv(pp, pv, po, price.size)
+    if rc != 0:
+        raise RuntimeError("ct_obv failed")
     return out

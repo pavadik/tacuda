@@ -40,6 +40,10 @@ namespace CudaTaLib
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_cci(float[] high, float[] low, float[] close,
                                         float[] output, int size, int period);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_obv(float[] price, float[] volume,
+                                        float[] output, int size);
     }
 
     public class Example

@@ -15,6 +15,7 @@
 #include <indicators/ATR.h>
 #include <indicators/Stochastic.h>
 #include <indicators/CCI.h>
+#include <indicators/OBV.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -291,6 +292,55 @@ ctStatus_t ct_cci(const float* host_high,
 
     try {
         cci.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
+    } catch (...) {
+        return CT_STATUS_KERNEL_FAILED;
+    }
+
+    err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+
+    return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_obv(const float* host_price,
+                  const float* host_volume,
+                  float* host_output,
+                  int size) {
+    OBV obv;
+    DeviceBuffer d_price{nullptr}, d_volume{nullptr}, d_out{nullptr};
+    float* tmp = nullptr;
+
+    cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_price.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_volume.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_out.reset(tmp);
+
+    err = cudaMemcpy(d_price.get(), host_price, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+    err = cudaMemcpy(d_volume.get(), host_volume, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+
+    try {
+        obv.calculate(d_price.get(), d_volume.get(), d_out.get(), size);
     } catch (...) {
         return CT_STATUS_KERNEL_FAILED;
     }
