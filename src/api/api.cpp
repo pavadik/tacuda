@@ -9,6 +9,7 @@
 #include <indicators/Momentum.h>
 #include <indicators/MACD.h>
 #include <indicators/EMA.h>
+#include <indicators/WMA.h>
 #include <indicators/RSI.h>
 #include <indicators/BBANDS.h>
 #include <utils/CudaUtils.h>
@@ -62,6 +63,11 @@ static ctStatus_t run_indicator(Indicator& ind, const float* h_in, float* h_out,
 ctStatus_t ct_sma(const float* host_input, float* host_output, int size, int period) {
     SMA sma(period);
     return run_indicator(sma, host_input, host_output, size);
+}
+
+ctStatus_t ct_wma(const float* host_input, float* host_output, int size, int period) {
+    WMA wma(period);
+    return run_indicator(wma, host_input, host_output, size);
 }
 
 ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, int period) {

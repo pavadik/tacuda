@@ -17,6 +17,9 @@ namespace CudaTaLib
         public static extern int ct_sma(float[] input, float[] output, int size, int period);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_wma(float[] input, float[] output, int size, int period);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_momentum(float[] input, float[] output, int size, int period);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
