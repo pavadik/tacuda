@@ -29,6 +29,14 @@ CTAPI_EXPORT ctStatus_t ct_rsi(const float* host_input, float* host_output, int 
 // MACD line only (EMA_fast - EMA_slow)
 CTAPI_EXPORT ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
                               int fastPeriod, int slowPeriod);
+CTAPI_EXPORT ctStatus_t ct_bbands(const float* host_input,
+                                  float* host_upper,
+                                  float* host_middle,
+                                  float* host_lower,
+                                  int size,
+                                  int period,
+                                  float upperMul,
+                                  float lowerMul);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -10,6 +10,7 @@
 #include <indicators/MACD.h>
 #include <indicators/EMA.h>
 #include <indicators/RSI.h>
+#include <indicators/BBANDS.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -21,7 +22,8 @@ struct CudaDeleter {
 };
 using DeviceBuffer = std::unique_ptr<float, CudaDeleter>;
 
-static ctStatus_t run_indicator(Indicator& ind, const float* h_in, float* h_out, int size) {
+static ctStatus_t run_indicator(Indicator& ind, const float* h_in, float* h_out,
+                                int size, int outMultiple = 1) {
     DeviceBuffer d_in{nullptr}, d_out{nullptr};
     float* tmp = nullptr;
 
@@ -31,7 +33,7 @@ static ctStatus_t run_indicator(Indicator& ind, const float* h_in, float* h_out,
     }
     d_in.reset(tmp);
 
-    err = cudaMalloc(&tmp, size * sizeof(float));
+    err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
     if (err != cudaSuccess) {
         return CT_STATUS_ALLOC_FAILED;
     }
@@ -48,7 +50,8 @@ static ctStatus_t run_indicator(Indicator& ind, const float* h_in, float* h_out,
         return CT_STATUS_KERNEL_FAILED;
     }
 
-    err = cudaMemcpy(h_out, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    err = cudaMemcpy(h_out, d_out.get(), size * outMultiple * sizeof(float),
+                     cudaMemcpyDeviceToHost);
     if (err != cudaSuccess) {
         return CT_STATUS_COPY_FAILED;
     }
@@ -80,6 +83,26 @@ ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
                  int fastPeriod, int slowPeriod) {
     MACD macd(fastPeriod, slowPeriod);
     return run_indicator(macd, host_input, host_output, size);
+}
+
+ctStatus_t ct_bbands(const float* host_input,
+                     float* host_upper,
+                     float* host_middle,
+                     float* host_lower,
+                     int size,
+                     int period,
+                     float upperMul,
+                     float lowerMul) {
+    BBANDS bb(period, upperMul, lowerMul);
+    std::vector<float> tmp(3 * size);
+    ctStatus_t rc = run_indicator(bb, host_input, tmp.data(), size, 3);
+    if (rc != CT_STATUS_SUCCESS) {
+        return rc;
+    }
+    std::memcpy(host_upper, tmp.data(), size * sizeof(float));
+    std::memcpy(host_middle, tmp.data() + size, size * sizeof(float));
+    std::memcpy(host_lower, tmp.data() + 2 * size, size * sizeof(float));
+    return CT_STATUS_SUCCESS;
 }
 
 } // extern "C"
