@@ -3,11 +3,11 @@
 #include <cstring>
 #include <cuda_runtime.h>
 
-#include "../../include/tacuda.h"
-#include "../../include/indicators/SMA.h"
-#include "../../include/indicators/Momentum.h"
-#include "../../include/indicators/MACD.h"
-#include "../../include/utils/CudaUtils.h"
+#include "tacuda.h"
+#include <indicators/SMA.h>
+#include <indicators/Momentum.h>
+#include <indicators/MACD.h>
+#include <utils/CudaUtils.h>
 
 extern "C" {
 

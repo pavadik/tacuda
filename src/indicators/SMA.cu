@@ -1,5 +1,5 @@
-#include "../../include/indicators/SMA.h"
-#include "../../include/utils/CudaUtils.h"
+#include <indicators/SMA.h>
+#include <utils/CudaUtils.h>
 #include <stdexcept>
 
 __global__ void smaKernel(const float* __restrict__ input, float* __restrict__ output,
