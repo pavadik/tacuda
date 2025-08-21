@@ -38,6 +38,13 @@ CTAPI_EXPORT ctStatus_t ct_bbands(const float* host_input,
                                   int period,
                                   float upperMul,
                                   float lowerMul);
+CTAPI_EXPORT ctStatus_t ct_atr(const float* host_high,
+                               const float* host_low,
+                               const float* host_close,
+                               float* host_output,
+                               int size,
+                               int period,
+                               float initial);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -27,6 +27,10 @@ namespace CudaTaLib
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_rsi(float[] input, float[] output, int size, int period);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_atr(float[] high, float[] low, float[] close,
+                                        float[] output, int size, int period, float initial);
     }
 
     public class Example

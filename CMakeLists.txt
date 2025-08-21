@@ -16,6 +16,7 @@ set(INDICATOR_SOURCES
     src/indicators/WMA.cu
     src/indicators/RSI.cu
     src/indicators/BBANDS.cu
+    src/indicators/ATR.cu
 )
 
 add_library(tacuda SHARED
