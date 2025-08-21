@@ -61,21 +61,33 @@ TEST(Tacuda, Momentum) {
   }
 }
 
-TEST(Tacuda, MacdLine) {
+TEST(Tacuda, Macd) {
   const int N = 128;
   std::vector<float> x(N);
   for (int i = 0; i < N; ++i)
     x[i] = std::sin(0.05f * i);
 
-  std::vector<float> out(N, 0.0f);
+  std::vector<float> line(N, 0.0f), signal(N, 0.0f), hist(N, 0.0f);
 
-  int fastP = 12, slowP = 26;
-  ctStatus_t rc = ct_macd_line(x.data(), out.data(), N, fastP, slowP);
-  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_macd_line failed";
+  int fastP = 12, slowP = 26, signalP = 9;
+  ctStatus_t rc = ct_macd(x.data(), line.data(), signal.data(), hist.data(), N,
+                          fastP, slowP, signalP);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_macd failed";
   for (int i = 0; i < slowP; i++) {
-    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+    EXPECT_TRUE(std::isnan(line[i])) << "expected NaN at head " << i;
   }
   for (int i = slowP; i < N; i++) {
-    EXPECT_TRUE(std::isfinite(out[i])) << "expected finite value at " << i;
+    EXPECT_TRUE(std::isfinite(line[i])) << "expected finite value at " << i;
+  }
+  int warm = slowP + signalP - 1;
+  for (int i = 0; i < warm; ++i) {
+    EXPECT_TRUE(std::isnan(signal[i])) << "expected NaN in signal at " << i;
+    EXPECT_TRUE(std::isnan(hist[i])) << "expected NaN in hist at " << i;
+  }
+  for (int i = warm; i < N; ++i) {
+    EXPECT_TRUE(std::isfinite(signal[i])) << "expected finite signal at " << i;
+    EXPECT_TRUE(std::isfinite(hist[i])) << "expected finite hist at " << i;
+    if (std::isfinite(line[i]) && std::isfinite(signal[i]))
+      EXPECT_NEAR(hist[i], line[i] - signal[i], 1e-3f);
   }
 }

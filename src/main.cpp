@@ -12,9 +12,11 @@ int main() {
     std::vector<float> h_in(N);
     for (int i = 0; i < N; ++i) h_in[i] = std::sin(0.01f * i) + 0.5f * std::cos(0.03f * i);
 
-    float *d_in = nullptr, *d_out = nullptr;
+    float *d_in = nullptr, *d_out = nullptr, *d_sig = nullptr, *d_hist = nullptr;
     CUDA_CHECK(cudaMalloc(&d_in, N * sizeof(float)));
     CUDA_CHECK(cudaMalloc(&d_out, N * sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_sig, N * sizeof(float)));
+    CUDA_CHECK(cudaMalloc(&d_hist, N * sizeof(float)));
     CUDA_CHECK(cudaMemcpy(d_in, h_in.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
     {
@@ -36,15 +38,17 @@ int main() {
     }
 
     {
-        MACD macd(12, 26);
-        macd.calculate(d_in, d_out, N);
-        std::vector<float> h_out(N, 0.0f);
-        CUDA_CHECK(cudaMemcpy(h_out.data(), d_out, N * sizeof(float), cudaMemcpyDeviceToHost));
-        std::cout << "MACD[0..4]: ";
-        for (int i = 0; i < 5; ++i) std::cout << h_out[i] << (i<4? ", ":"\n");
+        MACD macd(12, 26, 9);
+        macd.calculate(d_in, d_out, d_sig, d_hist, N);
+        std::vector<float> h_line(N, 0.0f);
+        CUDA_CHECK(cudaMemcpy(h_line.data(), d_out, N * sizeof(float), cudaMemcpyDeviceToHost));
+        std::cout << "MACD line[0..4]: ";
+        for (int i = 0; i < 5; ++i) std::cout << h_line[i] << (i<4? ", ":"\n");
     }
 
     CUDA_CHECK(cudaFree(d_in));
     CUDA_CHECK(cudaFree(d_out));
+    CUDA_CHECK(cudaFree(d_sig));
+    CUDA_CHECK(cudaFree(d_hist));
     return 0;
 }

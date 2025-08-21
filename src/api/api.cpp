@@ -64,10 +64,49 @@ ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, in
     return run_indicator(mom, host_input, host_output, size);
 }
 
-ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
-                 int fastPeriod, int slowPeriod) {
-    MACD macd(fastPeriod, slowPeriod);
-    return run_indicator(macd, host_input, host_output, size);
+ctStatus_t ct_macd(const float* host_input,
+                   float* macdOut,
+                   float* signalOut,
+                   float* histOut,
+                   int size,
+                   int fastPeriod, int slowPeriod, int signalPeriod) {
+    DeviceBuffer d_in{nullptr}, d_macd{nullptr}, d_signal{nullptr}, d_hist{nullptr};
+    float* tmp = nullptr;
+
+    cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) return CT_STATUS_ALLOC_FAILED;
+    d_in.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) return CT_STATUS_ALLOC_FAILED;
+    d_macd.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) return CT_STATUS_ALLOC_FAILED;
+    d_signal.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) return CT_STATUS_ALLOC_FAILED;
+    d_hist.reset(tmp);
+
+    err = cudaMemcpy(d_in.get(), host_input, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) return CT_STATUS_COPY_FAILED;
+
+    try {
+        MACD macd(fastPeriod, slowPeriod, signalPeriod);
+        macd.calculate(d_in.get(), d_macd.get(), d_signal.get(), d_hist.get(), size);
+    } catch (...) {
+        return CT_STATUS_KERNEL_FAILED;
+    }
+
+    err = cudaMemcpy(macdOut, d_macd.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) return CT_STATUS_COPY_FAILED;
+    err = cudaMemcpy(signalOut, d_signal.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) return CT_STATUS_COPY_FAILED;
+    err = cudaMemcpy(histOut, d_hist.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) return CT_STATUS_COPY_FAILED;
+
+    return CT_STATUS_SUCCESS;
 }
 
 } // extern "C"

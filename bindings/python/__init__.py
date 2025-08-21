@@ -29,9 +29,12 @@ _lib.ct_sma.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_
 _lib.ct_sma.restype  = ctypes.c_int
 _lib.ct_momentum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
 _lib.ct_momentum.restype  = ctypes.c_int
-_lib.ct_macd_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int,
-                              ctypes.c_int, ctypes.c_int]
-_lib.ct_macd_line.restype  = ctypes.c_int
+_lib.ct_macd.argtypes = [ctypes.POINTER(ctypes.c_float),
+                         ctypes.POINTER(ctypes.c_float),
+                         ctypes.POINTER(ctypes.c_float),
+                         ctypes.POINTER(ctypes.c_float),
+                         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+_lib.ct_macd.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -63,13 +66,17 @@ def momentum(x, period):
         raise RuntimeError("ct_momentum failed")
     return out
 
-def macd_line(x, fast=12, slow=26):
+def macd(x, fast=12, slow=26, signal=9):
     import numpy as np
     x = np.asarray(x, dtype=np.float32)
-    out = np.zeros_like(x)
+    line = np.zeros_like(x)
+    sig = np.zeros_like(x)
+    hist = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
-    _, pout = _as_float_ptr(out)
-    rc = _lib.ct_macd_line(pin, pout, x.size, int(fast), int(slow))
+    _, pline = _as_float_ptr(line)
+    _, psig = _as_float_ptr(sig)
+    _, phist = _as_float_ptr(hist)
+    rc = _lib.ct_macd(pin, pline, psig, phist, x.size, int(fast), int(slow), int(signal))
     if rc != 0:
-        raise RuntimeError("ct_macd_line failed")
-    return out
+        raise RuntimeError("ct_macd failed")
+    return line, sig, hist
