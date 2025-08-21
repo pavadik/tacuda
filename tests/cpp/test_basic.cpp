@@ -24,8 +24,8 @@ int main() {
 
     // SMA check vs CPU naive
     int p = 5;
-    int rc = ct_sma(x.data(), out.data(), N, p);
-    if (rc != 0) { std::cerr << "ct_sma failed\\n"; return 1; }
+    ctStatus_t rc = ct_sma(x.data(), out.data(), N, p);
+    if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_sma failed\\n"; return 1; }
     for (int i=0;i<=N-p;i++) {
         float s=0; for (int k=0;k<p;k++) s+=x[i+k];
         ref[i] = s/p;
@@ -35,13 +35,13 @@ int main() {
     // Momentum check
     std::fill(ref.begin(), ref.end(), 0.0f);
     rc = ct_momentum(x.data(), out.data(), N, p);
-    if (rc != 0) { std::cerr << "ct_momentum failed\\n"; return 1; }
+    if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_momentum failed\\n"; return 1; }
     for (int i=0;i<N-p;i++) ref[i] = x[i+p]-x[i];
     approx_equal(out, ref, 1e-3f);
 
     // MACD line smoke test (can't exact-match recursive EMA easily) — ensure finite values
     rc = ct_macd_line(x.data(), out.data(), N, 12, 26, 9);
-    if (rc != 0) { std::cerr << "ct_macd_line failed\\n"; return 1; }
+    if (rc != CT_STATUS_SUCCESS) { std::cerr << "ct_macd_line failed\\n"; return 1; }
     for (int i=0;i<N;i++) { if (!std::isfinite(out[i])) { std::cerr << "nan at " << i << "\\n"; return 1; } }
 
     std::cout << "All tests passed.\\n";
