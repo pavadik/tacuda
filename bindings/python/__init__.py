@@ -1,6 +1,6 @@
 """
-Python bindings for cuda_talib via ctypes.
-Build the project first (shared library 'cuda_talib_shared').
+Python bindings for tacuda via ctypes.
+Build the project first (shared library 'tacuda').
 """
 import ctypes
 import os
@@ -9,11 +9,11 @@ import sys
 def _load_lib():
     names = []
     if sys.platform.startswith("win"):
-        names = ["cuda_talib_shared.dll"]
+        names = ["tacuda.dll"]
     elif sys.platform == "darwin":
-        names = ["libcuda_talib_shared.dylib", "cuda_talib_shared.dylib"]
+        names = ["libtacuda.dylib", "tacuda.dylib"]
     else:
-        names = ["libcuda_talib_shared.so", "cuda_talib_shared.so"]
+        names = ["libtacuda.so", "tacuda.so"]
     search_paths = [os.getcwd(), os.path.join(os.getcwd(), "build"), os.path.dirname(__file__),
                     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "build"))]
     for base in search_paths:
@@ -21,7 +21,7 @@ def _load_lib():
             p = os.path.join(base, n)
             if os.path.exists(p):
                 return ctypes.CDLL(p)
-    raise OSError("cuda_talib_shared library not found. Build the project first.")
+    raise OSError("tacuda library not found. Build the project first.")
 
 _lib = _load_lib()
 

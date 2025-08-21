@@ -1,5 +1,5 @@
-#ifndef CUDA_TALIB_H
-#define CUDA_TALIB_H
+#ifndef TACUDA_H
+#define TACUDA_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,4 +26,4 @@ CTAPI_EXPORT int ct_macd_line(const float* host_input, float* host_output, int s
 } // extern "C"
 #endif
 
-#endif
+#endif // TACUDA_H

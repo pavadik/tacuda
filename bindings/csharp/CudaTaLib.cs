@@ -6,11 +6,11 @@ namespace CudaTaLib
     public static class Native
     {
         #if WINDOWS
-            const string LIB = "cuda_talib_shared.dll";
+            const string LIB = "tacuda.dll";
         #elif OSX
-            const string LIB = "libcuda_talib_shared.dylib";
+            const string LIB = "libtacuda.dylib";
         #else
-            const string LIB = "libcuda_talib_shared.so";
+            const string LIB = "libtacuda.so";
         #endif
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
