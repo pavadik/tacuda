@@ -17,6 +17,7 @@ set(INDICATOR_SOURCES
     src/indicators/RSI.cu
     src/indicators/BBANDS.cu
     src/indicators/ATR.cu
+    src/indicators/Stochastic.cu
 )
 
 add_library(tacuda SHARED
