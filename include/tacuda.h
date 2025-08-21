@@ -59,6 +59,10 @@ CTAPI_EXPORT ctStatus_t ct_cci(const float* host_high,
                                float* host_output,
                                int size,
                                int period);
+CTAPI_EXPORT ctStatus_t ct_obv(const float* host_price,
+                               const float* host_volume,
+                               float* host_output,
+                               int size);
 
 #ifdef __cplusplus
 } // extern "C"
