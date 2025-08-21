@@ -8,6 +8,7 @@
 #include <indicators/SMA.h>
 #include <indicators/Momentum.h>
 #include <indicators/MACD.h>
+#include <indicators/EMA.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -62,6 +63,11 @@ ctStatus_t ct_sma(const float* host_input, float* host_output, int size, int per
 ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, int period) {
     Momentum mom(period);
     return run_indicator(mom, host_input, host_output, size);
+}
+
+ctStatus_t ct_ema(const float* host_input, float* host_output, int size, int period) {
+    EMA ema(period);
+    return run_indicator(ema, host_input, host_output, size);
 }
 
 ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,
