@@ -33,9 +33,18 @@ target_link_libraries(example_app PRIVATE tacuda)
 # Tests (simple CTest with a small program using the C API)
 if (BUILD_TESTING)
   enable_testing()
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.14.0
+  )
+  FetchContent_MakeAvailable(googletest)
+
   add_executable(test_basic tests/cpp/test_basic.cpp)
-  target_link_libraries(test_basic PRIVATE tacuda)
-  add_test(NAME run_test_basic COMMAND test_basic)
+  target_link_libraries(test_basic PRIVATE tacuda GTest::gtest_main)
+  include(GoogleTest)
+  gtest_discover_tests(test_basic)
 endif()
 
 # Install (optional)
