@@ -31,6 +31,11 @@ namespace CudaTaLib
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_atr(float[] high, float[] low, float[] close,
                                         float[] output, int size, int period, float initial);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_stochastic(float[] high, float[] low, float[] close,
+                                               float[] kOut, float[] dOut,
+                                               int size, int kPeriod, int dPeriod);
     }
 
     public class Example
