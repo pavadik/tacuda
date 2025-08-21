@@ -30,7 +30,7 @@ _lib.ct_sma.restype  = ctypes.c_int
 _lib.ct_momentum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
 _lib.ct_momentum.restype  = ctypes.c_int
 _lib.ct_macd_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int,
-                              ctypes.c_int, ctypes.c_int, ctypes.c_int]
+                              ctypes.c_int, ctypes.c_int]
 _lib.ct_macd_line.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
@@ -63,13 +63,13 @@ def momentum(x, period):
         raise RuntimeError("ct_momentum failed")
     return out
 
-def macd_line(x, fast=12, slow=26, signal=9):
+def macd_line(x, fast=12, slow=26):
     import numpy as np
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
     _, pout = _as_float_ptr(out)
-    rc = _lib.ct_macd_line(pin, pout, x.size, int(fast), int(slow), int(signal))
+    rc = _lib.ct_macd_line(pin, pout, x.size, int(fast), int(slow))
     if rc != 0:
         raise RuntimeError("ct_macd_line failed")
     return out

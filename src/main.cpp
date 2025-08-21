@@ -36,7 +36,7 @@ int main() {
     }
 
     {
-        MACD macd(12, 26, 9);
+        MACD macd(12, 26);
         macd.calculate(d_in, d_out, N);
         std::vector<float> h_out(N, 0.0f);
         CUDA_CHECK(cudaMemcpy(h_out.data(), d_out, N * sizeof(float), cudaMemcpyDeviceToHost));
