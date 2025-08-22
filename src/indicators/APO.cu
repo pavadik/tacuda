@@ -3,7 +3,7 @@
 #include <indicators/APO.h>
 #include <utils/CudaUtils.h>
 
-__device__ float ema_at(const float* __restrict__ x, int idx, int period) {
+static __device__ float ema_at(const float* __restrict__ x, int idx, int period) {
     const float k = 2.0f / (period + 1.0f);
     float weight = 1.0f;
     float weightedSum = x[idx];

@@ -10,7 +10,7 @@
 // the actual period and accumulate weighted sums, effectively mimicking a
 // prefix-sum of exponentially decaying weights.  This improves cache
 // locality and avoids touching values outside the required window.
-__device__ float ema_at(const float* __restrict__ x, int idx, int period) {
+static __device__ float ema_at(const float* __restrict__ x, int idx, int period) {
     const float k = 2.0f / (period + 1.0f);
     float weight = 1.0f;        // Current weight for x[idx - i]
     float weightedSum = x[idx]; // Accumulated weighted input values

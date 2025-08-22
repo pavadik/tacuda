@@ -32,6 +32,10 @@
 #include <indicators/TEMA.h>
 #include <indicators/TRIX.h>
 #include <indicators/WMA.h>
+#include <indicators/MA.h>
+#include <indicators/MAX.h>
+#include <indicators/MAMA.h>
+#include <indicators/MACDEXT.h>
 #include <indicators/Beta.h>
 #include <indicators/BOP.h>
 #include <indicators/CMO.h>
@@ -102,6 +106,12 @@ ctStatus_t ct_sma(const float *host_input, float *host_output, int size,
   return run_indicator(sma, host_input, host_output, size);
 }
 
+ctStatus_t ct_ma(const float *host_input, float *host_output, int size,
+                 int period, ctMaType_t type) {
+  MA ma(period, static_cast<MAType>(type));
+  return run_indicator(ma, host_input, host_output, size);
+}
+
 ctStatus_t ct_wma(const float *host_input, float *host_output, int size,
                   int period) {
   WMA wma(period);
@@ -144,6 +154,12 @@ ctStatus_t ct_trix(const float *host_input, float *host_output, int size,
   return run_indicator(trix, host_input, host_output, size);
 }
 
+ctStatus_t ct_max(const float *host_input, float *host_output, int size,
+                  int period) {
+  MAX mx(period);
+  return run_indicator(mx, host_input, host_output, size);
+}
+
 ctStatus_t ct_rsi(const float *host_input, float *host_output, int size,
                   int period) {
   RSI rsi(period);
@@ -160,6 +176,35 @@ ctStatus_t ct_macd_line(const float *host_input, float *host_output, int size,
                         int fastPeriod, int slowPeriod) {
   MACD macd(fastPeriod, slowPeriod);
   return run_indicator(macd, host_input, host_output, size);
+}
+
+ctStatus_t ct_macd(const float *host_input, float *host_macd,
+                   float *host_signal, float *host_hist, int size,
+                   int fastPeriod, int slowPeriod, int signalPeriod,
+                   ctMaType_t type) {
+  MACDEXT macd(fastPeriod, slowPeriod, signalPeriod,
+               static_cast<MAType>(type));
+  std::vector<float> tmp(3 * size);
+  ctStatus_t rc = run_indicator(macd, host_input, tmp.data(), size, 3);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_macd, tmp.data(), size * sizeof(float));
+  std::memcpy(host_signal, tmp.data() + size, size * sizeof(float));
+  std::memcpy(host_hist, tmp.data() + 2 * size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_mama(const float *host_input, float *host_mama,
+                   float *host_fama, int size,
+                   float fastLimit, float slowLimit) {
+  MAMA ma(fastLimit, slowLimit);
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_indicator(ma, host_input, tmp.data(), size, 2);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_mama, tmp.data(), size * sizeof(float));
+  std::memcpy(host_fama, tmp.data() + size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_apo(const float *host_input, float *host_output, int size,
