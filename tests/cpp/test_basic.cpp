@@ -940,3 +940,218 @@ TEST(Tacuda, MFI) {
   for (int i = 0; i < p; ++i)
     EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
 }
+
+namespace {
+
+std::vector<float> ad_ref(const std::vector<float> &high,
+                          const std::vector<float> &low,
+                          const std::vector<float> &close,
+                          const std::vector<float> &volume) {
+  int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  float cum = 0.0f;
+  for (int i = 0; i < N; ++i) {
+    float denom = high[i] - low[i];
+    float clv = denom == 0.0f
+                    ? 0.0f
+                    : ((close[i] - low[i]) - (high[i] - close[i])) / denom;
+    cum += clv * volume[i];
+    out[i] = cum;
+  }
+  return out;
+}
+
+float ema_at_ref(const std::vector<float> &x, int idx, int period) {
+  const float k = 2.0f / (period + 1.0f);
+  float weight = 1.0f;
+  float weightedSum = x[idx];
+  float weightSum = 1.0f;
+  int steps = std::min(period, idx);
+  for (int i = 1; i <= steps; ++i) {
+    weight *= (1.0f - k);
+    weightedSum += x[idx - i] * weight;
+    weightSum += weight;
+  }
+  return weightedSum / weightSum;
+}
+
+std::vector<float> apo_ref(const std::vector<float> &in, int fastP,
+                           int slowP) {
+  int N = in.size();
+  std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+  for (int i = slowP; i < N; ++i) {
+    float emaFast = ema_at_ref(in, i, fastP);
+    float emaSlow = ema_at_ref(in, i, slowP);
+    out[i] = emaFast - emaSlow;
+  }
+  return out;
+}
+
+std::vector<float> aroonosc_ref(const std::vector<float> &high,
+                                const std::vector<float> &low, int period) {
+  int N = high.size();
+  std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+  for (int i = period; i < N; ++i) {
+    int sinceHigh = 0, sinceLow = 0;
+    float maxVal = high[i];
+    float minVal = low[i];
+    for (int j = 1; j <= period; ++j) {
+      float h = high[i - j];
+      float l = low[i - j];
+      if (h >= maxVal) {
+        maxVal = h;
+        sinceHigh = j;
+      }
+      if (l <= minVal) {
+        minVal = l;
+        sinceLow = j;
+      }
+    }
+    float up = 100.0f * (period - sinceHigh) / period;
+    float down = 100.0f * (period - sinceLow) / period;
+    out[i] = up - down;
+  }
+  return out;
+}
+
+std::vector<float> adxr_ref(const std::vector<float> &high,
+                            const std::vector<float> &low,
+                            const std::vector<float> &close, int p) {
+  int N = high.size();
+  std::vector<float> adx(N, std::numeric_limits<float>::quiet_NaN());
+  std::vector<float> dmp(N, 0.0f), dmm(N, 0.0f), tr(N, 0.0f), dx(N, 0.0f);
+  for (int i = 1; i < N; ++i) {
+    float upMove = high[i] - high[i - 1];
+    float downMove = low[i - 1] - low[i];
+    dmp[i] = (upMove > downMove && upMove > 0.0f) ? upMove : 0.0f;
+    dmm[i] = (downMove > upMove && downMove > 0.0f) ? downMove : 0.0f;
+    float range1 = high[i] - low[i];
+    float range2 = std::fabs(high[i] - close[i - 1]);
+    float range3 = std::fabs(low[i] - close[i - 1]);
+    tr[i] = std::max(range1, std::max(range2, range3));
+  }
+  float dmp_s = 0.0f, dmm_s = 0.0f, tr_s = 0.0f;
+  for (int i = 1; i <= p; ++i) {
+    dmp_s += dmp[i];
+    dmm_s += dmm[i];
+    tr_s += tr[i];
+  }
+  float dip = (tr_s == 0.0f) ? 0.0f : 100.0f * dmp_s / tr_s;
+  float dim = (tr_s == 0.0f) ? 0.0f : 100.0f * dmm_s / tr_s;
+  dx[p] =
+      (dip + dim == 0.0f) ? 0.0f : 100.0f * std::fabs(dip - dim) / (dip + dim);
+  float dx_sum = dx[p];
+  for (int i = p + 1; i < N; ++i) {
+    dmp_s = dmp_s - dmp_s / p + dmp[i];
+    dmm_s = dmm_s - dmm_s / p + dmm[i];
+    tr_s = tr_s - tr_s / p + tr[i];
+    dip = (tr_s == 0.0f) ? 0.0f : 100.0f * dmp_s / tr_s;
+    dim = (tr_s == 0.0f) ? 0.0f : 100.0f * dmm_s / tr_s;
+    dx[i] = (dip + dim == 0.0f)
+                ? 0.0f
+                : 100.0f * std::fabs(dip - dim) / (dip + dim);
+    if (i < 2 * p) {
+      dx_sum += dx[i];
+      if (i == 2 * p - 1)
+        adx[i] = dx_sum / p;
+    } else {
+      adx[i] = ((adx[i - 1] * (p - 1)) + dx[i]) / p;
+    }
+  }
+  std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+  for (int i = 3 * p - 1; i < N; ++i) {
+    out[i] = 0.5f * (adx[i] + adx[i - p]);
+  }
+  return out;
+}
+
+std::vector<float> avgprice_ref(const std::vector<float> &open,
+                                const std::vector<float> &high,
+                                const std::vector<float> &low,
+                                const std::vector<float> &close) {
+  int N = open.size();
+  std::vector<float> out(N, 0.0f);
+  for (int i = 0; i < N; ++i)
+    out[i] = (open[i] + high[i] + low[i] + close[i]) * 0.25f;
+  return out;
+}
+
+} // namespace
+
+TEST(Tacuda, AD) {
+  std::vector<float> high = {12.f, 12.5f, 13.f, 13.5f};
+  std::vector<float> low = {11.f, 11.5f, 12.f, 12.5f};
+  std::vector<float> close = {11.5f, 12.f, 12.5f, 13.f};
+  std::vector<float> volume = {100.f, 110.f, 120.f, 130.f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc =
+      ct_ad(high.data(), low.data(), close.data(), volume.data(), out.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ad failed";
+  auto ref = ad_ref(high, low, close, volume);
+  expect_approx_equal(out, ref);
+}
+
+TEST(Tacuda, ADXR) {
+  std::vector<float> high = {30.0f, 32.0f, 31.0f, 33.0f, 34.0f, 35.0f,
+                             36.0f, 37.0f, 36.0f, 38.0f, 39.0f, 40.0f};
+  std::vector<float> low = {29.0f, 30.0f, 30.0f, 31.0f, 32.0f, 33.0f,
+                            34.0f, 35.0f, 34.0f, 35.0f, 36.0f, 37.0f};
+  std::vector<float> close = {29.5f, 31.0f, 30.5f, 32.0f, 33.0f, 34.0f,
+                              35.0f, 36.0f, 35.0f, 37.0f, 38.0f, 39.0f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  int p = 3;
+  ctStatus_t rc =
+      ct_adxr(high.data(), low.data(), close.data(), out.data(), N, p);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_adxr failed";
+  auto ref = adxr_ref(high, low, close, p);
+  expect_approx_equal(out, ref);
+  for (int i = 0; i < 3 * p - 1; ++i)
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+}
+
+TEST(Tacuda, APO) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i)
+    x[i] = std::sin(0.05f * i);
+  std::vector<float> out(N, 0.0f);
+  int fastP = 12, slowP = 26;
+  ctStatus_t rc = ct_apo(x.data(), out.data(), N, fastP, slowP);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_apo failed";
+  auto ref = apo_ref(x, fastP, slowP);
+  expect_approx_equal(out, ref);
+  for (int i = 0; i < slowP; ++i)
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+}
+
+TEST(Tacuda, AroonOscillator) {
+  std::vector<float> high = {1.f, 2.f, 3.f, 2.f, 3.f, 4.f, 5.f, 4.f, 6.f, 7.f};
+  std::vector<float> low = {0.5f, 1.5f, 2.5f, 1.5f, 2.5f,
+                            3.5f, 4.5f, 3.5f, 5.5f, 6.5f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  int p = 5;
+  ctStatus_t rc =
+      ct_aroonosc(high.data(), low.data(), out.data(), N, p);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_aroonosc failed";
+  auto ref = aroonosc_ref(high, low, p);
+  expect_approx_equal(out, ref);
+  for (int i = 0; i < p; ++i)
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+}
+
+TEST(Tacuda, AvgPrice) {
+  std::vector<float> open = {10.f, 11.f, 12.f};
+  std::vector<float> high = {12.f, 13.f, 14.f};
+  std::vector<float> low = {9.f, 10.f, 11.f};
+  std::vector<float> close = {11.f, 12.f, 13.f};
+  const int N = open.size();
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_avgprice(open.data(), high.data(), low.data(),
+                              close.data(), out.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_avgprice failed";
+  auto ref = avgprice_ref(open, high, low, close);
+  expect_approx_equal(out, ref);
+}
