@@ -77,7 +77,8 @@ if (BUILD_TESTING)
   )
   FetchContent_MakeAvailable(googletest)
 
-  add_executable(test_basic tests/cpp/test_basic.cpp)
+  file(GLOB TEST_SOURCES tests/cpp/*.cpp)
+  add_executable(test_basic ${TEST_SOURCES})
   target_include_directories(test_basic PRIVATE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
   target_link_libraries(test_basic PRIVATE tacuda GTest::gtest_main)
