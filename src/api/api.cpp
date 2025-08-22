@@ -7,6 +7,7 @@
 #include "tacuda.h"
 #include <indicators/SMA.h>
 #include <indicators/Momentum.h>
+#include <indicators/ROC.h>
 #include <indicators/MACD.h>
 #include <indicators/EMA.h>
 #include <indicators/WMA.h>
@@ -82,6 +83,11 @@ ctStatus_t ct_wma(const float* host_input, float* host_output, int size, int per
 ctStatus_t ct_momentum(const float* host_input, float* host_output, int size, int period) {
     Momentum mom(period);
     return run_indicator(mom, host_input, host_output, size);
+}
+
+ctStatus_t ct_roc(const float* host_input, float* host_output, int size, int period) {
+    ROC roc(period);
+    return run_indicator(roc, host_input, host_output, size);
 }
 
 ctStatus_t ct_ema(const float* host_input, float* host_output, int size, int period) {
