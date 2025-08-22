@@ -7,7 +7,7 @@ set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 option(BUILD_TESTING "Enable tests" ON)
 
-# Explicitly list indicator sources instead of globbing
+#Explicitly list indicator sources instead of globbing
 set(INDICATOR_SOURCES
     src/indicators/MACD.cu
     src/indicators/MACDEXT.cu
@@ -47,6 +47,10 @@ set(INDICATOR_SOURCES
     src/indicators/CMO.cu
     src/indicators/Correl.cu
     src/indicators/DX.cu
+    src/indicators/PlusDM.cu
+    src/indicators/MinusDM.cu
+    src/indicators/PlusDI.cu
+    src/indicators/MinusDI.cu
     src/indicators/HT_DCPERIOD.cu
     src/indicators/HT_DCPHASE.cu
     src/indicators/HT_PHASOR.cu
@@ -76,7 +80,7 @@ target_compile_options(tacuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-
 add_executable(example_app src/main.cpp)
 target_link_libraries(example_app PRIVATE tacuda CUDA::cudart)
 
-# Tests (simple CTest with a small program using the C API)
+#Tests(simple CTest with a small program using the C API)
 if (BUILD_TESTING)
   enable_testing()
   include(FetchContent)
