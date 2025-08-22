@@ -52,3 +52,13 @@ std::vector<float> linearreg_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_slope_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_intercept_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_angle_ref(const std::vector<float>& in, int period);
+std::vector<float> plus_dm_ref(const std::vector<float>& high,
+                               const std::vector<float>& low, int period);
+std::vector<float> minus_dm_ref(const std::vector<float>& high,
+                                const std::vector<float>& low, int period);
+std::vector<float> plus_di_ref(const std::vector<float>& high,
+                               const std::vector<float>& low,
+                               const std::vector<float>& close, int period);
+std::vector<float> minus_di_ref(const std::vector<float>& high,
+                                const std::vector<float>& low,
+                                const std::vector<float>& close, int period);
