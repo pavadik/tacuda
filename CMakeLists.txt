@@ -41,6 +41,11 @@ set(INDICATOR_SOURCES
     src/indicators/CMO.cu
     src/indicators/Correl.cu
     src/indicators/DX.cu
+    src/indicators/HT_DCPERIOD.cu
+    src/indicators/HT_DCPHASE.cu
+    src/indicators/HT_PHASOR.cu
+    src/indicators/HT_SINE.cu
+    src/indicators/HT_TRENDMODE.cu
 )
 
 add_library(tacuda SHARED

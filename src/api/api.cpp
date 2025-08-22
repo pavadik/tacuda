@@ -37,6 +37,11 @@
 #include <indicators/CMO.h>
 #include <indicators/Correl.h>
 #include <indicators/DX.h>
+#include <indicators/HT_DCPERIOD.h>
+#include <indicators/HT_DCPHASE.h>
+#include <indicators/HT_PHASOR.h>
+#include <indicators/HT_SINE.h>
+#include <indicators/HT_TRENDMODE.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -1109,6 +1114,45 @@ ctStatus_t ct_beta(const float *host_x, const float *host_y,
   }
 
   return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_ht_dcperiod(const float *host_input, float *host_output, int size) {
+  HT_DCPERIOD ind;
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_ht_dcphase(const float *host_input, float *host_output, int size) {
+  HT_DCPHASE ind;
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_ht_phasor(const float *host_input, float *host_inphase,
+                        float *host_quadrature, int size) {
+  HT_PHASOR ind;
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_indicator(ind, host_input, tmp.data(), size, 2);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_inphase, tmp.data(), size * sizeof(float));
+  std::memcpy(host_quadrature, tmp.data() + size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
+                      float *host_leadsine, int size) {
+  HT_SINE ind;
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_indicator(ind, host_input, tmp.data(), size, 2);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_sine, tmp.data(), size * sizeof(float));
+  std::memcpy(host_leadsine, tmp.data() + size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_ht_trendmode(const float *host_input, float *host_output, int size) {
+  HT_TRENDMODE ind;
+  return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_bop(const float *host_open, const float *host_high,
