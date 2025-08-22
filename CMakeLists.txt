@@ -23,6 +23,7 @@ set(INDICATOR_SOURCES
     src/indicators/SAR.cu
     src/indicators/ADX.cu
     src/indicators/Aroon.cu
+    src/indicators/ADOSC.cu
 )
 
 add_library(tacuda SHARED
