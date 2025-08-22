@@ -184,4 +184,58 @@ __host__ __device__ inline bool is_dark_cloud_cover(float o1, float h1,
   return c1 > o1 && o2 > h1 && c2 < o2 && c2 > o1 && c2 < mid1;
 }
 
+__host__ __device__ inline bool is_doji_star(float o1, float h1, float l1,
+                                             float c1, float o2, float h2,
+                                             float l2, float c2) {
+  bool gapUp = l2 > h1;
+  bool gapDown = h2 < l1;
+  return !is_doji(o1, h1, l1, c1) && is_doji(o2, h2, l2, c2) &&
+         (gapUp || gapDown);
+}
+
+__host__ __device__ inline bool is_dragonfly_doji(float open, float high,
+                                                  float low, float close) {
+  if (!is_doji(open, high, low, close))
+    return false;
+  float range = high - low;
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return upper <= range * 0.1f && lower >= range * 0.5f;
+}
+
+__host__ __device__ inline float engulfing(float prevOpen, float prevClose,
+                                           float open, float close) {
+  if (is_bullish_engulfing(prevOpen, prevClose, open, close))
+    return 1.0f;
+  if (is_bearish_engulfing(prevOpen, prevClose, open, close))
+    return -1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline bool is_evening_star(float o1, float h1, float l1,
+                                                float c1, float o2, float h2,
+                                                float l2, float c2, float o3,
+                                                float h3, float l3, float c3) {
+  bool bullish1 = c1 > o1;
+  bool gapUp = l2 > h1;
+  float body1 = real_body(o1, c1);
+  float body2 = real_body(o2, c2);
+  bool smallBody2 = body2 < body1 * 0.5f;
+  bool bearish3 = c3 < o3;
+  bool closeIntoBody = c3 < (o1 + c1) * 0.5f;
+  return bullish1 && gapUp && smallBody2 && bearish3 && closeIntoBody;
+}
+
+__host__ __device__ inline bool
+is_evening_doji_star(float o1, float h1, float l1, float c1, float o2, float h2,
+                     float l2, float c2, float o3, float h3, float l3,
+                     float c3) {
+  bool bullish1 = c1 > o1;
+  bool doji2 = is_doji(o2, h2, l2, c2);
+  bool gapUp = l2 > h1;
+  bool bearish3 = c3 < o3;
+  bool closeIntoBody = c3 < (o1 + c1) * 0.5f;
+  return bullish1 && doji2 && gapUp && bearish3 && closeIntoBody;
+}
+
 #endif

@@ -34,7 +34,12 @@
 #include <indicators/DX.h>
 #include <indicators/DarkCloudCover.h>
 #include <indicators/Doji.h>
+#include <indicators/DojiStar.h>
+#include <indicators/DragonflyDoji.h>
 #include <indicators/EMA.h>
+#include <indicators/Engulfing.h>
+#include <indicators/EveningDojiStar.h>
+#include <indicators/EveningStar.h>
 #include <indicators/HT_DCPERIOD.h>
 #include <indicators/HT_DCPHASE.h>
 #include <indicators/HT_PHASOR.h>
@@ -2172,6 +2177,48 @@ ctStatus_t ct_cdl_dark_cloud_cover(const float *host_open,
                                    const float *host_close, float *host_output,
                                    int size) {
   DarkCloudCover ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_doji_star(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
+                            float *host_output, int size) {
+  DojiStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_dragonfly_doji(const float *host_open, const float *host_high,
+                                 const float *host_low, const float *host_close,
+                                 float *host_output, int size) {
+  DragonflyDoji ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_engulfing(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
+                            float *host_output, int size) {
+  Engulfing ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_evening_doji_star(const float *host_open,
+                                    const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close, float *host_output,
+                                    int size) {
+  EveningDojiStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_evening_star(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  EveningStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
