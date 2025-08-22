@@ -10,6 +10,7 @@ option(BUILD_TESTING "Enable tests" ON)
 # Explicitly list indicator sources instead of globbing
 set(INDICATOR_SOURCES
     src/indicators/MACD.cu
+    src/indicators/MACDEXT.cu
     src/indicators/Momentum.cu
     src/indicators/ROC.cu
     src/indicators/SMA.cu
@@ -17,6 +18,9 @@ set(INDICATOR_SOURCES
     src/indicators/DEMA.cu
     src/indicators/TEMA.cu
     src/indicators/TRIX.cu
+    src/indicators/MA.cu
+    src/indicators/MAX.cu
+    src/indicators/MAMA.cu
     src/indicators/WMA.cu
     src/indicators/RSI.cu
     src/indicators/KAMA.cu
@@ -68,7 +72,7 @@ target_link_libraries(tacuda PRIVATE CUDA::cudart)
 target_compile_options(tacuda PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr>)
 
 add_executable(example_app src/main.cpp)
-target_link_libraries(example_app PRIVATE tacuda)
+target_link_libraries(example_app PRIVATE tacuda CUDA::cudart)
 
 # Tests (simple CTest with a small program using the C API)
 if (BUILD_TESTING)

@@ -21,9 +21,16 @@ typedef enum ctStatus {
   CT_STATUS_KERNEL_FAILED = 3,
 } ctStatus_t;
 
+typedef enum ctMaType {
+  CT_MA_SMA = 0,
+  CT_MA_EMA = 1,
+} ctMaType_t;
+
 // All APIs copy host->device->host internally for ease of binding.
 CTAPI_EXPORT ctStatus_t ct_sma(const float *host_input, float *host_output,
                                int size, int period);
+CTAPI_EXPORT ctStatus_t ct_ma(const float *host_input, float *host_output,
+                              int size, int period, ctMaType_t type);
 CTAPI_EXPORT ctStatus_t ct_wma(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_momentum(const float *host_input, float *host_output,
@@ -38,6 +45,8 @@ CTAPI_EXPORT ctStatus_t ct_tema(const float *host_input, float *host_output,
                                 int size, int period);
 CTAPI_EXPORT ctStatus_t ct_trix(const float *host_input, float *host_output,
                                 int size, int period);
+CTAPI_EXPORT ctStatus_t ct_max(const float *host_input, float *host_output,
+                               int size, int period);
 CTAPI_EXPORT ctStatus_t ct_rsi(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_kama(const float *host_input, float *host_output,
@@ -47,6 +56,13 @@ CTAPI_EXPORT ctStatus_t ct_kama(const float *host_input, float *host_output,
 CTAPI_EXPORT ctStatus_t ct_macd_line(const float *host_input,
                                      float *host_output, int size,
                                      int fastPeriod, int slowPeriod);
+CTAPI_EXPORT ctStatus_t ct_macd(const float *host_input, float *host_macd,
+                                float *host_signal, float *host_hist, int size,
+                                int fastPeriod, int slowPeriod, int signalPeriod,
+                                ctMaType_t type);
+CTAPI_EXPORT ctStatus_t ct_mama(const float *host_input, float *host_mama,
+                                float *host_fama, int size,
+                                float fastLimit, float slowLimit);
 CTAPI_EXPORT ctStatus_t ct_apo(const float *host_input,
                                float *host_output, int size,
                                int fastPeriod, int slowPeriod);
