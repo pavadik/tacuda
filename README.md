@@ -8,7 +8,7 @@ It provides a **stable C API**, **Python bindings** (pybind11), and a **C# bindi
 ## Features
 
 - ⚙️ **Indicators**: `SMA` implemented; the framework is ready for `EMA`, `RSI`, `MACD`, `BBANDS`, `WMA`, `STDDEV`, `MIN/MAX`, etc.
-- 🕯️ **Candlestick patterns**: Doji, Hammer, Inverted Hammer, Bullish Engulfing, Bearish Engulfing.
+ - 🕯️ **Candlestick patterns**: Doji, Hammer, Inverted Hammer, Bullish Engulfing, Bearish Engulfing, Three White Soldiers, Abandoned Baby, Advance Block, Belt Hold, Breakaway.
 - 🧩 **TA-style API**: procedural calls by indicator name with a unified dispatcher.
 - 🧱 **Stable C interface**: `extern "C"` functions (`tacuda_sma_host`, `tacuda_run_indicator_host_c`) with a fixed ABI.
 - 🐍 **Python bindings**: `tacuda.sma()` and a generic `tacuda.run()`.

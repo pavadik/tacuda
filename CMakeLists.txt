@@ -80,6 +80,11 @@ set(INDICATOR_SOURCES
     src/indicators/InvertedHammer.cu
     src/indicators/BullishEngulfing.cu
     src/indicators/BearishEngulfing.cu
+    src/indicators/ThreeWhiteSoldiers.cu
+    src/indicators/AbandonedBaby.cu
+    src/indicators/AdvanceBlock.cu
+    src/indicators/BeltHold.cu
+    src/indicators/Breakaway.cu
 )
 
 add_library(tacuda SHARED

@@ -139,6 +139,26 @@ _lib.ct_cdl_bearish_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes
                                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                           ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_bearish_engulfing.restype  = ctypes.c_int
+_lib.ct_cdl_three_white_soldiers.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_three_white_soldiers.restype  = ctypes.c_int
+_lib.ct_cdl_abandoned_baby.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_abandoned_baby.restype  = ctypes.c_int
+_lib.ct_cdl_advance_block.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_advance_block.restype  = ctypes.c_int
+_lib.ct_cdl_belt_hold.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_belt_hold.restype  = ctypes.c_int
+_lib.ct_cdl_breakaway.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_breakaway.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -433,6 +453,101 @@ def cdl_bearish_engulfing(open, high, low, close):
         raise RuntimeError("ct_cdl_bearish_engulfing failed")
     return out
 
+def cdl_three_white_soldiers(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_three_white_soldiers(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_three_white_soldiers failed")
+    return out
+
+def cdl_abandoned_baby(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_abandoned_baby(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_abandoned_baby failed")
+    return out
+
+def cdl_advance_block(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_advance_block(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_advance_block failed")
+    return out
+
+def cdl_belt_hold(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_belt_hold(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_belt_hold failed")
+    return out
+
+def cdl_breakaway(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_breakaway(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_breakaway failed")
+    return out
+
 def trange(high, low, close):
     import numpy as np
     high = np.asarray(high, dtype=np.float32)
@@ -516,6 +631,11 @@ __all__ = [
     "cdl_inverted_hammer",
     "cdl_bullish_engulfing",
     "cdl_bearish_engulfing",
+    "cdl_three_white_soldiers",
+    "cdl_abandoned_baby",
+    "cdl_advance_block",
+    "cdl_belt_hold",
+    "cdl_breakaway",
     "trange",
     "summation",
     "t3",
