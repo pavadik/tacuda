@@ -16,6 +16,7 @@ set(INDICATOR_SOURCES
     src/indicators/EMA.cu
     src/indicators/DEMA.cu
     src/indicators/TEMA.cu
+    src/indicators/TRIX.cu
     src/indicators/WMA.cu
     src/indicators/RSI.cu
     src/indicators/KAMA.cu

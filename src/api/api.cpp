@@ -24,6 +24,7 @@
 #include <indicators/SMA.h>
 #include <indicators/Stochastic.h>
 #include <indicators/TEMA.h>
+#include <indicators/TRIX.h>
 #include <indicators/WMA.h>
 #include <utils/CudaUtils.h>
 
@@ -115,6 +116,12 @@ ctStatus_t ct_tema(const float *host_input, float *host_output, int size,
                    int period) {
   TEMA tema(period);
   return run_indicator(tema, host_input, host_output, size);
+}
+
+ctStatus_t ct_trix(const float *host_input, float *host_output, int size,
+                   int period) {
+  TRIX trix(period);
+  return run_indicator(trix, host_input, host_output, size);
 }
 
 ctStatus_t ct_rsi(const float *host_input, float *host_output, int size,
