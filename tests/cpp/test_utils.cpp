@@ -458,3 +458,41 @@ std::vector<float> avgprice_ref(const std::vector<float> &open,
   return out;
 }
 
+static std::vector<float> run_linearreg_python(const std::vector<float>& in,
+                                               int period,
+                                               const char* func) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "res=getattr(talib,'"<<func<<"')(x,timeperiod="<<period<<")\n";
+  cmd << "lb="<< (period-1) <<"\n";
+  cmd << "out=np.full_like(x,float('nan'))\n";
+  cmd << "out[:len(x)-lb]=res[lb:]\n";
+  cmd << "print('\\n'.join(str(v) for v in out))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> out(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; for(size_t i=0;i<out.size() && fgets(buf,sizeof(buf),pipe);++i){ out[i]=std::strtof(buf,nullptr);} pclose(pipe);} 
+  return out;
+}
+
+std::vector<float> linearreg_ref(const std::vector<float>& in, int period) {
+  return run_linearreg_python(in, period, "LINEARREG");
+}
+
+std::vector<float> linearreg_slope_ref(const std::vector<float>& in, int period) {
+  return run_linearreg_python(in, period, "LINEARREG_SLOPE");
+}
+
+std::vector<float> linearreg_intercept_ref(const std::vector<float>& in, int period) {
+  return run_linearreg_python(in, period, "LINEARREG_INTERCEPT");
+}
+
+std::vector<float> linearreg_angle_ref(const std::vector<float>& in, int period) {
+  return run_linearreg_python(in, period, "LINEARREG_ANGLE");
+}
+

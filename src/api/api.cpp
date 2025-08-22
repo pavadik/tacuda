@@ -42,6 +42,10 @@
 #include <indicators/HT_PHASOR.h>
 #include <indicators/HT_SINE.h>
 #include <indicators/HT_TRENDMODE.h>
+#include <indicators/LINEARREG.h>
+#include <indicators/LINEARREG_ANGLE.h>
+#include <indicators/LINEARREG_INTERCEPT.h>
+#include <indicators/LINEARREG_SLOPE.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -1152,6 +1156,30 @@ ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
 
 ctStatus_t ct_ht_trendmode(const float *host_input, float *host_output, int size) {
   HT_TRENDMODE ind;
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_linearreg(const float *host_input, float *host_output, int size,
+                        int period) {
+  LINEARREG ind(period);
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_linearreg_slope(const float *host_input, float *host_output,
+                              int size, int period) {
+  LINEARREG_SLOPE ind(period);
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_linearreg_intercept(const float *host_input, float *host_output,
+                                  int size, int period) {
+  LINEARREG_INTERCEPT ind(period);
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_linearreg_angle(const float *host_input, float *host_output,
+                              int size, int period) {
+  LINEARREG_ANGLE ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
