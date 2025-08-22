@@ -18,6 +18,7 @@
 #include <indicators/DEMA.h>
 #include <indicators/EMA.h>
 #include <indicators/AvgPrice.h>
+#include <indicators/MedPrice.h>
 #include <indicators/KAMA.h>
 #include <indicators/MACD.h>
 #include <indicators/MFI.h>
@@ -34,6 +35,7 @@
 #include <indicators/WMA.h>
 #include <indicators/MA.h>
 #include <indicators/MAX.h>
+#include <indicators/MIN.h>
 #include <indicators/MAMA.h>
 #include <indicators/MACDEXT.h>
 #include <indicators/Beta.h>
@@ -158,6 +160,12 @@ ctStatus_t ct_max(const float *host_input, float *host_output, int size,
                   int period) {
   MAX mx(period);
   return run_indicator(mx, host_input, host_output, size);
+}
+
+ctStatus_t ct_min(const float *host_input, float *host_output, int size,
+                  int period) {
+  MIN mn(period);
+  return run_indicator(mn, host_input, host_output, size);
 }
 
 ctStatus_t ct_rsi(const float *host_input, float *host_output, int size,
@@ -917,6 +925,56 @@ ctStatus_t ct_avgprice(const float *host_open, const float *host_high,
   try {
     ap.calculate(d_open.get(), d_high.get(), d_low.get(), d_close.get(),
                  d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_medprice(const float *host_high, const float *host_low,
+                       float *host_output, int size) {
+  MedPrice mp;
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    mp.calculate(d_high.get(), d_low.get(), d_out.get(), size);
   } catch (...) {
     return CT_STATUS_KERNEL_FAILED;
   }

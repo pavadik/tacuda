@@ -40,6 +40,8 @@ set(INDICATOR_SOURCES
     src/indicators/APO.cu
     src/indicators/AroonOscillator.cu
     src/indicators/AvgPrice.cu
+    src/indicators/MIN.cu
+    src/indicators/MedPrice.cu
     src/indicators/Beta.cu
     src/indicators/BOP.cu
     src/indicators/CMO.cu
