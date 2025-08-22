@@ -36,6 +36,8 @@ CTAPI_EXPORT ctStatus_t ct_dema(const float *host_input, float *host_output,
                                 int size, int period);
 CTAPI_EXPORT ctStatus_t ct_tema(const float *host_input, float *host_output,
                                 int size, int period);
+CTAPI_EXPORT ctStatus_t ct_trix(const float *host_input, float *host_output,
+                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_rsi(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_kama(const float *host_input, float *host_output,
