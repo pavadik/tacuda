@@ -118,6 +118,16 @@ CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,
 CTAPI_EXPORT ctStatus_t ct_dx(const float *host_high, const float *host_low,
                               const float *host_close, float *host_output,
                               int size, int period);
+CTAPI_EXPORT ctStatus_t ct_ht_dcperiod(const float *host_input, float *host_output,
+                                      int size);
+CTAPI_EXPORT ctStatus_t ct_ht_dcphase(const float *host_input, float *host_output,
+                                     int size);
+CTAPI_EXPORT ctStatus_t ct_ht_phasor(const float *host_input, float *host_inphase,
+                                     float *host_quadrature, int size);
+CTAPI_EXPORT ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
+                                   float *host_leadsine, int size);
+CTAPI_EXPORT ctStatus_t ct_ht_trendmode(const float *host_input, float *host_output,
+                                       int size);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <limits>
 #include <sstream>
+#include <utility>
 #include <tacuda.h>
 #include <vector>
 
@@ -147,6 +148,95 @@ std::vector<float> kama_ref(const std::vector<float> &in, int period,
     }
     pclose(pipe);
   }
+  return out;
+}
+
+std::vector<float> ht_dcperiod_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "res=talib.HT_DCPERIOD(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in res))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> out(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; for(size_t i=0;i<out.size() && fgets(buf,sizeof(buf),pipe);++i){ out[i]=std::strtof(buf,nullptr);} pclose(pipe);} 
+  return out;
+}
+
+std::vector<float> ht_dcphase_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "res=talib.HT_DCPHASE(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in res))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> out(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; for(size_t i=0;i<out.size() && fgets(buf,sizeof(buf),pipe);++i){ out[i]=std::strtof(buf,nullptr);} pclose(pipe);} 
+  return out;
+}
+
+std::pair<std::vector<float>, std::vector<float>> ht_phasor_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "r1,r2=talib.HT_PHASOR(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in r1))\n";
+  cmd << "print('---')\n";
+  cmd << "print('\\n'.join(str(v) for v in r2))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> a(in.size(), std::numeric_limits<float>::quiet_NaN()), b(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; size_t idx=0; bool second=false; while(fgets(buf,sizeof(buf),pipe)){ if(strncmp(buf,"---",3)==0){second=true; idx=0; continue;} float v=strtof(buf,nullptr); if(!second){ if(idx<a.size()) a[idx++]=v;} else { if(idx<b.size()) b[idx++]=v; } } pclose(pipe);} 
+  return {a,b};
+}
+
+std::pair<std::vector<float>, std::vector<float>> ht_sine_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "r1,r2=talib.HT_SINE(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in r1))\n";
+  cmd << "print('---')\n";
+  cmd << "print('\\n'.join(str(v) for v in r2))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> a(in.size(), std::numeric_limits<float>::quiet_NaN()), b(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; size_t idx=0; bool second=false; while(fgets(buf,sizeof(buf),pipe)){ if(strncmp(buf,"---",3)==0){second=true; idx=0; continue;} float v=strtof(buf,nullptr); if(!second){ if(idx<a.size()) a[idx++]=v;} else { if(idx<b.size()) b[idx++]=v; } } pclose(pipe);} 
+  return {a,b};
+}
+
+std::vector<float> ht_trendmode_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for(size_t i=0;i<in.size();++i){ if(i) cmd<<','; cmd<<in[i]; }
+  cmd << "],dtype=float)\n";
+  cmd << "res=talib.HT_TRENDMODE(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in res))\n";
+  cmd << "PY";
+  FILE* pipe=popen(cmd.str().c_str(),"r");
+  std::vector<float> out(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if(pipe){ char buf[128]; for(size_t i=0;i<out.size() && fgets(buf,sizeof(buf),pipe);++i){ out[i]=std::strtof(buf,nullptr);} pclose(pipe);} 
   return out;
 }
 
@@ -1312,5 +1402,62 @@ TEST(Tacuda, DX) {
   expect_approx_equal(out, ref);
   for (int i = N - p; i < N; ++i)
     EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at tail " << i;
+}
+
+TEST(Tacuda, HT_DCPERIOD) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i) x[i] = std::sin(0.05f * i);
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_ht_dcperiod(x.data(), out.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ht_dcperiod failed";
+  auto ref = ht_dcperiod_ref(x);
+  expect_approx_equal(out, ref);
+}
+
+TEST(Tacuda, HT_DCPHASE) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i) x[i] = std::sin(0.05f * i);
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_ht_dcphase(x.data(), out.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ht_dcphase failed";
+  auto ref = ht_dcphase_ref(x);
+  expect_approx_equal(out, ref);
+}
+
+TEST(Tacuda, HT_PHASOR) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i) x[i] = std::sin(0.05f * i);
+  std::vector<float> inphase(N, 0.0f), quadrature(N, 0.0f);
+  ctStatus_t rc = ct_ht_phasor(x.data(), inphase.data(), quadrature.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ht_phasor failed";
+  auto ref = ht_phasor_ref(x);
+  expect_approx_equal(inphase, ref.first);
+  expect_approx_equal(quadrature, ref.second);
+}
+
+TEST(Tacuda, HT_SINE) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i) x[i] = std::sin(0.05f * i);
+  std::vector<float> sine(N, 0.0f), lead(N, 0.0f);
+  ctStatus_t rc = ct_ht_sine(x.data(), sine.data(), lead.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ht_sine failed";
+  auto ref = ht_sine_ref(x);
+  expect_approx_equal(sine, ref.first);
+  expect_approx_equal(lead, ref.second);
+}
+
+TEST(Tacuda, HT_TRENDMODE) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i) x[i] = std::sin(0.05f * i);
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_ht_trendmode(x.data(), out.data(), N);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ht_trendmode failed";
+  auto ref = ht_trendmode_ref(x);
+  expect_approx_equal(out, ref);
 }
 
