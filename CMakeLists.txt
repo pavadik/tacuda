@@ -20,6 +20,7 @@ set(INDICATOR_SOURCES
     src/indicators/Stochastic.cu
     src/indicators/CCI.cu
     src/indicators/OBV.cu
+    src/indicators/SAR.cu
     src/indicators/ADX.cu
 )
 
