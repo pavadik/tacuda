@@ -17,7 +17,12 @@
 #include <indicators/TypPrice.h>
 #include <indicators/BBANDS.h>
 #include <indicators/BOP.h>
+#include <indicators/BearishEngulfing.h>
+#include <indicators/BullishEngulfing.h>
 #include <indicators/Beta.h>
+#include <indicators/Doji.h>
+#include <indicators/Hammer.h>
+#include <indicators/InvertedHammer.h>
 #include <indicators/CCI.h>
 #include <indicators/CMO.h>
 #include <indicators/Change.h>
@@ -113,6 +118,82 @@ static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
   }
 
   err = cudaMemcpy(h_out, d_out.get(), size * outMultiple * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+template <typename T>
+static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
+                                     const float *h_high, const float *h_low,
+                                     const float *h_close, float *h_out,
+                                     int size) {
+  DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
+      d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_open.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_open.get(), h_open, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_high.get(), h_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), h_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), h_close, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    ind.calculate(d_open.get(), d_high.get(), d_low.get(), d_close.get(),
+                  d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(h_out, d_out.get(), size * sizeof(float),
                    cudaMemcpyDeviceToHost);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
@@ -1906,75 +1987,52 @@ ctStatus_t ct_bop(const float *host_open, const float *host_high,
                   const float *host_low, const float *host_close,
                   float *host_output, int size) {
   BOP bop;
-  DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr},
-      d_close{nullptr}, d_out{nullptr};
-  float *tmp = nullptr;
+  return run_ohlc_indicator(bop, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
 
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_open.reset(tmp);
+ctStatus_t ct_cdl_doji(const float *host_open, const float *host_high,
+                       const float *host_low, const float *host_close,
+                       float *host_output, int size) {
+  Doji ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
+ctStatus_t ct_cdl_hammer(const float *host_open, const float *host_high,
+                         const float *host_low, const float *host_close,
+                         float *host_output, int size) {
+  Hammer ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
+ctStatus_t ct_cdl_inverted_hammer(const float *host_open, const float *host_high,
+                                  const float *host_low, const float *host_close,
+                                  float *host_output, int size) {
+  InvertedHammer ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
+ctStatus_t ct_cdl_bullish_engulfing(const float *host_open,
+                                    const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close,
+                                    float *host_output, int size) {
+  BullishEngulfing ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_open.get(), host_open, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    bop.calculate(d_open.get(), d_high.get(), d_low.get(), d_close.get(),
-                  d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+ctStatus_t ct_cdl_bearish_engulfing(const float *host_open,
+                                    const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close,
+                                    float *host_output, int size) {
+  BearishEngulfing ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
 }
 
 ctStatus_t ct_cmo(const float *host_input, float *host_output, int size,
