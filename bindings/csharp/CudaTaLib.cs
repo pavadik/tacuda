@@ -53,6 +53,11 @@ namespace CudaTaLib
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_obv(float[] price, float[] volume,
                                         float[] output, int size);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_aroon(float[] high, float[] low,
+                                          float[] up, float[] down, float[] osc,
+                                          int size, int upPeriod, int downPeriod);
     }
 
     public class Example
