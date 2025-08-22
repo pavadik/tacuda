@@ -119,6 +119,26 @@ _lib.ct_trima.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.
 _lib.ct_trima.restype  = ctypes.c_int
 _lib.ct_stochrsi.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
 _lib.ct_stochrsi.restype  = ctypes.c_int
+_lib.ct_cdl_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                              ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                              ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_doji.restype  = ctypes.c_int
+_lib.ct_cdl_hammer.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_hammer.restype  = ctypes.c_int
+_lib.ct_cdl_inverted_hammer.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_inverted_hammer.restype  = ctypes.c_int
+_lib.ct_cdl_bullish_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_bullish_engulfing.restype  = ctypes.c_int
+_lib.ct_cdl_bearish_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_bearish_engulfing.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -316,6 +336,101 @@ def obv(price, volume):
     rc = _lib.ct_obv(pp, pv, po, price.size)
     if rc != 0:
         raise RuntimeError("ct_obv failed")
+    return out
+
+def cdl_doji(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_doji(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_doji failed")
+    return out
+
+def cdl_hammer(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_hammer(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_hammer failed")
+    return out
+
+def cdl_inverted_hammer(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_inverted_hammer(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_inverted_hammer failed")
+    return out
+
+def cdl_bullish_engulfing(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_bullish_engulfing(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_bullish_engulfing failed")
+    return out
+
+def cdl_bearish_engulfing(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_bearish_engulfing(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_bearish_engulfing failed")
     return out
 
 def trange(high, low, close):
