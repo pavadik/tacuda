@@ -17,6 +17,52 @@ void expect_approx_equal(const std::vector<float> &a,
   }
 }
 
+std::vector<float> sar_ref(const std::vector<float> &high,
+                           const std::vector<float> &low,
+                           float step, float maxAcc) {
+  size_t n = high.size();
+  std::vector<float> out(n);
+  float af = step;
+  float ep = high[0];
+  float sar = low[0];
+  bool longPos = true;
+  out[0] = sar;
+  for (size_t i = 1; i < n; ++i) {
+    sar = sar + af * (ep - sar);
+    if (longPos) {
+      sar = std::min(sar, low[i - 1]);
+      if (low[i] < sar) {
+        longPos = false;
+        sar = ep;
+        ep = low[i];
+        af = step;
+        sar = std::max(sar, high[i - 1]);
+      } else {
+        if (high[i] > ep) {
+          ep = high[i];
+          af = std::min(af + step, maxAcc);
+        }
+      }
+    } else {
+      sar = std::max(sar, high[i - 1]);
+      if (high[i] > sar) {
+        longPos = true;
+        sar = ep;
+        ep = high[i];
+        af = step;
+        sar = std::min(sar, low[i - 1]);
+      } else {
+        if (low[i] < ep) {
+          ep = low[i];
+          af = std::min(af + step, maxAcc);
+        }
+      }
+    }
+    out[i] = sar;
+  }
+  return out;
+}
+
 } // namespace
 
 TEST(Tacuda, SMA) {
@@ -406,4 +452,26 @@ TEST(Tacuda, ADX) {
   for (int i = 0; i < 2 * p - 1; ++i) {
     EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
   }
+}
+
+TEST(Tacuda, SARTrending) {
+  std::vector<float> high = {1.f,2.f,3.f,4.f,5.f,6.f,7.f,8.f};
+  std::vector<float> low  = {0.5f,1.5f,2.5f,3.5f,4.5f,5.5f,6.5f,7.5f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_sar(high.data(), low.data(), out.data(), N, 0.02f, 0.2f);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_sar failed";
+  auto ref = sar_ref(high, low, 0.02f, 0.2f);
+  expect_approx_equal(out, ref);
+}
+
+TEST(Tacuda, SARRanging) {
+  std::vector<float> high = {5.f,6.f,5.5f,6.2f,5.8f,6.4f,5.9f,6.5f};
+  std::vector<float> low  = {4.f,5.f,4.5f,5.2f,4.8f,5.4f,4.9f,5.5f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  ctStatus_t rc = ct_sar(high.data(), low.data(), out.data(), N, 0.02f, 0.2f);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_sar failed";
+  auto ref = sar_ref(high, low, 0.02f, 0.2f);
+  expect_approx_equal(out, ref);
 }

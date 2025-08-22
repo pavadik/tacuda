@@ -97,6 +97,10 @@ _lib.ct_adx.restype  = ctypes.c_int
 _lib.ct_obv.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_obv.restype  = ctypes.c_int
+_lib.ct_sar.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                        ctypes.POINTER(ctypes.c_float), ctypes.c_int,
+                        ctypes.c_float, ctypes.c_float]
+_lib.ct_sar.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -229,6 +233,21 @@ def adx(high, low, close, period):
     rc = _lib.ct_adx(ph, pl, pc, pout, close.size, int(period))
     if rc != 0:
         raise RuntimeError("ct_adx failed")
+    return out
+
+def sar(high, low, step=0.02, max_acc=0.2):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    if high.shape != low.shape:
+        raise ValueError("high and low must have same shape")
+    out = np.zeros_like(high)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_sar(ph, pl, po, high.size, float(step), float(max_acc))
+    if rc != 0:
+        raise RuntimeError("ct_sar failed")
     return out
 
 def obv(price, volume):
