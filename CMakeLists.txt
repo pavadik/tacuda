@@ -46,6 +46,10 @@ set(INDICATOR_SOURCES
     src/indicators/HT_PHASOR.cu
     src/indicators/HT_SINE.cu
     src/indicators/HT_TRENDMODE.cu
+    src/indicators/LINEARREG.cu
+    src/indicators/LINEARREG_ANGLE.cu
+    src/indicators/LINEARREG_INTERCEPT.cu
+    src/indicators/LINEARREG_SLOPE.cu
 )
 
 add_library(tacuda SHARED
