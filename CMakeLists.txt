@@ -18,6 +18,7 @@ set(INDICATOR_SOURCES
     src/indicators/TEMA.cu
     src/indicators/WMA.cu
     src/indicators/RSI.cu
+    src/indicators/KAMA.cu
     src/indicators/BBANDS.cu
     src/indicators/ATR.cu
     src/indicators/Stochastic.cu
