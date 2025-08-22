@@ -18,6 +18,7 @@
 #include <indicators/OBV.h>
 #include <indicators/SAR.h>
 #include <indicators/ADX.h>
+#include <indicators/Aroon.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -414,6 +415,64 @@ ctStatus_t ct_sar(const float* host_high,
     if (err != cudaSuccess) {
         return CT_STATUS_COPY_FAILED;
     }
+
+    return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_aroon(const float* host_high,
+                    const float* host_low,
+                    float* host_up,
+                    float* host_down,
+                    float* host_osc,
+                    int size,
+                    int upPeriod,
+                    int downPeriod) {
+    Aroon aroon(upPeriod, downPeriod);
+    DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
+    float* tmp = nullptr;
+
+    cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_high.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_low.reset(tmp);
+
+    err = cudaMalloc(&tmp, 3 * size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_out.reset(tmp);
+
+    err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+    err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+
+    try {
+        aroon.calculate(d_high.get(), d_low.get(), d_out.get(), size);
+    } catch (...) {
+        return CT_STATUS_KERNEL_FAILED;
+    }
+
+    std::vector<float> tmpHost(3 * size);
+    err = cudaMemcpy(tmpHost.data(), d_out.get(), 3 * size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+
+    std::memcpy(host_up, tmpHost.data(), size * sizeof(float));
+    std::memcpy(host_down, tmpHost.data() + size, size * sizeof(float));
+    std::memcpy(host_osc, tmpHost.data() + 2 * size, size * sizeof(float));
 
     return CT_STATUS_SUCCESS;
 }

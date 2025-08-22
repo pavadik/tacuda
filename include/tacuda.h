@@ -75,6 +75,14 @@ CTAPI_EXPORT ctStatus_t ct_sar(const float* host_high,
                                int size,
                                float step,
                                float maxAcceleration);
+CTAPI_EXPORT ctStatus_t ct_aroon(const float* host_high,
+                                 const float* host_low,
+                                 float* host_up,
+                                 float* host_down,
+                                 float* host_osc,
+                                 int size,
+                                 int upPeriod,
+                                 int downPeriod);
 
 #ifdef __cplusplus
 } // extern "C"

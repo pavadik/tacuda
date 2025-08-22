@@ -101,6 +101,10 @@ _lib.ct_sar.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_
                         ctypes.POINTER(ctypes.c_float), ctypes.c_int,
                         ctypes.c_float, ctypes.c_float]
 _lib.ct_sar.restype  = ctypes.c_int
+_lib.ct_aroon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                          ctypes.c_int, ctypes.c_int, ctypes.c_int]
+_lib.ct_aroon.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -249,6 +253,23 @@ def sar(high, low, step=0.02, max_acc=0.2):
     if rc != 0:
         raise RuntimeError("ct_sar failed")
     return out
+
+def aroon(high, low, up_period, down_period):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    up = np.zeros_like(high)
+    down = np.zeros_like(high)
+    osc = np.zeros_like(high)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pu = _as_float_ptr(up)
+    _, pd = _as_float_ptr(down)
+    _, po = _as_float_ptr(osc)
+    rc = _lib.ct_aroon(ph, pl, pu, pd, po, high.size, int(up_period), int(down_period))
+    if rc != 0:
+        raise RuntimeError("ct_aroon failed")
+    return up, down, osc
 
 def obv(price, volume):
     import numpy as np
