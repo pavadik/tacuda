@@ -11,46 +11,42 @@
 #include <indicators/ADXR.h>
 #include <indicators/APO.h>
 #include <indicators/ATR.h>
+#include <indicators/AbandonedBaby.h>
+#include <indicators/AdvanceBlock.h>
 #include <indicators/Aroon.h>
 #include <indicators/AroonOscillator.h>
 #include <indicators/AvgPrice.h>
-#include <indicators/TypPrice.h>
 #include <indicators/BBANDS.h>
 #include <indicators/BOP.h>
 #include <indicators/BearishEngulfing.h>
-#include <indicators/BullishEngulfing.h>
-#include <indicators/Beta.h>
-#include <indicators/Doji.h>
-#include <indicators/Hammer.h>
-#include <indicators/InvertedHammer.h>
-#include <indicators/ThreeWhiteSoldiers.h>
-#include <indicators/AbandonedBaby.h>
-#include <indicators/AdvanceBlock.h>
 #include <indicators/BeltHold.h>
+#include <indicators/Beta.h>
 #include <indicators/Breakaway.h>
-#include <indicators/TwoCrows.h>
-#include <indicators/ThreeBlackCrows.h>
-#include <indicators/ThreeInside.h>
-#include <indicators/ThreeLineStrike.h>
-#include <indicators/ThreeStarsInSouth.h>
+#include <indicators/BullishEngulfing.h>
 #include <indicators/CCI.h>
 #include <indicators/CMO.h>
 #include <indicators/Change.h>
+#include <indicators/ClosingMarubozu.h>
+#include <indicators/ConcealBabySwallow.h>
 #include <indicators/Correl.h>
+#include <indicators/CounterAttack.h>
 #include <indicators/DEMA.h>
 #include <indicators/DX.h>
+#include <indicators/DarkCloudCover.h>
+#include <indicators/Doji.h>
 #include <indicators/EMA.h>
 #include <indicators/HT_DCPERIOD.h>
 #include <indicators/HT_DCPHASE.h>
 #include <indicators/HT_PHASOR.h>
 #include <indicators/HT_SINE.h>
 #include <indicators/HT_TRENDMODE.h>
+#include <indicators/Hammer.h>
+#include <indicators/InvertedHammer.h>
 #include <indicators/KAMA.h>
 #include <indicators/LINEARREG.h>
 #include <indicators/LINEARREG_ANGLE.h>
 #include <indicators/LINEARREG_INTERCEPT.h>
 #include <indicators/LINEARREG_SLOPE.h>
-#include <indicators/TSF.h>
 #include <indicators/MA.h>
 #include <indicators/MACD.h>
 #include <indicators/MACDEXT.h>
@@ -75,7 +71,6 @@
 #include <indicators/SMA.h>
 #include <indicators/SUM.h>
 #include <indicators/StdDev.h>
-#include <indicators/VAR.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
 #include <indicators/StochasticFast.h>
@@ -84,7 +79,16 @@
 #include <indicators/TRANGE.h>
 #include <indicators/TRIMA.h>
 #include <indicators/TRIX.h>
+#include <indicators/TSF.h>
+#include <indicators/ThreeBlackCrows.h>
+#include <indicators/ThreeInside.h>
+#include <indicators/ThreeLineStrike.h>
+#include <indicators/ThreeStarsInSouth.h>
+#include <indicators/ThreeWhiteSoldiers.h>
+#include <indicators/TwoCrows.h>
+#include <indicators/TypPrice.h>
 #include <indicators/ULTOSC.h>
+#include <indicators/VAR.h>
 #include <indicators/WMA.h>
 #include <utils/CudaUtils.h>
 
@@ -141,8 +145,8 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
                                      const float *h_high, const float *h_low,
                                      const float *h_close, float *h_out,
                                      int size) {
-  DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
+  DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr},
+      d_close{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
   cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
@@ -1621,10 +1625,10 @@ ctStatus_t ct_medprice(const float *host_high, const float *host_low,
 }
 
 ctStatus_t ct_typprice(const float *host_high, const float *host_low,
-                       const float *host_close, float *host_output,
-                       int size) {
+                       const float *host_close, float *host_output, int size) {
   TypPrice tp;
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr}, d_out{nullptr};
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
+      d_out{nullptr};
   float *tmp = nullptr;
 
   cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
@@ -2017,9 +2021,10 @@ ctStatus_t ct_cdl_hammer(const float *host_open, const float *host_high,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_inverted_hammer(const float *host_open, const float *host_high,
-                                  const float *host_low, const float *host_close,
-                                  float *host_output, int size) {
+ctStatus_t ct_cdl_inverted_hammer(const float *host_open,
+                                  const float *host_high, const float *host_low,
+                                  const float *host_close, float *host_output,
+                                  int size) {
   InvertedHammer ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2028,8 +2033,8 @@ ctStatus_t ct_cdl_inverted_hammer(const float *host_open, const float *host_high
 ctStatus_t ct_cdl_bullish_engulfing(const float *host_open,
                                     const float *host_high,
                                     const float *host_low,
-                                    const float *host_close,
-                                    float *host_output, int size) {
+                                    const float *host_close, float *host_output,
+                                    int size) {
   BullishEngulfing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2038,8 +2043,8 @@ ctStatus_t ct_cdl_bullish_engulfing(const float *host_open,
 ctStatus_t ct_cdl_bearish_engulfing(const float *host_open,
                                     const float *host_high,
                                     const float *host_low,
-                                    const float *host_close,
-                                    float *host_output, int size) {
+                                    const float *host_close, float *host_output,
+                                    int size) {
   BearishEngulfing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2055,50 +2060,40 @@ ctStatus_t ct_cdl_three_white_soldiers(const float *host_open,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_abandoned_baby(const float *host_open,
-                                 const float *host_high,
-                                 const float *host_low,
-                                 const float *host_close,
+ctStatus_t ct_cdl_abandoned_baby(const float *host_open, const float *host_high,
+                                 const float *host_low, const float *host_close,
                                  float *host_output, int size) {
   AbandonedBaby ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_advance_block(const float *host_open,
-                                const float *host_high,
-                                const float *host_low,
-                                const float *host_close,
+ctStatus_t ct_cdl_advance_block(const float *host_open, const float *host_high,
+                                const float *host_low, const float *host_close,
                                 float *host_output, int size) {
   AdvanceBlock ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_belt_hold(const float *host_open,
-                            const float *host_high,
-                            const float *host_low,
-                            const float *host_close,
+ctStatus_t ct_cdl_belt_hold(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
                             float *host_output, int size) {
   BeltHold ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_breakaway(const float *host_open,
-                            const float *host_high,
-                            const float *host_low,
-                            const float *host_close,
+ctStatus_t ct_cdl_breakaway(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
                             float *host_output, int size) {
   Breakaway ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_two_crows(const float *host_open,
-                            const float *host_high,
-                            const float *host_low,
-                            const float *host_close,
+ctStatus_t ct_cdl_two_crows(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
                             float *host_output, int size) {
   TwoCrows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
@@ -2108,17 +2103,15 @@ ctStatus_t ct_cdl_two_crows(const float *host_open,
 ctStatus_t ct_cdl_three_black_crows(const float *host_open,
                                     const float *host_high,
                                     const float *host_low,
-                                    const float *host_close,
-                                    float *host_output, int size) {
+                                    const float *host_close, float *host_output,
+                                    int size) {
   ThreeBlackCrows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_three_inside(const float *host_open,
-                               const float *host_high,
-                               const float *host_low,
-                               const float *host_close,
+ctStatus_t ct_cdl_three_inside(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
                                float *host_output, int size) {
   ThreeInside ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
@@ -2128,8 +2121,8 @@ ctStatus_t ct_cdl_three_inside(const float *host_open,
 ctStatus_t ct_cdl_three_line_strike(const float *host_open,
                                     const float *host_high,
                                     const float *host_low,
-                                    const float *host_close,
-                                    float *host_output, int size) {
+                                    const float *host_close, float *host_output,
+                                    int size) {
   ThreeLineStrike ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2141,6 +2134,44 @@ ctStatus_t ct_cdl_three_stars_in_south(const float *host_open,
                                        const float *host_close,
                                        float *host_output, int size) {
   ThreeStarsInSouth ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_closing_marubozu(const float *host_open,
+                                   const float *host_high,
+                                   const float *host_low,
+                                   const float *host_close, float *host_output,
+                                   int size) {
+  ClosingMarubozu ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_conceal_baby_swallow(const float *host_open,
+                                       const float *host_high,
+                                       const float *host_low,
+                                       const float *host_close,
+                                       float *host_output, int size) {
+  ConcealBabySwallow ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_counterattack(const float *host_open, const float *host_high,
+                                const float *host_low, const float *host_close,
+                                float *host_output, int size) {
+  CounterAttack ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_dark_cloud_cover(const float *host_open,
+                                   const float *host_high,
+                                   const float *host_low,
+                                   const float *host_close, float *host_output,
+                                   int size) {
+  DarkCloudCover ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }

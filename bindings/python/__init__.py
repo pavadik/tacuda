@@ -179,6 +179,22 @@ _lib.ct_cdl_three_stars_in_south.argtypes = [ctypes.POINTER(ctypes.c_float), cty
                                              ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                              ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_three_stars_in_south.restype  = ctypes.c_int
+_lib.ct_cdl_closing_marubozu.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_closing_marubozu.restype  = ctypes.c_int
+_lib.ct_cdl_conceal_baby_swallow.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_conceal_baby_swallow.restype  = ctypes.c_int
+_lib.ct_cdl_counterattack.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_counterattack.restype  = ctypes.c_int
+_lib.ct_cdl_dark_cloud_cover.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_dark_cloud_cover.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
