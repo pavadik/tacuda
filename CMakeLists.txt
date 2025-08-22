@@ -67,6 +67,11 @@ set(INDICATOR_SOURCES
     src/indicators/NATR.cu
     src/indicators/PPO.cu
     src/indicators/PVO.cu
+    src/indicators/SUM.cu
+    src/indicators/TRANGE.cu
+    src/indicators/TRIMA.cu
+    src/indicators/T3.cu
+    src/indicators/StochRSI.cu
 )
 
 add_library(tacuda SHARED

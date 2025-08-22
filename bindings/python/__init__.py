@@ -109,6 +109,16 @@ _lib.ct_ultosc.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes
                            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                            ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
 _lib.ct_ultosc.restype  = ctypes.c_int
+_lib.ct_trange.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_trange.restype  = ctypes.c_int
+_lib.ct_sum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
+_lib.ct_sum.restype  = ctypes.c_int
+_lib.ct_t3.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_float]
+_lib.ct_t3.restype  = ctypes.c_int
+_lib.ct_trima.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
+_lib.ct_trima.restype  = ctypes.c_int
+_lib.ct_stochrsi.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+_lib.ct_stochrsi.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -307,3 +317,66 @@ def obv(price, volume):
     if rc != 0:
         raise RuntimeError("ct_obv failed")
     return out
+
+def trange(high, low, close):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_trange(ph, pl, pc, po, close.size)
+    if rc != 0:
+        raise RuntimeError("ct_trange failed")
+    return out
+
+def summation(x, period):
+    import numpy as np
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, px = _as_float_ptr(x)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_sum(px, po, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_sum failed")
+    return out
+
+def t3(x, period, v_factor):
+    import numpy as np
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, px = _as_float_ptr(x)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_t3(px, po, x.size, int(period), float(v_factor))
+    if rc != 0:
+        raise RuntimeError("ct_t3 failed")
+    return out
+
+def trima(x, period):
+    import numpy as np
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, px = _as_float_ptr(x)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_trima(px, po, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_trima failed")
+    return out
+
+def stochrsi(x, rsi_period, k_period, d_period):
+    import numpy as np
+    x = np.asarray(x, dtype=np.float32)
+    k = np.zeros_like(x)
+    d = np.zeros_like(x)
+    _, px = _as_float_ptr(x)
+    _, pk = _as_float_ptr(k)
+    _, pd = _as_float_ptr(d)
+    rc = _lib.ct_stochrsi(px, pk, pd, x.size, int(rsi_period), int(k_period), int(d_period))
+    if rc != 0:
+        raise RuntimeError("ct_stochrsi failed")
+    return k, d
