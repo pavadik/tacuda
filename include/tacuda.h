@@ -67,6 +67,10 @@ CTAPI_EXPORT ctStatus_t ct_mama(const float *host_input, float *host_mama,
                                 float slowLimit);
 CTAPI_EXPORT ctStatus_t ct_apo(const float *host_input, float *host_output,
                                int size, int fastPeriod, int slowPeriod);
+CTAPI_EXPORT ctStatus_t ct_ppo(const float *host_input, float *host_output,
+                               int size, int fastPeriod, int slowPeriod);
+CTAPI_EXPORT ctStatus_t ct_pvo(const float *host_volume, float *host_output,
+                               int size, int fastPeriod, int slowPeriod);
 CTAPI_EXPORT ctStatus_t ct_bbands(const float *host_input, float *host_upper,
                                   float *host_middle, float *host_lower,
                                   int size, int period, float upperMul,
@@ -74,6 +78,9 @@ CTAPI_EXPORT ctStatus_t ct_bbands(const float *host_input, float *host_upper,
 CTAPI_EXPORT ctStatus_t ct_atr(const float *host_high, const float *host_low,
                                const float *host_close, float *host_output,
                                int size, int period, float initial);
+CTAPI_EXPORT ctStatus_t ct_natr(const float *host_high, const float *host_low,
+                                const float *host_close, float *host_output,
+                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_stochastic(const float *host_high,
                                       const float *host_low,
                                       const float *host_close, float *host_k,

@@ -60,6 +60,9 @@ set(INDICATOR_SOURCES
     src/indicators/LINEARREG_ANGLE.cu
     src/indicators/LINEARREG_INTERCEPT.cu
     src/indicators/LINEARREG_SLOPE.cu
+    src/indicators/NATR.cu
+    src/indicators/PPO.cu
+    src/indicators/PVO.cu
 )
 
 add_library(tacuda SHARED

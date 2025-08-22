@@ -460,6 +460,24 @@ std::vector<float> sar_ref(const std::vector<float> &high,
           return out;
         }
 
+        std::vector<float> ppo_ref(const std::vector<float> &in, int fastP,
+                                   int slowP) {
+          int N = in.size();
+          std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+          for (int i = slowP; i < N; ++i) {
+            float emaFast = ema_at_ref(in, i, fastP);
+            float emaSlow = ema_at_ref(in, i, slowP);
+            out[i] = (emaSlow == 0.0f) ? 0.0f
+                                       : 100.0f * (emaFast - emaSlow) / emaSlow;
+          }
+          return out;
+        }
+
+        std::vector<float> pvo_ref(const std::vector<float> &in, int fastP,
+                                   int slowP) {
+          return ppo_ref(in, fastP, slowP);
+        }
+
         std::vector<float> aroonosc_ref(const std::vector<float> &high,
                                         const std::vector<float> &low,
                                         int period) {
