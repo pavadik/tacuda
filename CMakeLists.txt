@@ -18,6 +18,8 @@ set(INDICATOR_SOURCES
     src/indicators/DEMA.cu
     src/indicators/TEMA.cu
     src/indicators/TRIX.cu
+    src/indicators/Change.cu
+    src/indicators/StdDev.cu
     src/indicators/MA.cu
     src/indicators/MAX.cu
     src/indicators/MAMA.cu
@@ -42,6 +44,8 @@ set(INDICATOR_SOURCES
     src/indicators/AvgPrice.cu
     src/indicators/MIN.cu
     src/indicators/MedPrice.cu
+    src/indicators/SAREXT.cu
+    src/indicators/StochasticFast.cu
     src/indicators/Beta.cu
     src/indicators/BOP.cu
     src/indicators/CMO.cu
