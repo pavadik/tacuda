@@ -75,6 +75,11 @@ set(INDICATOR_SOURCES
     src/indicators/TSF.cu
     src/indicators/TypPrice.cu
     src/indicators/VAR.cu
+    src/indicators/Doji.cu
+    src/indicators/Hammer.cu
+    src/indicators/InvertedHammer.cu
+    src/indicators/BullishEngulfing.cu
+    src/indicators/BearishEngulfing.cu
 )
 
 add_library(tacuda SHARED

@@ -182,6 +182,23 @@ CTAPI_EXPORT ctStatus_t ct_beta(const float *host_x, const float *host_y,
 CTAPI_EXPORT ctStatus_t ct_bop(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_doji(const float *host_open, const float *host_high,
+                                    const float *host_low, const float *host_close,
+                                    float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_hammer(const float *host_open, const float *host_high,
+                                      const float *host_low, const float *host_close,
+                                      float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_inverted_hammer(const float *host_open,
+                                               const float *host_high,
+                                               const float *host_low,
+                                               const float *host_close,
+                                               float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_bullish_engulfing(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_bearish_engulfing(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cmo(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,
