@@ -24,6 +24,7 @@ set(INDICATOR_SOURCES
     src/indicators/ADX.cu
     src/indicators/Aroon.cu
     src/indicators/ADOSC.cu
+    src/indicators/MFI.cu
 )
 
 add_library(tacuda SHARED
