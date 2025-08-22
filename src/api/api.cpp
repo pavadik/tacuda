@@ -32,6 +32,11 @@
 #include <indicators/TEMA.h>
 #include <indicators/TRIX.h>
 #include <indicators/WMA.h>
+#include <indicators/Beta.h>
+#include <indicators/BOP.h>
+#include <indicators/CMO.h>
+#include <indicators/Correl.h>
+#include <indicators/DX.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -1052,6 +1057,233 @@ ctStatus_t ct_obv(const float *host_price, const float *host_volume,
 
   err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
                    cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_beta(const float *host_x, const float *host_y,
+                   float *host_output, int size, int period) {
+  Beta beta(period);
+  DeviceBuffer d_x{nullptr}, d_y{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_x.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_y.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_x.get(), host_x, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_y.get(), host_y, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    beta.calculate(d_x.get(), d_y.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_bop(const float *host_open, const float *host_high,
+                  const float *host_low, const float *host_close,
+                  float *host_output, int size) {
+  BOP bop;
+  DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
+      d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_open.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_open.get(), host_open, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    bop.calculate(d_open.get(), d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_cmo(const float *host_input, float *host_output, int size,
+                  int period) {
+  CMO cmo(period);
+  return run_indicator(cmo, host_input, host_output, size);
+}
+
+ctStatus_t ct_correl(const float *host_x, const float *host_y,
+                     float *host_output, int size, int period) {
+  Correl correl(period);
+  DeviceBuffer d_x{nullptr}, d_y{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_x.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_y.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_x.get(), host_x, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_y.get(), host_y, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    correl.calculate(d_x.get(), d_y.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_dx(const float *host_high, const float *host_low,
+                 const float *host_close, float *host_output, int size,
+                 int period) {
+  DX dx(period);
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float), cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    dx.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }

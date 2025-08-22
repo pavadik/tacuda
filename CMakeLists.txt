@@ -36,6 +36,11 @@ set(INDICATOR_SOURCES
     src/indicators/APO.cu
     src/indicators/AroonOscillator.cu
     src/indicators/AvgPrice.cu
+    src/indicators/Beta.cu
+    src/indicators/BOP.cu
+    src/indicators/CMO.cu
+    src/indicators/Correl.cu
+    src/indicators/DX.cu
 )
 
 add_library(tacuda SHARED
