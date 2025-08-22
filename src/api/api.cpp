@@ -23,6 +23,7 @@
 #include <indicators/SAR.h>
 #include <indicators/SMA.h>
 #include <indicators/Stochastic.h>
+#include <indicators/ULTOSC.h>
 #include <indicators/TEMA.h>
 #include <indicators/TRIX.h>
 #include <indicators/WMA.h>
@@ -583,6 +584,69 @@ ctStatus_t ct_adosc(const float *host_high, const float *host_low,
   try {
     adosc.calculate(d_high.get(), d_low.get(), d_close.get(), d_vol.get(),
                     d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
+                     const float *host_close, float *host_output, int size,
+                     int shortPeriod, int mediumPeriod, int longPeriod) {
+  ULTOSC ultosc(shortPeriod, mediumPeriod, longPeriod);
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    ultosc.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(),
+                     size);
   } catch (...) {
     return CT_STATUS_KERNEL_FAILED;
   }

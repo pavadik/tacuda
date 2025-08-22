@@ -30,6 +30,7 @@ set(INDICATOR_SOURCES
     src/indicators/Aroon.cu
     src/indicators/ADOSC.cu
     src/indicators/MFI.cu
+    src/indicators/ULTOSC.cu
 )
 
 add_library(tacuda SHARED

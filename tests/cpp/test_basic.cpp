@@ -704,6 +704,62 @@ TEST(Tacuda, ADOSC) {
   }
 }
 
+namespace {
+std::vector<float> ultosc_ref(const std::vector<float> &high,
+                              const std::vector<float> &low,
+                              const std::vector<float> &close, int shortP,
+                              int medP, int longP) {
+  int N = high.size();
+  std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+  for (int idx = longP; idx < N; ++idx) {
+    float bp1 = 0.0f, tr1 = 0.0f;
+    float bp2 = 0.0f, tr2 = 0.0f;
+    float bp3 = 0.0f, tr3 = 0.0f;
+    for (int j = 0; j < longP; ++j) {
+      int i = idx - j;
+      float prev = (i > 0) ? close[i - 1] : close[i];
+      float bp = close[i] - std::fmin(low[i], prev);
+      float tr = std::fmax(high[i], prev) - std::fmin(low[i], prev);
+      if (j < shortP) {
+        bp1 += bp;
+        tr1 += tr;
+      }
+      if (j < medP) {
+        bp2 += bp;
+        tr2 += tr;
+      }
+      bp3 += bp;
+      tr3 += tr;
+    }
+    float avg1 = (tr1 == 0.0f) ? 0.0f : bp1 / tr1;
+    float avg2 = (tr2 == 0.0f) ? 0.0f : bp2 / tr2;
+    float avg3 = (tr3 == 0.0f) ? 0.0f : bp3 / tr3;
+    out[idx] = 100.0f * (4.0f * avg1 + 2.0f * avg2 + avg3) / 7.0f;
+  }
+  return out;
+}
+} // namespace
+
+TEST(Tacuda, ULTOSC) {
+  std::vector<float> high = {30.0f, 32.0f, 31.0f, 33.0f, 34.0f, 35.0f,
+                             36.0f, 37.0f, 36.0f, 38.0f, 39.0f, 40.0f};
+  std::vector<float> low = {29.0f, 30.0f, 30.0f, 31.0f, 32.0f, 33.0f,
+                            34.0f, 35.0f, 34.0f, 35.0f, 36.0f, 37.0f};
+  std::vector<float> close = {29.5f, 31.0f, 30.5f, 32.0f, 33.0f, 34.0f,
+                              35.0f, 36.0f, 35.0f, 37.0f, 38.0f, 39.0f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  int sp = 3, mp = 5, lp = 7;
+  ctStatus_t rc =
+      ct_ultosc(high.data(), low.data(), close.data(), out.data(), N, sp, mp, lp);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_ultosc failed";
+  auto ref = ultosc_ref(high, low, close, sp, mp, lp);
+  expect_approx_equal(out, ref);
+  for (int i = 0; i < lp; ++i) {
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+  }
+}
+
 TEST(Tacuda, ADX) {
   std::vector<float> high = {30.0f, 32.0f, 31.0f, 33.0f, 34.0f, 35.0f,
                              36.0f, 37.0f, 36.0f, 38.0f, 39.0f, 40.0f};

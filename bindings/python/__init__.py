@@ -105,6 +105,10 @@ _lib.ct_aroon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.
                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                           ctypes.c_int, ctypes.c_int, ctypes.c_int]
 _lib.ct_aroon.restype  = ctypes.c_int
+_lib.ct_ultosc.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                           ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+_lib.ct_ultosc.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -270,6 +274,24 @@ def aroon(high, low, up_period, down_period):
     if rc != 0:
         raise RuntimeError("ct_aroon failed")
     return up, down, osc
+
+def ultosc(high, low, close, short_period, medium_period, long_period):
+    import numpy as np
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_ultosc(ph, pl, pc, po, close.size,
+                        int(short_period), int(medium_period), int(long_period))
+    if rc != 0:
+        raise RuntimeError("ct_ultosc failed")
+    return out
 
 def obv(price, volume):
     import numpy as np
