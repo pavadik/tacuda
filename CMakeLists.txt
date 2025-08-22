@@ -31,6 +31,11 @@ set(INDICATOR_SOURCES
     src/indicators/ADOSC.cu
     src/indicators/MFI.cu
     src/indicators/ULTOSC.cu
+    src/indicators/AD.cu
+    src/indicators/ADXR.cu
+    src/indicators/APO.cu
+    src/indicators/AroonOscillator.cu
+    src/indicators/AvgPrice.cu
 )
 
 add_library(tacuda SHARED
