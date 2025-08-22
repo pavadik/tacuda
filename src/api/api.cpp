@@ -10,6 +10,7 @@
 #include <indicators/ROC.h>
 #include <indicators/MACD.h>
 #include <indicators/EMA.h>
+#include <indicators/DEMA.h>
 #include <indicators/WMA.h>
 #include <indicators/RSI.h>
 #include <indicators/BBANDS.h>
@@ -93,6 +94,11 @@ ctStatus_t ct_roc(const float* host_input, float* host_output, int size, int per
 ctStatus_t ct_ema(const float* host_input, float* host_output, int size, int period) {
     EMA ema(period);
     return run_indicator(ema, host_input, host_output, size);
+}
+
+ctStatus_t ct_dema(const float* host_input, float* host_output, int size, int period) {
+    DEMA dema(period);
+    return run_indicator(dema, host_input, host_output, size);
 }
 
 ctStatus_t ct_rsi(const float* host_input, float* host_output, int size, int period) {
