@@ -50,10 +50,14 @@ std::vector<float> avgprice_ref(const std::vector<float>& open,
                                 const std::vector<float>& high,
                                 const std::vector<float>& low,
                                 const std::vector<float>& close);
+std::vector<float> typprice_ref(const std::vector<float>& high,
+                                const std::vector<float>& low,
+                                const std::vector<float>& close);
 std::vector<float> linearreg_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_slope_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_intercept_ref(const std::vector<float>& in, int period);
 std::vector<float> linearreg_angle_ref(const std::vector<float>& in, int period);
+std::vector<float> tsf_ref(const std::vector<float>& in, int period);
 std::vector<float> plus_dm_ref(const std::vector<float>& high,
                                const std::vector<float>& low, int period);
 std::vector<float> minus_dm_ref(const std::vector<float>& high,

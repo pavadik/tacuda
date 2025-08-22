@@ -72,6 +72,9 @@ set(INDICATOR_SOURCES
     src/indicators/TRIMA.cu
     src/indicators/T3.cu
     src/indicators/StochRSI.cu
+    src/indicators/TSF.cu
+    src/indicators/TypPrice.cu
+    src/indicators/VAR.cu
 )
 
 add_library(tacuda SHARED
