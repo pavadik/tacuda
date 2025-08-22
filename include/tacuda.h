@@ -83,6 +83,10 @@ CTAPI_EXPORT ctStatus_t ct_adosc(const float *host_high, const float *host_low,
                                  const float *host_close,
                                  const float *host_volume, float *host_output,
                                  int size, int shortPeriod, int longPeriod);
+CTAPI_EXPORT ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
+                                  const float *host_close, float *host_output,
+                                  int size, int shortPeriod, int mediumPeriod,
+                                  int longPeriod);
 
 #ifdef __cplusplus
 } // extern "C"

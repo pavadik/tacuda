@@ -46,6 +46,11 @@ namespace CudaTaLib
                                         float[] output, int size, int period);
 
         [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int ct_ultosc(float[] high, float[] low, float[] close,
+                                           float[] output, int size,
+                                           int shortPeriod, int mediumPeriod, int longPeriod);
+
+        [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ct_sar(float[] high, float[] low,
                                         float[] output, int size,
                                         float step, float maxAcceleration);
