@@ -38,6 +38,8 @@ std::vector<float> ad_ref(const std::vector<float>& high,
                           const std::vector<float>& close,
                           const std::vector<float>& volume);
 std::vector<float> apo_ref(const std::vector<float>& in, int fastP, int slowP);
+std::vector<float> ppo_ref(const std::vector<float>& in, int fastP, int slowP);
+std::vector<float> pvo_ref(const std::vector<float>& in, int fastP, int slowP);
 std::vector<float> aroonosc_ref(const std::vector<float>& high,
                                 const std::vector<float>& low,
                                 int period);
