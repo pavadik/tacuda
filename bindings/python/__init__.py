@@ -159,6 +159,26 @@ _lib.ct_cdl_breakaway.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER
                                   ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                   ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_breakaway.restype  = ctypes.c_int
+_lib.ct_cdl_two_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_two_crows.restype  = ctypes.c_int
+_lib.ct_cdl_three_black_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_three_black_crows.restype  = ctypes.c_int
+_lib.ct_cdl_three_inside.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_three_inside.restype  = ctypes.c_int
+_lib.ct_cdl_three_line_strike.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_three_line_strike.restype  = ctypes.c_int
+_lib.ct_cdl_three_stars_in_south.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_three_stars_in_south.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -548,6 +568,101 @@ def cdl_breakaway(open, high, low, close):
         raise RuntimeError("ct_cdl_breakaway failed")
     return out
 
+def cdl_two_crows(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_two_crows(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_two_crows failed")
+    return out
+
+def cdl_three_black_crows(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_three_black_crows(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_three_black_crows failed")
+    return out
+
+def cdl_three_inside(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_three_inside(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_three_inside failed")
+    return out
+
+def cdl_three_line_strike(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_three_line_strike(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_three_line_strike failed")
+    return out
+
+def cdl_three_stars_in_south(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_three_stars_in_south(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_three_stars_in_south failed")
+    return out
+
 def trange(high, low, close):
     import numpy as np
     high = np.asarray(high, dtype=np.float32)
@@ -636,6 +751,11 @@ __all__ = [
     "cdl_advance_block",
     "cdl_belt_hold",
     "cdl_breakaway",
+    "cdl_two_crows",
+    "cdl_three_black_crows",
+    "cdl_three_inside",
+    "cdl_three_line_strike",
+    "cdl_three_stars_in_south",
     "trange",
     "summation",
     "t3",

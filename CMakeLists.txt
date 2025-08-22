@@ -85,6 +85,11 @@ set(INDICATOR_SOURCES
     src/indicators/AdvanceBlock.cu
     src/indicators/BeltHold.cu
     src/indicators/Breakaway.cu
+    src/indicators/TwoCrows.cu
+    src/indicators/ThreeBlackCrows.cu
+    src/indicators/ThreeInside.cu
+    src/indicators/ThreeLineStrike.cu
+    src/indicators/ThreeStarsInSouth.cu
 )
 
 add_library(tacuda SHARED

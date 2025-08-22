@@ -96,4 +96,58 @@ __host__ __device__ inline bool is_breakaway(
     return true;
 }
 
+__host__ __device__ inline bool is_two_crows(
+    float o1, float h1, float l1, float c1,
+    float o2, float h2, float l2, float c2,
+    float o3, float h3, float l3, float c3) {
+    return c1 > o1 && c2 < o2 && c3 < o3 &&
+           o2 > c1 && c2 > c1 &&
+           o3 < o2 && o3 > c2 &&
+           c3 < c2 && c3 > o1 && c3 < c1;
+}
+
+__host__ __device__ inline bool is_three_black_crows(
+    float o1, float h1, float l1, float c1,
+    float o2, float h2, float l2, float c2,
+    float o3, float h3, float l3, float c3) {
+    return c1 < o1 && c2 < o2 && c3 < o3 &&
+           o2 <= o1 && o2 >= c1 &&
+           o3 <= o2 && o3 >= c2 &&
+           c1 > c2 && c2 > c3;
+}
+
+__host__ __device__ inline bool is_three_inside(
+    float o1, float h1, float l1, float c1,
+    float o2, float h2, float l2, float c2,
+    float o3, float h3, float l3, float c3) {
+    return c1 > o1 && c2 < o2 &&
+           o2 >= o1 && c2 <= c1 && o2 <= c1 && c2 >= o1 &&
+           c3 > o3 && c3 > c1;
+}
+
+__host__ __device__ inline bool is_three_line_strike(
+    float o1, float h1, float l1, float c1,
+    float o2, float h2, float l2, float c2,
+    float o3, float h3, float l3, float c3,
+    float o4, float h4, float l4, float c4) {
+    bool firstThree = c1 > o1 && c2 > o2 && c3 > o3 &&
+                      o2 >= o1 && o2 <= c1 &&
+                      o3 >= o2 && o3 <= c2 &&
+                      c1 < c2 && c2 < c3;
+    bool fourth = c4 < o4 && o4 >= c3 && c4 < o1;
+    return firstThree && fourth;
+}
+
+__host__ __device__ inline bool is_three_stars_in_south(
+    float o1, float h1, float l1, float c1,
+    float o2, float h2, float l2, float c2,
+    float o3, float h3, float l3, float c3) {
+    float ls1 = lower_shadow(l1, o1, c1);
+    float ls2 = lower_shadow(l2, o2, c2);
+    float ls3 = lower_shadow(l3, o3, c3);
+    return c1 < o1 && c2 < o2 && c3 < o3 &&
+           c1 > c2 && c2 > c3 &&
+           ls1 > ls2 && ls2 > ls3;
+}
+
 #endif

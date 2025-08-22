@@ -214,6 +214,21 @@ CTAPI_EXPORT ctStatus_t ct_cdl_belt_hold(
 CTAPI_EXPORT ctStatus_t ct_cdl_breakaway(
     const float *host_open, const float *host_high, const float *host_low,
     const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_two_crows(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_three_black_crows(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_three_inside(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_three_line_strike(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_three_stars_in_south(
+    const float *host_open, const float *host_high, const float *host_low,
+    const float *host_close, float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cmo(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,
