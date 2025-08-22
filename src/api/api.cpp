@@ -19,6 +19,7 @@
 #include <indicators/SAR.h>
 #include <indicators/ADX.h>
 #include <indicators/Aroon.h>
+#include <indicators/ADOSC.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -473,6 +474,79 @@ ctStatus_t ct_aroon(const float* host_high,
     std::memcpy(host_up, tmpHost.data(), size * sizeof(float));
     std::memcpy(host_down, tmpHost.data() + size, size * sizeof(float));
     std::memcpy(host_osc, tmpHost.data() + 2 * size, size * sizeof(float));
+
+    return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_adosc(const float* host_high,
+                    const float* host_low,
+                    const float* host_close,
+                    const float* host_volume,
+                    float* host_output,
+                    int size,
+                    int shortPeriod,
+                    int longPeriod) {
+    ADOSC adosc(shortPeriod, longPeriod);
+    DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr}, d_vol{nullptr}, d_out{nullptr};
+    float* tmp = nullptr;
+
+    cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_high.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_low.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_close.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_vol.reset(tmp);
+
+    err = cudaMalloc(&tmp, size * sizeof(float));
+    if (err != cudaSuccess) {
+        return CT_STATUS_ALLOC_FAILED;
+    }
+    d_out.reset(tmp);
+
+    err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+    err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+    err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+    err = cudaMemcpy(d_vol.get(), host_volume, size * sizeof(float), cudaMemcpyHostToDevice);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
+
+    try {
+        adosc.calculate(d_high.get(), d_low.get(), d_close.get(), d_vol.get(), d_out.get(), size);
+    } catch (...) {
+        return CT_STATUS_KERNEL_FAILED;
+    }
+
+    err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float), cudaMemcpyDeviceToHost);
+    if (err != cudaSuccess) {
+        return CT_STATUS_COPY_FAILED;
+    }
 
     return CT_STATUS_SUCCESS;
 }

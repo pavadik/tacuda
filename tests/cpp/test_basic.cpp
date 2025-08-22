@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <gtest/gtest.h>
 #include <tacuda.h>
 #include <vector>
@@ -393,6 +394,62 @@ TEST(Tacuda, OBV) {
   ctStatus_t rc = ct_obv(price.data(), volume.data(), out.data(), N);
   ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_obv failed";
   expect_approx_equal(out, ref);
+}
+
+namespace {
+std::vector<float> adosc_ref(const std::vector<float>& high,
+                             const std::vector<float>& low,
+                             const std::vector<float>& close,
+                             const std::vector<float>& volume,
+                             int shortP, int longP) {
+  int N = high.size();
+  std::vector<float> ad(N, 0.0f);
+  std::vector<float> out(N, std::numeric_limits<float>::quiet_NaN());
+  float cum = 0.0f;
+  for (int i = 0; i < N; ++i) {
+    float denom = high[i] - low[i];
+    float clv = denom == 0.0f ? 0.0f : ((close[i] - low[i]) - (high[i] - close[i])) / denom;
+    cum += clv * volume[i];
+    ad[i] = cum;
+  }
+  auto ema_at = [](const std::vector<float>& x, int idx, int period) {
+    const float k = 2.0f / (period + 1.0f);
+    float weight = 1.0f;
+    float weightedSum = x[idx];
+    float weightSum = 1.0f;
+    int steps = std::min(period, idx);
+    for (int i = 1; i <= steps; ++i) {
+      weight *= (1.0f - k);
+      weightedSum += x[idx - i] * weight;
+      weightSum += weight;
+    }
+    return weightedSum / weightSum;
+  };
+  for (int i = longP; i < N; ++i) {
+    float emaS = ema_at(ad, i, shortP);
+    float emaL = ema_at(ad, i, longP);
+    out[i] = emaS - emaL;
+  }
+  return out;
+}
+} // namespace
+
+TEST(Tacuda, ADOSC) {
+  std::vector<float> high   = {12.f, 12.5f, 13.f, 13.5f, 14.f, 14.5f};
+  std::vector<float> low    = {11.f, 11.5f, 12.f, 12.5f, 13.f, 13.5f};
+  std::vector<float> close  = {11.5f, 12.f, 12.5f, 13.f, 13.5f, 14.f};
+  std::vector<float> volume = {100.f, 110.f, 120.f, 130.f, 140.f, 150.f};
+  const int N = high.size();
+  std::vector<float> out(N, 0.0f);
+  int shortP = 3, longP = 5;
+  ctStatus_t rc = ct_adosc(high.data(), low.data(), close.data(), volume.data(),
+                           out.data(), N, shortP, longP);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_adosc failed";
+  auto ref = adosc_ref(high, low, close, volume, shortP, longP);
+  expect_approx_equal(out, ref);
+  for (int i = 0; i < longP; ++i) {
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at head " << i;
+  }
 }
 
 TEST(Tacuda, ADX) {
