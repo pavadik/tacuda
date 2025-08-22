@@ -78,6 +78,29 @@ std::vector<float> tema_ref(const std::vector<float>& in, int period) {
   return out;
 }
 
+std::vector<float> trima_ref(const std::vector<float>& in, int period) {
+  size_t n = in.size();
+  std::vector<float> tmp(n, std::numeric_limits<float>::quiet_NaN());
+  std::vector<float> out(n, std::numeric_limits<float>::quiet_NaN());
+  if (period <= 0 || n < static_cast<size_t>(period)) return out;
+  for (size_t i = 0; i + period <= n; ++i) {
+    float sum = 0.0f;
+    for (int j = 0; j < period; ++j)
+      sum += in[i + j];
+    tmp[i] = sum / period;
+  }
+  size_t size2 = n >= static_cast<size_t>(period) ? n - period + 1 : 0;
+  if (size2 >= static_cast<size_t>(period)) {
+    for (size_t i = 0; i + period <= size2; ++i) {
+      float sum = 0.0f;
+      for (int j = 0; j < period; ++j)
+        sum += tmp[i + j];
+      out[i] = sum / period;
+    }
+  }
+  return out;
+}
+
 std::vector<float> sar_ref(const std::vector<float> &high,
                            const std::vector<float> &low,
                            float step, float maxAcc) {
@@ -237,6 +260,25 @@ TEST(Tacuda, TEMA) {
   auto ref = tema_ref(x, p);
   expect_approx_equal(out, ref);
   for (int i = N - 3 * p + 3; i < N; ++i) {
+    EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at tail " << i;
+  }
+}
+
+TEST(Tacuda, TRIMA) {
+  const int N = 128;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i)
+    x[i] = std::sin(0.05f * i);
+
+  std::vector<float> out(N, 0.0f);
+
+  int p = 5;
+  ctStatus_t rc = ct_trima(x.data(), out.data(), N, p);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS) << "ct_trima failed";
+
+  auto ref = trima_ref(x, p);
+  expect_approx_equal(out, ref);
+  for (int i = N - 2 * p + 2; i < N; ++i) {
     EXPECT_TRUE(std::isnan(out[i])) << "expected NaN at tail " << i;
   }
 }

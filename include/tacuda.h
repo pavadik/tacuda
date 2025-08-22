@@ -29,6 +29,7 @@ CTAPI_EXPORT ctStatus_t ct_roc(const float* host_input, float* host_output, int 
 CTAPI_EXPORT ctStatus_t ct_ema(const float* host_input, float* host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_dema(const float* host_input, float* host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_tema(const float* host_input, float* host_output, int size, int period);
+CTAPI_EXPORT ctStatus_t ct_trima(const float* host_input, float* host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_rsi(const float* host_input, float* host_output, int size, int period);
 // MACD line only (EMA_fast - EMA_slow)
 CTAPI_EXPORT ctStatus_t ct_macd_line(const float* host_input, float* host_output, int size,

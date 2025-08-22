@@ -12,6 +12,7 @@
 #include <indicators/EMA.h>
 #include <indicators/DEMA.h>
 #include <indicators/TEMA.h>
+#include <indicators/TRIMA.h>
 #include <indicators/WMA.h>
 #include <indicators/RSI.h>
 #include <indicators/BBANDS.h>
@@ -105,6 +106,11 @@ ctStatus_t ct_dema(const float* host_input, float* host_output, int size, int pe
 ctStatus_t ct_tema(const float* host_input, float* host_output, int size, int period) {
     TEMA tema(period);
     return run_indicator(tema, host_input, host_output, size);
+}
+
+ctStatus_t ct_trima(const float* host_input, float* host_output, int size, int period) {
+    TRIMA trima(period);
+    return run_indicator(trima, host_input, host_output, size);
 }
 
 ctStatus_t ct_rsi(const float* host_input, float* host_output, int size, int period) {
