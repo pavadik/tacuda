@@ -90,6 +90,10 @@ set(INDICATOR_SOURCES
     src/indicators/ThreeInside.cu
     src/indicators/ThreeLineStrike.cu
     src/indicators/ThreeStarsInSouth.cu
+    src/indicators/ClosingMarubozu.cu
+    src/indicators/ConcealBabySwallow.cu
+    src/indicators/CounterAttack.cu
+    src/indicators/DarkCloudCover.cu
 )
 
 add_library(tacuda SHARED
