@@ -569,6 +569,16 @@ std::vector<float> sar_ref(const std::vector<float> &high,
           return out;
         }
 
+        std::vector<float> typprice_ref(
+            const std::vector<float> &high, const std::vector<float> &low,
+            const std::vector<float> &close) {
+          int N = high.size();
+          std::vector<float> out(N, 0.0f);
+          for (int i = 0; i < N; ++i)
+            out[i] = (high[i] + low[i] + close[i]) / 3.0f;
+          return out;
+        }
+
         static std::vector<float> run_linearreg_python(
             const std::vector<float> &in, int period, const char *func) {
           std::ostringstream cmd;
@@ -624,6 +634,10 @@ std::vector<float> sar_ref(const std::vector<float> &high,
         std::vector<float> linearreg_angle_ref(const std::vector<float> &in,
                                                int period) {
           return run_linearreg_python(in, period, "LINEARREG_ANGLE");
+        }
+
+        std::vector<float> tsf_ref(const std::vector<float> &in, int period) {
+          return run_linearreg_python(in, period, "TSF");
         }
 
         std::vector<float> plus_dm_ref(const std::vector<float> &high,

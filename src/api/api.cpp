@@ -14,6 +14,7 @@
 #include <indicators/Aroon.h>
 #include <indicators/AroonOscillator.h>
 #include <indicators/AvgPrice.h>
+#include <indicators/TypPrice.h>
 #include <indicators/BBANDS.h>
 #include <indicators/BOP.h>
 #include <indicators/Beta.h>
@@ -34,6 +35,7 @@
 #include <indicators/LINEARREG_ANGLE.h>
 #include <indicators/LINEARREG_INTERCEPT.h>
 #include <indicators/LINEARREG_SLOPE.h>
+#include <indicators/TSF.h>
 #include <indicators/MA.h>
 #include <indicators/MACD.h>
 #include <indicators/MACDEXT.h>
@@ -58,6 +60,7 @@
 #include <indicators/SMA.h>
 #include <indicators/SUM.h>
 #include <indicators/StdDev.h>
+#include <indicators/VAR.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
 #include <indicators/StochasticFast.h>
@@ -206,6 +209,12 @@ ctStatus_t ct_stddev(const float *host_input, float *host_output, int size,
                      int period) {
   StdDev sd(period);
   return run_indicator(sd, host_input, host_output, size);
+}
+
+ctStatus_t ct_var(const float *host_input, float *host_output, int size,
+                  int period) {
+  VAR vr(period);
+  return run_indicator(vr, host_input, host_output, size);
 }
 
 ctStatus_t ct_sum(const float *host_input, float *host_output, int size,
@@ -1520,6 +1529,68 @@ ctStatus_t ct_medprice(const float *host_high, const float *host_low,
   return CT_STATUS_SUCCESS;
 }
 
+ctStatus_t ct_typprice(const float *host_high, const float *host_low,
+                       const float *host_close, float *host_output,
+                       int size) {
+  TypPrice tp;
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    tp.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
 ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
                      const float *host_close, float *host_output, int size,
                      int shortPeriod, int mediumPeriod, int longPeriod) {
@@ -1822,6 +1893,12 @@ ctStatus_t ct_linearreg_intercept(const float *host_input, float *host_output,
 ctStatus_t ct_linearreg_angle(const float *host_input, float *host_output,
                               int size, int period) {
   LINEARREG_ANGLE ind(period);
+  return run_indicator(ind, host_input, host_output, size);
+}
+
+ctStatus_t ct_tsf(const float *host_input, float *host_output, int size,
+                  int period) {
+  TSF ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 

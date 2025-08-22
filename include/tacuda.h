@@ -57,6 +57,8 @@ CTAPI_EXPORT ctStatus_t ct_min(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_stddev(const float *host_input, float *host_output,
                                   int size, int period);
+CTAPI_EXPORT ctStatus_t ct_var(const float *host_input, float *host_output,
+                               int size, int period);
 CTAPI_EXPORT ctStatus_t ct_sum(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_rsi(const float *host_input, float *host_output,
@@ -171,6 +173,10 @@ CTAPI_EXPORT ctStatus_t ct_avgprice(const float *host_open,
 CTAPI_EXPORT ctStatus_t ct_medprice(const float *host_high,
                                     const float *host_low, float *host_output,
                                     int size);
+CTAPI_EXPORT ctStatus_t ct_typprice(const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close, float *host_output,
+                                    int size);
 CTAPI_EXPORT ctStatus_t ct_beta(const float *host_x, const float *host_y,
                                 float *host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_bop(const float *host_open, const float *host_high,
@@ -194,6 +200,8 @@ CTAPI_EXPORT ctStatus_t ct_linearreg_intercept(const float *host_input,
 CTAPI_EXPORT ctStatus_t ct_linearreg_angle(const float *host_input,
                                            float *host_output, int size,
                                            int period);
+CTAPI_EXPORT ctStatus_t ct_tsf(const float *host_input,
+                               float *host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_ht_dcperiod(const float *host_input,
                                        float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_ht_dcphase(const float *host_input,
