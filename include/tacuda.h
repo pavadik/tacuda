@@ -106,6 +106,18 @@ CTAPI_EXPORT ctStatus_t ct_avgprice(const float *host_open,
                                     const float *host_low,
                                     const float *host_close,
                                     float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_beta(const float *host_x, const float *host_y,
+                                    float *host_output, int size, int period);
+CTAPI_EXPORT ctStatus_t ct_bop(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cmo(const float *host_input, float *host_output,
+                               int size, int period);
+CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,
+                                  float *host_output, int size, int period);
+CTAPI_EXPORT ctStatus_t ct_dx(const float *host_high, const float *host_low,
+                              const float *host_close, float *host_output,
+                              int size, int period);
 
 #ifdef __cplusplus
 } // extern "C"
