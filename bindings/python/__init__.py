@@ -195,6 +195,26 @@ _lib.ct_cdl_dark_cloud_cover.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.
                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_dark_cloud_cover.restype  = ctypes.c_int
+_lib.ct_cdl_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_doji_star.restype  = ctypes.c_int
+_lib.ct_cdl_dragonfly_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_dragonfly_doji.restype  = ctypes.c_int
+_lib.ct_cdl_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_engulfing.restype  = ctypes.c_int
+_lib.ct_cdl_evening_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_evening_doji_star.restype  = ctypes.c_int
+_lib.ct_cdl_evening_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_evening_star.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -679,6 +699,101 @@ def cdl_three_stars_in_south(open, high, low, close):
         raise RuntimeError("ct_cdl_three_stars_in_south failed")
     return out
 
+def cdl_doji_star(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_doji_star(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_doji_star failed")
+    return out
+
+def cdl_dragonfly_doji(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_dragonfly_doji(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_dragonfly_doji failed")
+    return out
+
+def cdl_engulfing(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_engulfing(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_engulfing failed")
+    return out
+
+def cdl_evening_doji_star(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_evening_doji_star(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_evening_doji_star failed")
+    return out
+
+def cdl_evening_star(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_evening_star(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_evening_star failed")
+    return out
+
 def trange(high, low, close):
     import numpy as np
     high = np.asarray(high, dtype=np.float32)
@@ -772,6 +887,11 @@ __all__ = [
     "cdl_three_inside",
     "cdl_three_line_strike",
     "cdl_three_stars_in_south",
+    "cdl_doji_star",
+    "cdl_dragonfly_doji",
+    "cdl_engulfing",
+    "cdl_evening_doji_star",
+    "cdl_evening_star",
     "trange",
     "summation",
     "t3",

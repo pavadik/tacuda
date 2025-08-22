@@ -94,6 +94,11 @@ set(INDICATOR_SOURCES
     src/indicators/ConcealBabySwallow.cu
     src/indicators/CounterAttack.cu
     src/indicators/DarkCloudCover.cu
+    src/indicators/DojiStar.cu
+    src/indicators/DragonflyDoji.cu
+    src/indicators/Engulfing.cu
+    src/indicators/EveningDojiStar.cu
+    src/indicators/EveningStar.cu
 )
 
 add_library(tacuda SHARED
