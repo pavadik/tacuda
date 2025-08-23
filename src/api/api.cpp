@@ -105,15 +105,8 @@
 #include <indicators/ShortLine.h>
 #include <indicators/SpinningTop.h>
 #include <indicators/StalledPattern.h>
-#include <indicators/StickSandwich.h>
-#include <indicators/Takuri.h>
-#include <indicators/TasukiGap.h>
-#include <indicators/Thrusting.h>
-#include <indicators/Tristar.h>
-#include <indicators/Unique3River.h>
-#include <indicators/UpsideGap2Crows.h>
-#include <indicators/XSideGap3Methods.h>
 #include <indicators/StdDev.h>
+#include <indicators/StickSandwich.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
 #include <indicators/StochasticFast.h>
@@ -123,16 +116,24 @@
 #include <indicators/TRIMA.h>
 #include <indicators/TRIX.h>
 #include <indicators/TSF.h>
+#include <indicators/Takuri.h>
+#include <indicators/TasukiGap.h>
 #include <indicators/ThreeBlackCrows.h>
 #include <indicators/ThreeInside.h>
 #include <indicators/ThreeLineStrike.h>
 #include <indicators/ThreeStarsInSouth.h>
 #include <indicators/ThreeWhiteSoldiers.h>
+#include <indicators/Thrusting.h>
+#include <indicators/Tristar.h>
 #include <indicators/TwoCrows.h>
 #include <indicators/TypPrice.h>
 #include <indicators/ULTOSC.h>
+#include <indicators/Unique3River.h>
+#include <indicators/UpsideGap2Crows.h>
 #include <indicators/VAR.h>
 #include <indicators/WMA.h>
+#include <indicators/WclPrice.h>
+#include <indicators/XSideGap3Methods.h>
 #include <utils/CudaUtils.h>
 
 extern "C" {
@@ -343,6 +344,12 @@ ctStatus_t ct_min(const float *host_input, float *host_output, int size,
   return run_indicator(mn, host_input, host_output, size);
 }
 
+ctStatus_t ct_maxindex(const float *host_input, float *host_output, int size,
+                       int period) {
+  MAXINDEX mi(period);
+  return run_indicator(mi, host_input, host_output, size);
+}
+
 ctStatus_t ct_stddev(const float *host_input, float *host_output, int size,
                      int period) {
   StdDev sd(period);
@@ -384,6 +391,20 @@ ctStatus_t ct_macd(const float *host_input, float *host_macd,
                    int fastPeriod, int slowPeriod, int signalPeriod,
                    ctMaType_t type) {
   MACDEXT macd(fastPeriod, slowPeriod, signalPeriod, static_cast<MAType>(type));
+  std::vector<float> tmp(3 * size);
+  ctStatus_t rc = run_indicator(macd, host_input, tmp.data(), size, 3);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_macd, tmp.data(), size * sizeof(float));
+  std::memcpy(host_signal, tmp.data() + size, size * sizeof(float));
+  std::memcpy(host_hist, tmp.data() + 2 * size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_macdfix(const float *host_input, float *host_macd,
+                      float *host_signal, float *host_hist, int size,
+                      int signalPeriod) {
+  MACDFIX macd(signalPeriod);
   std::vector<float> tmp(3 * size);
   ctStatus_t rc = run_indicator(macd, host_input, tmp.data(), size, 3);
   if (rc != CT_STATUS_SUCCESS)
@@ -1729,6 +1750,111 @@ ctStatus_t ct_typprice(const float *host_high, const float *host_low,
   return CT_STATUS_SUCCESS;
 }
 
+ctStatus_t ct_wclprice(const float *host_high, const float *host_low,
+                       const float *host_close, float *host_output, int size) {
+  WclPrice wc;
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
+      d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    wc.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_midpoint(const float *host_input, float *host_output, int size,
+                       int period) {
+  MIDPOINT mp(period);
+  return run_indicator(mp, host_input, host_output, size);
+}
+
+ctStatus_t ct_midprice(const float *host_high, const float *host_low,
+                       float *host_output, int size, int period) {
+  MIDPRICE mp(period);
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
+  float *tmp = nullptr;
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess)
+    return CT_STATUS_ALLOC_FAILED;
+  d_high.reset(tmp);
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess)
+    return CT_STATUS_ALLOC_FAILED;
+  d_low.reset(tmp);
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess)
+    return CT_STATUS_ALLOC_FAILED;
+  d_out.reset(tmp);
+  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess)
+    return CT_STATUS_COPY_FAILED;
+  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
+                   cudaMemcpyHostToDevice);
+  if (err != cudaSuccess)
+    return CT_STATUS_COPY_FAILED;
+  try {
+    mp.calculate(d_high.get(), d_low.get(), d_out.get(), size);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
+                   cudaMemcpyDeviceToHost);
+  if (err != cudaSuccess)
+    return CT_STATUS_COPY_FAILED;
+  return CT_STATUS_SUCCESS;
+}
+
 ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
                      const float *host_close, float *host_output, int size,
                      int shortPeriod, int mediumPeriod, int longPeriod) {
@@ -2002,6 +2128,12 @@ ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
   std::memcpy(host_sine, tmp.data(), size * sizeof(float));
   std::memcpy(host_leadsine, tmp.data() + size, size * sizeof(float));
   return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_ht_trendline(const float *host_input, float *host_output,
+                           int size) {
+  HT_TRENDLINE ind;
+  return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_ht_trendmode(const float *host_input, float *host_output,
@@ -2508,9 +2640,10 @@ ctStatus_t ct_cdl_spinning_top(const float *host_open, const float *host_high,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_stalled_pattern(const float *host_open, const float *host_high,
-                                  const float *host_low, const float *host_close,
-                                  float *host_output, int size) {
+ctStatus_t ct_cdl_stalled_pattern(const float *host_open,
+                                  const float *host_high, const float *host_low,
+                                  const float *host_close, float *host_output,
+                                  int size) {
   StalledPattern ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2556,11 +2689,9 @@ ctStatus_t ct_cdl_tristar(const float *host_open, const float *host_high,
                             host_output, size);
 }
 
-ctStatus_t ct_cdl_unique_3_river(const float *host_open,
-                                 const float *host_high,
-                                 const float *host_low,
-                                 const float *host_close, float *host_output,
-                                 int size) {
+ctStatus_t ct_cdl_unique_3_river(const float *host_open, const float *host_high,
+                                 const float *host_low, const float *host_close,
+                                 float *host_output, int size) {
   Unique3River ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);

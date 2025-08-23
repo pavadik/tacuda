@@ -11,6 +11,7 @@ option(BUILD_TESTING "Enable tests" ON)
 set(INDICATOR_SOURCES
     src/indicators/MACD.cu
     src/indicators/MACDEXT.cu
+    src/indicators/MACDFIX.cu
     src/indicators/Momentum.cu
     src/indicators/ROC.cu
     src/indicators/SMA.cu
@@ -22,6 +23,7 @@ set(INDICATOR_SOURCES
     src/indicators/StdDev.cu
     src/indicators/MA.cu
     src/indicators/MAX.cu
+    src/indicators/MAXINDEX.cu
     src/indicators/MAMA.cu
     src/indicators/WMA.cu
     src/indicators/RSI.cu
@@ -43,6 +45,8 @@ set(INDICATOR_SOURCES
     src/indicators/AroonOscillator.cu
     src/indicators/AvgPrice.cu
     src/indicators/MIN.cu
+    src/indicators/MIDPOINT.cu
+    src/indicators/MIDPRICE.cu
     src/indicators/MedPrice.cu
     src/indicators/SAREXT.cu
     src/indicators/StochasticFast.cu
@@ -60,6 +64,7 @@ set(INDICATOR_SOURCES
     src/indicators/HT_PHASOR.cu
     src/indicators/HT_SINE.cu
     src/indicators/HT_TRENDMODE.cu
+    src/indicators/HT_TRENDLINE.cu
     src/indicators/LINEARREG.cu
     src/indicators/LINEARREG_ANGLE.cu
     src/indicators/LINEARREG_INTERCEPT.cu
@@ -74,6 +79,7 @@ set(INDICATOR_SOURCES
     src/indicators/StochRSI.cu
     src/indicators/TSF.cu
     src/indicators/TypPrice.cu
+    src/indicators/WclPrice.cu
     src/indicators/VAR.cu
     src/indicators/Doji.cu
     src/indicators/Hammer.cu

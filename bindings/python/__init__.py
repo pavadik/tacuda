@@ -2,6 +2,7 @@
 Python bindings for tacuda via ctypes.
 Build the project first (shared library 'tacuda').
 """
+
 import ctypes
 import ctypes.util
 import os
@@ -22,7 +23,9 @@ def _load_lib():
     env = os.environ.get("TACUDA_LIBRARY")
     if env:
         env_candidates.append(env)
-    env_dir = os.environ.get("TACUDA_LIBRARY_PATH") or os.environ.get("TACUDA_LIBRARY_DIR")
+    env_dir = os.environ.get("TACUDA_LIBRARY_PATH") or os.environ.get(
+        "TACUDA_LIBRARY_DIR"
+    )
     if env_dir:
         for n in names:
             env_candidates.append(os.path.join(env_dir, n))
@@ -65,283 +68,699 @@ def _load_lib():
         "tacuda library not found. Build the project first or set TACUDA_LIBRARY[_PATH]."
     )
 
+
 _lib = _load_lib()
 
-_lib.ct_sma.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_sma.restype  = ctypes.c_int
-_lib.ct_wma.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_wma.restype  = ctypes.c_int
-_lib.ct_momentum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_momentum.restype  = ctypes.c_int
-_lib.ct_macd_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int,
-                              ctypes.c_int, ctypes.c_int]
-_lib.ct_macd_line.restype  = ctypes.c_int
-_lib.ct_rsi.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_rsi.restype  = ctypes.c_int
-_lib.ct_atr.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.c_int, ctypes.c_int, ctypes.c_float]
-_lib.ct_atr.restype  = ctypes.c_int
-_lib.ct_stochastic.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                               ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                               ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_int]
-_lib.ct_stochastic.restype  = ctypes.c_int
-_lib.ct_cci.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.c_int, ctypes.c_int]
-_lib.ct_cci.restype  = ctypes.c_int
-_lib.ct_adx.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.c_int, ctypes.c_int]
-_lib.ct_adx.restype  = ctypes.c_int
-_lib.ct_obv.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_obv.restype  = ctypes.c_int
-_lib.ct_sar.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                        ctypes.POINTER(ctypes.c_float), ctypes.c_int,
-                        ctypes.c_float, ctypes.c_float]
-_lib.ct_sar.restype  = ctypes.c_int
-_lib.ct_aroon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                          ctypes.c_int, ctypes.c_int, ctypes.c_int]
-_lib.ct_aroon.restype  = ctypes.c_int
-_lib.ct_ultosc.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                           ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-_lib.ct_ultosc.restype  = ctypes.c_int
-_lib.ct_trange.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_trange.restype  = ctypes.c_int
-_lib.ct_sum.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_sum.restype  = ctypes.c_int
-_lib.ct_t3.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_float]
-_lib.ct_t3.restype  = ctypes.c_int
-_lib.ct_trima.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int]
-_lib.ct_trima.restype  = ctypes.c_int
-_lib.ct_stochrsi.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float), ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-_lib.ct_stochrsi.restype  = ctypes.c_int
-_lib.ct_cdl_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                              ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                              ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_doji.restype  = ctypes.c_int
-_lib.ct_cdl_hammer.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_hammer.restype  = ctypes.c_int
-_lib.ct_cdl_inverted_hammer.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_inverted_hammer.restype  = ctypes.c_int
-_lib.ct_cdl_bullish_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_bullish_engulfing.restype  = ctypes.c_int
-_lib.ct_cdl_bearish_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_bearish_engulfing.restype  = ctypes.c_int
-_lib.ct_cdl_three_white_soldiers.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_three_white_soldiers.restype  = ctypes.c_int
-_lib.ct_cdl_abandoned_baby.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_abandoned_baby.restype  = ctypes.c_int
-_lib.ct_cdl_advance_block.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_advance_block.restype  = ctypes.c_int
-_lib.ct_cdl_belt_hold.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_belt_hold.restype  = ctypes.c_int
-_lib.ct_cdl_breakaway.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_breakaway.restype  = ctypes.c_int
-_lib.ct_cdl_two_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_two_crows.restype  = ctypes.c_int
-_lib.ct_cdl_three_black_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_three_black_crows.restype  = ctypes.c_int
-_lib.ct_cdl_three_inside.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_three_inside.restype  = ctypes.c_int
-_lib.ct_cdl_three_line_strike.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_three_line_strike.restype  = ctypes.c_int
-_lib.ct_cdl_three_stars_in_south.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_three_stars_in_south.restype  = ctypes.c_int
-_lib.ct_cdl_closing_marubozu.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_closing_marubozu.restype  = ctypes.c_int
-_lib.ct_cdl_conceal_baby_swallow.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                             ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_conceal_baby_swallow.restype  = ctypes.c_int
-_lib.ct_cdl_counterattack.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_counterattack.restype  = ctypes.c_int
-_lib.ct_cdl_dark_cloud_cover.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_dark_cloud_cover.restype  = ctypes.c_int
-_lib.ct_cdl_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_doji_star.restype  = ctypes.c_int
-_lib.ct_cdl_dragonfly_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_dragonfly_doji.restype  = ctypes.c_int
-_lib.ct_cdl_engulfing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_engulfing.restype  = ctypes.c_int
-_lib.ct_cdl_evening_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_evening_doji_star.restype  = ctypes.c_int
-_lib.ct_cdl_evening_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_evening_star.restype  = ctypes.c_int
-_lib.ct_cdl_gap_side_side_white.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                            ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_gap_side_side_white.restype  = ctypes.c_int
-_lib.ct_cdl_gravestone_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_gravestone_doji.restype  = ctypes.c_int
-_lib.ct_cdl_hanging_man.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                    ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                    ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_hanging_man.restype  = ctypes.c_int
-_lib.ct_cdl_harami.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                               ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                               ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_harami.restype  = ctypes.c_int
-_lib.ct_cdl_harami_cross.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_harami_cross.restype  = ctypes.c_int
-_lib.ct_cdl_high_wave.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_high_wave.restype  = ctypes.c_int
-_lib.ct_cdl_hikkake.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_hikkake.restype  = ctypes.c_int
-_lib.ct_cdl_hikkake_mod.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                    ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                    ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_hikkake_mod.restype  = ctypes.c_int
-_lib.ct_cdl_homing_pigeon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_homing_pigeon.restype  = ctypes.c_int
-_lib.ct_cdl_ladder_bottom.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_ladder_bottom.restype  = ctypes.c_int
-_lib.ct_cdl_long_legged_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_long_legged_doji.restype  = ctypes.c_int
-_lib.ct_cdl_long_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_long_line.restype  = ctypes.c_int
-_lib.ct_cdl_marubozu.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_marubozu.restype  = ctypes.c_int
-_lib.ct_cdl_matching_low.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_matching_low.restype  = ctypes.c_int
-_lib.ct_cdl_mat_hold.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_mat_hold.restype  = ctypes.c_int
-_lib.ct_cdl_morning_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_morning_doji_star.restype  = ctypes.c_int
-_lib.ct_cdl_morning_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_morning_star.restype  = ctypes.c_int
-_lib.ct_cdl_on_neck.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_on_neck.restype  = ctypes.c_int
-_lib.ct_cdl_piercing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_piercing.restype  = ctypes.c_int
-_lib.ct_cdl_spinning_top.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_spinning_top.restype  = ctypes.c_int
-_lib.ct_cdl_stalled_pattern.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_stalled_pattern.restype  = ctypes.c_int
-_lib.ct_cdl_stick_sandwich.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_stick_sandwich.restype  = ctypes.c_int
-_lib.ct_cdl_takuri.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_takuri.restype  = ctypes.c_int
-_lib.ct_cdl_tasuki_gap.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                   ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                   ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_tasuki_gap.restype  = ctypes.c_int
-_lib.ct_cdl_thrusting.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_thrusting.restype  = ctypes.c_int
-_lib.ct_cdl_tristar.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_tristar.restype  = ctypes.c_int
-_lib.ct_cdl_unique_3_river.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_unique_3_river.restype  = ctypes.c_int
-_lib.ct_cdl_upside_gap_2_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                           ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_upside_gap_2_crows.restype  = ctypes.c_int
-_lib.ct_cdl_xside_gap_3_methods.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
-                                            ctypes.POINTER(ctypes.c_float), ctypes.c_int]
-_lib.ct_cdl_xside_gap_3_methods.restype  = ctypes.c_int
+_lib.ct_sma.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_sma.restype = ctypes.c_int
+_lib.ct_wma.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_wma.restype = ctypes.c_int
+_lib.ct_momentum.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_momentum.restype = ctypes.c_int
+_lib.ct_macd_line.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_macd_line.restype = ctypes.c_int
+_lib.ct_rsi.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_rsi.restype = ctypes.c_int
+_lib.ct_atr.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_float,
+]
+_lib.ct_atr.restype = ctypes.c_int
+_lib.ct_stochastic.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_stochastic.restype = ctypes.c_int
+_lib.ct_cci.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_cci.restype = ctypes.c_int
+_lib.ct_adx.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_adx.restype = ctypes.c_int
+_lib.ct_obv.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_obv.restype = ctypes.c_int
+_lib.ct_sar.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_float,
+    ctypes.c_float,
+]
+_lib.ct_sar.restype = ctypes.c_int
+_lib.ct_aroon.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_aroon.restype = ctypes.c_int
+_lib.ct_ultosc.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_ultosc.restype = ctypes.c_int
+_lib.ct_wclprice.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_wclprice.restype = ctypes.c_int
+_lib.ct_midpoint.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_midpoint.restype = ctypes.c_int
+_lib.ct_midprice.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_midprice.restype = ctypes.c_int
+_lib.ct_maxindex.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_maxindex.restype = ctypes.c_int
+_lib.ct_ht_trendline.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_ht_trendline.restype = ctypes.c_int
+_lib.ct_macdfix.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_macdfix.restype = ctypes.c_int
+_lib.ct_trange.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_trange.restype = ctypes.c_int
+_lib.ct_sum.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_sum.restype = ctypes.c_int
+_lib.ct_t3.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_float,
+]
+_lib.ct_t3.restype = ctypes.c_int
+_lib.ct_trima.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_trima.restype = ctypes.c_int
+_lib.ct_stochrsi.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_stochrsi.restype = ctypes.c_int
+_lib.ct_cdl_doji.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_doji.restype = ctypes.c_int
+_lib.ct_cdl_hammer.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_hammer.restype = ctypes.c_int
+_lib.ct_cdl_inverted_hammer.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_inverted_hammer.restype = ctypes.c_int
+_lib.ct_cdl_bullish_engulfing.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_bullish_engulfing.restype = ctypes.c_int
+_lib.ct_cdl_bearish_engulfing.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_bearish_engulfing.restype = ctypes.c_int
+_lib.ct_cdl_three_white_soldiers.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_three_white_soldiers.restype = ctypes.c_int
+_lib.ct_cdl_abandoned_baby.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_abandoned_baby.restype = ctypes.c_int
+_lib.ct_cdl_advance_block.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_advance_block.restype = ctypes.c_int
+_lib.ct_cdl_belt_hold.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_belt_hold.restype = ctypes.c_int
+_lib.ct_cdl_breakaway.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_breakaway.restype = ctypes.c_int
+_lib.ct_cdl_two_crows.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_two_crows.restype = ctypes.c_int
+_lib.ct_cdl_three_black_crows.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_three_black_crows.restype = ctypes.c_int
+_lib.ct_cdl_three_inside.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_three_inside.restype = ctypes.c_int
+_lib.ct_cdl_three_line_strike.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_three_line_strike.restype = ctypes.c_int
+_lib.ct_cdl_three_stars_in_south.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_three_stars_in_south.restype = ctypes.c_int
+_lib.ct_cdl_closing_marubozu.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_closing_marubozu.restype = ctypes.c_int
+_lib.ct_cdl_conceal_baby_swallow.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_conceal_baby_swallow.restype = ctypes.c_int
+_lib.ct_cdl_counterattack.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_counterattack.restype = ctypes.c_int
+_lib.ct_cdl_dark_cloud_cover.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_dark_cloud_cover.restype = ctypes.c_int
+_lib.ct_cdl_doji_star.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_doji_star.restype = ctypes.c_int
+_lib.ct_cdl_dragonfly_doji.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_dragonfly_doji.restype = ctypes.c_int
+_lib.ct_cdl_engulfing.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_engulfing.restype = ctypes.c_int
+_lib.ct_cdl_evening_doji_star.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_evening_doji_star.restype = ctypes.c_int
+_lib.ct_cdl_evening_star.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_evening_star.restype = ctypes.c_int
+_lib.ct_cdl_gap_side_side_white.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_gap_side_side_white.restype = ctypes.c_int
+_lib.ct_cdl_gravestone_doji.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_gravestone_doji.restype = ctypes.c_int
+_lib.ct_cdl_hanging_man.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_hanging_man.restype = ctypes.c_int
+_lib.ct_cdl_harami.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_harami.restype = ctypes.c_int
+_lib.ct_cdl_harami_cross.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_harami_cross.restype = ctypes.c_int
+_lib.ct_cdl_high_wave.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_high_wave.restype = ctypes.c_int
+_lib.ct_cdl_hikkake.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_hikkake.restype = ctypes.c_int
+_lib.ct_cdl_hikkake_mod.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_hikkake_mod.restype = ctypes.c_int
+_lib.ct_cdl_homing_pigeon.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_homing_pigeon.restype = ctypes.c_int
+_lib.ct_cdl_ladder_bottom.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_ladder_bottom.restype = ctypes.c_int
+_lib.ct_cdl_long_legged_doji.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_long_legged_doji.restype = ctypes.c_int
+_lib.ct_cdl_long_line.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_long_line.restype = ctypes.c_int
+_lib.ct_cdl_marubozu.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_marubozu.restype = ctypes.c_int
+_lib.ct_cdl_matching_low.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_matching_low.restype = ctypes.c_int
+_lib.ct_cdl_mat_hold.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_mat_hold.restype = ctypes.c_int
+_lib.ct_cdl_morning_doji_star.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_morning_doji_star.restype = ctypes.c_int
+_lib.ct_cdl_morning_star.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_morning_star.restype = ctypes.c_int
+_lib.ct_cdl_on_neck.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_on_neck.restype = ctypes.c_int
+_lib.ct_cdl_piercing.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_piercing.restype = ctypes.c_int
+_lib.ct_cdl_spinning_top.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_spinning_top.restype = ctypes.c_int
+_lib.ct_cdl_stalled_pattern.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_stalled_pattern.restype = ctypes.c_int
+_lib.ct_cdl_stick_sandwich.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_stick_sandwich.restype = ctypes.c_int
+_lib.ct_cdl_takuri.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_takuri.restype = ctypes.c_int
+_lib.ct_cdl_tasuki_gap.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_tasuki_gap.restype = ctypes.c_int
+_lib.ct_cdl_thrusting.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_thrusting.restype = ctypes.c_int
+_lib.ct_cdl_tristar.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_tristar.restype = ctypes.c_int
+_lib.ct_cdl_unique_3_river.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_unique_3_river.restype = ctypes.c_int
+_lib.ct_cdl_upside_gap_2_crows.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_upside_gap_2_crows.restype = ctypes.c_int
+_lib.ct_cdl_xside_gap_3_methods.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+]
+_lib.ct_cdl_xside_gap_3_methods.restype = ctypes.c_int
+
 
 def _as_float_ptr(arr):
     import numpy as np
+
     if not isinstance(arr, np.ndarray):
         arr = np.asarray(arr, dtype=np.float32)
     if arr.dtype != np.float32:
         arr = arr.astype(np.float32, copy=False)
     return arr, arr.ctypes.data_as(ctypes.POINTER(ctypes.c_float))
 
+
 def sma(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
@@ -351,8 +770,10 @@ def sma(x, period):
         raise RuntimeError("ct_sma failed")
     return out
 
+
 def wma(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
@@ -362,8 +783,10 @@ def wma(x, period):
         raise RuntimeError("ct_wma failed")
     return out
 
+
 def momentum(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
@@ -373,8 +796,10 @@ def momentum(x, period):
         raise RuntimeError("ct_momentum failed")
     return out
 
+
 def macd_line(x, fast=12, slow=26):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
@@ -384,8 +809,10 @@ def macd_line(x, fast=12, slow=26):
         raise RuntimeError("ct_macd_line failed")
     return out
 
+
 def rsi(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     xin, pin = _as_float_ptr(x)
@@ -395,8 +822,10 @@ def rsi(x, period):
         raise RuntimeError("ct_rsi failed")
     return out
 
+
 def atr(high, low, close, period, initial=0.0):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -412,8 +841,10 @@ def atr(high, low, close, period, initial=0.0):
         raise RuntimeError("ct_atr failed")
     return out
 
+
 def stochastic(high, low, close, k_period, d_period):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -426,13 +857,17 @@ def stochastic(high, low, close, k_period, d_period):
     _, pc = _as_float_ptr(close)
     _, pk = _as_float_ptr(k)
     _, pd = _as_float_ptr(d)
-    rc = _lib.ct_stochastic(ph, pl, pc, pk, pd, close.size, int(k_period), int(d_period))
+    rc = _lib.ct_stochastic(
+        ph, pl, pc, pk, pd, close.size, int(k_period), int(d_period)
+    )
     if rc != 0:
         raise RuntimeError("ct_stochastic failed")
     return k, d
 
+
 def cci(high, low, close, period):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -448,8 +883,10 @@ def cci(high, low, close, period):
         raise RuntimeError("ct_cci failed")
     return out
 
+
 def adx(high, low, close, period):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -465,8 +902,10 @@ def adx(high, low, close, period):
         raise RuntimeError("ct_adx failed")
     return out
 
+
 def sar(high, low, step=0.02, max_acc=0.2):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     if high.shape != low.shape:
@@ -480,8 +919,10 @@ def sar(high, low, step=0.02, max_acc=0.2):
         raise RuntimeError("ct_sar failed")
     return out
 
+
 def aroon(high, low, up_period, down_period):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     up = np.zeros_like(high)
@@ -497,8 +938,10 @@ def aroon(high, low, up_period, down_period):
         raise RuntimeError("ct_aroon failed")
     return up, down, osc
 
+
 def ultosc(high, low, close, short_period, medium_period, long_period):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -509,14 +952,24 @@ def ultosc(high, low, close, short_period, medium_period, long_period):
     _, pl = _as_float_ptr(low)
     _, pc = _as_float_ptr(close)
     _, po = _as_float_ptr(out)
-    rc = _lib.ct_ultosc(ph, pl, pc, po, close.size,
-                        int(short_period), int(medium_period), int(long_period))
+    rc = _lib.ct_ultosc(
+        ph,
+        pl,
+        pc,
+        po,
+        close.size,
+        int(short_period),
+        int(medium_period),
+        int(long_period),
+    )
     if rc != 0:
         raise RuntimeError("ct_ultosc failed")
     return out
 
+
 def obv(price, volume):
     import numpy as np
+
     price = np.asarray(price, dtype=np.float32)
     volume = np.asarray(volume, dtype=np.float32)
     if price.shape != volume.shape:
@@ -530,8 +983,10 @@ def obv(price, volume):
         raise RuntimeError("ct_obv failed")
     return out
 
+
 def cdl_doji(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -549,8 +1004,10 @@ def cdl_doji(open, high, low, close):
         raise RuntimeError("ct_cdl_doji failed")
     return out
 
+
 def cdl_hammer(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -568,8 +1025,10 @@ def cdl_hammer(open, high, low, close):
         raise RuntimeError("ct_cdl_hammer failed")
     return out
 
+
 def cdl_inverted_hammer(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -587,8 +1046,10 @@ def cdl_inverted_hammer(open, high, low, close):
         raise RuntimeError("ct_cdl_inverted_hammer failed")
     return out
 
+
 def cdl_bullish_engulfing(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -606,8 +1067,10 @@ def cdl_bullish_engulfing(open, high, low, close):
         raise RuntimeError("ct_cdl_bullish_engulfing failed")
     return out
 
+
 def cdl_bearish_engulfing(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -625,8 +1088,10 @@ def cdl_bearish_engulfing(open, high, low, close):
         raise RuntimeError("ct_cdl_bearish_engulfing failed")
     return out
 
+
 def cdl_three_white_soldiers(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -644,8 +1109,10 @@ def cdl_three_white_soldiers(open, high, low, close):
         raise RuntimeError("ct_cdl_three_white_soldiers failed")
     return out
 
+
 def cdl_abandoned_baby(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -663,8 +1130,10 @@ def cdl_abandoned_baby(open, high, low, close):
         raise RuntimeError("ct_cdl_abandoned_baby failed")
     return out
 
+
 def cdl_advance_block(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -682,8 +1151,10 @@ def cdl_advance_block(open, high, low, close):
         raise RuntimeError("ct_cdl_advance_block failed")
     return out
 
+
 def cdl_belt_hold(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -701,8 +1172,10 @@ def cdl_belt_hold(open, high, low, close):
         raise RuntimeError("ct_cdl_belt_hold failed")
     return out
 
+
 def cdl_breakaway(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -720,8 +1193,10 @@ def cdl_breakaway(open, high, low, close):
         raise RuntimeError("ct_cdl_breakaway failed")
     return out
 
+
 def cdl_two_crows(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -739,8 +1214,10 @@ def cdl_two_crows(open, high, low, close):
         raise RuntimeError("ct_cdl_two_crows failed")
     return out
 
+
 def cdl_three_black_crows(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -758,8 +1235,10 @@ def cdl_three_black_crows(open, high, low, close):
         raise RuntimeError("ct_cdl_three_black_crows failed")
     return out
 
+
 def cdl_three_inside(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -777,8 +1256,10 @@ def cdl_three_inside(open, high, low, close):
         raise RuntimeError("ct_cdl_three_inside failed")
     return out
 
+
 def cdl_three_line_strike(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -796,8 +1277,10 @@ def cdl_three_line_strike(open, high, low, close):
         raise RuntimeError("ct_cdl_three_line_strike failed")
     return out
 
+
 def cdl_three_stars_in_south(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -815,8 +1298,10 @@ def cdl_three_stars_in_south(open, high, low, close):
         raise RuntimeError("ct_cdl_three_stars_in_south failed")
     return out
 
+
 def cdl_doji_star(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -834,8 +1319,10 @@ def cdl_doji_star(open, high, low, close):
         raise RuntimeError("ct_cdl_doji_star failed")
     return out
 
+
 def cdl_dragonfly_doji(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -853,8 +1340,10 @@ def cdl_dragonfly_doji(open, high, low, close):
         raise RuntimeError("ct_cdl_dragonfly_doji failed")
     return out
 
+
 def cdl_engulfing(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -872,8 +1361,10 @@ def cdl_engulfing(open, high, low, close):
         raise RuntimeError("ct_cdl_engulfing failed")
     return out
 
+
 def cdl_evening_doji_star(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -891,8 +1382,10 @@ def cdl_evening_doji_star(open, high, low, close):
         raise RuntimeError("ct_cdl_evening_doji_star failed")
     return out
 
+
 def cdl_evening_star(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -910,8 +1403,10 @@ def cdl_evening_star(open, high, low, close):
         raise RuntimeError("ct_cdl_evening_star failed")
     return out
 
+
 def cdl_gap_side_side_white(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -929,8 +1424,10 @@ def cdl_gap_side_side_white(open, high, low, close):
         raise RuntimeError("ct_cdl_gap_side_side_white failed")
     return out
 
+
 def cdl_gravestone_doji(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -948,8 +1445,10 @@ def cdl_gravestone_doji(open, high, low, close):
         raise RuntimeError("ct_cdl_gravestone_doji failed")
     return out
 
+
 def cdl_hanging_man(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -967,8 +1466,10 @@ def cdl_hanging_man(open, high, low, close):
         raise RuntimeError("ct_cdl_hanging_man failed")
     return out
 
+
 def cdl_harami(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -986,8 +1487,10 @@ def cdl_harami(open, high, low, close):
         raise RuntimeError("ct_cdl_harami failed")
     return out
 
+
 def cdl_harami_cross(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1005,8 +1508,10 @@ def cdl_harami_cross(open, high, low, close):
         raise RuntimeError("ct_cdl_harami_cross failed")
     return out
 
+
 def cdl_high_wave(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1024,8 +1529,10 @@ def cdl_high_wave(open, high, low, close):
         raise RuntimeError("ct_cdl_high_wave failed")
     return out
 
+
 def cdl_hikkake(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1043,8 +1550,10 @@ def cdl_hikkake(open, high, low, close):
         raise RuntimeError("ct_cdl_hikkake failed")
     return out
 
+
 def cdl_hikkake_mod(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1062,8 +1571,10 @@ def cdl_hikkake_mod(open, high, low, close):
         raise RuntimeError("ct_cdl_hikkake_mod failed")
     return out
 
+
 def cdl_homing_pigeon(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1081,8 +1592,10 @@ def cdl_homing_pigeon(open, high, low, close):
         raise RuntimeError("ct_cdl_homing_pigeon failed")
     return out
 
+
 def cdl_ladder_bottom(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1100,8 +1613,10 @@ def cdl_ladder_bottom(open, high, low, close):
         raise RuntimeError("ct_cdl_ladder_bottom failed")
     return out
 
+
 def cdl_long_legged_doji(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1119,8 +1634,10 @@ def cdl_long_legged_doji(open, high, low, close):
         raise RuntimeError("ct_cdl_long_legged_doji failed")
     return out
 
+
 def cdl_long_line(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1138,8 +1655,10 @@ def cdl_long_line(open, high, low, close):
         raise RuntimeError("ct_cdl_long_line failed")
     return out
 
+
 def cdl_marubozu(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1157,8 +1676,10 @@ def cdl_marubozu(open, high, low, close):
         raise RuntimeError("ct_cdl_marubozu failed")
     return out
 
+
 def cdl_matching_low(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1176,8 +1697,10 @@ def cdl_matching_low(open, high, low, close):
         raise RuntimeError("ct_cdl_matching_low failed")
     return out
 
+
 def cdl_mat_hold(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1195,8 +1718,10 @@ def cdl_mat_hold(open, high, low, close):
         raise RuntimeError("ct_cdl_mat_hold failed")
     return out
 
+
 def cdl_morning_doji_star(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1214,8 +1739,10 @@ def cdl_morning_doji_star(open, high, low, close):
         raise RuntimeError("ct_cdl_morning_doji_star failed")
     return out
 
+
 def cdl_morning_star(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1233,8 +1760,10 @@ def cdl_morning_star(open, high, low, close):
         raise RuntimeError("ct_cdl_morning_star failed")
     return out
 
+
 def cdl_on_neck(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1252,8 +1781,10 @@ def cdl_on_neck(open, high, low, close):
         raise RuntimeError("ct_cdl_on_neck failed")
     return out
 
+
 def cdl_piercing(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1271,8 +1802,10 @@ def cdl_piercing(open, high, low, close):
         raise RuntimeError("ct_cdl_piercing failed")
     return out
 
+
 def cdl_thrusting(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1290,8 +1823,10 @@ def cdl_thrusting(open, high, low, close):
         raise RuntimeError("ct_cdl_thrusting failed")
     return out
 
+
 def cdl_tristar(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1309,8 +1844,10 @@ def cdl_tristar(open, high, low, close):
         raise RuntimeError("ct_cdl_tristar failed")
     return out
 
+
 def cdl_unique_3_river(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1328,8 +1865,10 @@ def cdl_unique_3_river(open, high, low, close):
         raise RuntimeError("ct_cdl_unique_3_river failed")
     return out
 
+
 def cdl_upside_gap_2_crows(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1347,8 +1886,10 @@ def cdl_upside_gap_2_crows(open, high, low, close):
         raise RuntimeError("ct_cdl_upside_gap_2_crows failed")
     return out
 
+
 def cdl_xside_gap_3_methods(open, high, low, close):
     import numpy as np
+
     open = np.asarray(open, dtype=np.float32)
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
@@ -1366,8 +1907,102 @@ def cdl_xside_gap_3_methods(open, high, low, close):
         raise RuntimeError("ct_cdl_xside_gap_3_methods failed")
     return out
 
+
+def wclprice(high, low, close):
+    import numpy as np
+
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if high.shape != low.shape or high.shape != close.shape:
+        raise ValueError("high, low, close must have same shape")
+    out = np.zeros_like(close)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_wclprice(ph, pl, pc, po, close.size)
+    if rc != 0:
+        raise RuntimeError("ct_wclprice failed")
+    return out
+
+
+def midpoint(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_midpoint(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_midpoint failed")
+    return out
+
+
+def midprice(high, low, period):
+    import numpy as np
+
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    if high.shape != low.shape:
+        raise ValueError("high, low must have same shape")
+    out = np.zeros_like(high)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, po = _as_float_ptr(out)
+    rc = _lib.ct_midprice(ph, pl, po, high.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_midprice failed")
+    return out
+
+
+def maxindex(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_maxindex(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_maxindex failed")
+    return out
+
+
+def ht_trendline(x):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_ht_trendline(pin, pout, x.size)
+    if rc != 0:
+        raise RuntimeError("ct_ht_trendline failed")
+    return out
+
+
+def macdfix(x, signalperiod=9):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    macd = np.zeros_like(x)
+    signal = np.zeros_like(x)
+    hist = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pm = _as_float_ptr(macd)
+    _, ps = _as_float_ptr(signal)
+    _, ph = _as_float_ptr(hist)
+    rc = _lib.ct_macdfix(pin, pm, ps, ph, x.size, int(signalperiod))
+    if rc != 0:
+        raise RuntimeError("ct_macdfix failed")
+    return macd, signal, hist
+
+
 def trange(high, low, close):
     import numpy as np
+
     high = np.asarray(high, dtype=np.float32)
     low = np.asarray(low, dtype=np.float32)
     close = np.asarray(close, dtype=np.float32)
@@ -1383,8 +2018,10 @@ def trange(high, low, close):
         raise RuntimeError("ct_trange failed")
     return out
 
+
 def summation(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     _, px = _as_float_ptr(x)
@@ -1394,8 +2031,10 @@ def summation(x, period):
         raise RuntimeError("ct_sum failed")
     return out
 
+
 def t3(x, period, v_factor):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     _, px = _as_float_ptr(x)
@@ -1405,8 +2044,10 @@ def t3(x, period, v_factor):
         raise RuntimeError("ct_t3 failed")
     return out
 
+
 def trima(x, period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     out = np.zeros_like(x)
     _, px = _as_float_ptr(x)
@@ -1416,15 +2057,19 @@ def trima(x, period):
         raise RuntimeError("ct_trima failed")
     return out
 
+
 def stochrsi(x, rsi_period, k_period, d_period):
     import numpy as np
+
     x = np.asarray(x, dtype=np.float32)
     k = np.zeros_like(x)
     d = np.zeros_like(x)
     _, px = _as_float_ptr(x)
     _, pk = _as_float_ptr(k)
     _, pd = _as_float_ptr(d)
-    rc = _lib.ct_stochrsi(px, pk, pd, x.size, int(rsi_period), int(k_period), int(d_period))
+    rc = _lib.ct_stochrsi(
+        px, pk, pd, x.size, int(rsi_period), int(k_period), int(d_period)
+    )
     if rc != 0:
         raise RuntimeError("ct_stochrsi failed")
     return k, d
@@ -1474,6 +2119,12 @@ __all__ = [
     "cdl_unique_3_river",
     "cdl_upside_gap_2_crows",
     "cdl_xside_gap_3_methods",
+    "midpoint",
+    "midprice",
+    "maxindex",
+    "ht_trendline",
+    "macdfix",
+    "wclprice",
     "trange",
     "summation",
     "t3",

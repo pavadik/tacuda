@@ -331,6 +331,82 @@ std::vector<float> ht_trendmode_ref(const std::vector<float> &in) {
   return out;
 }
 
+std::vector<float> ht_trendline_ref(const std::vector<float> &in) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n "
+          "subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (i)
+      cmd << ',';
+    cmd << in[i];
+  }
+  cmd << "],dtype=float)\n";
+  cmd << "res=talib.HT_TRENDLINE(x)\n";
+  cmd << "print('\\n'.join(str(v) for v in res))\n";
+  cmd << "PY";
+  FILE *pipe = popen(cmd.str().c_str(), "r");
+  std::vector<float> out(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if (pipe) {
+    char buf[128];
+    for (size_t i = 0; i < out.size() && fgets(buf, sizeof(buf), pipe); ++i) {
+      out[i] = std::strtof(buf, nullptr);
+    }
+    pclose(pipe);
+  }
+  return out;
+}
+
+std::tuple<std::vector<float>, std::vector<float>, std::vector<float>>
+macdfix_ref(const std::vector<float> &in, int signalPeriod) {
+  std::ostringstream cmd;
+  cmd << "python3 - <<'PY'\n";
+  cmd << "import numpy as np\n";
+  cmd << "try:\n import talib\nexcept Exception:\n import subprocess, sys\n "
+          "subprocess.check_call([sys.executable,'-m','pip','install','-q','TA-Lib'])\n import talib\n";
+  cmd << "x=np.array([";
+  for (size_t i = 0; i < in.size(); ++i) {
+    if (i)
+      cmd << ',';
+    cmd << in[i];
+  }
+  cmd << "],dtype=float)\n";
+  cmd << "macd,signal,hist=talib.MACDFIX(x,signalperiod=" << signalPeriod << ")\n";
+  cmd << "print('\\n'.join(str(v) for v in macd))\n";
+  cmd << "print('@@')\n";
+  cmd << "print('\\n'.join(str(v) for v in signal))\n";
+  cmd << "print('@@')\n";
+  cmd << "print('\\n'.join(str(v) for v in hist))\n";
+  cmd << "PY";
+  FILE *pipe = popen(cmd.str().c_str(), "r");
+  std::vector<float> macd(in.size(), std::numeric_limits<float>::quiet_NaN());
+  std::vector<float> signal(in.size(), std::numeric_limits<float>::quiet_NaN());
+  std::vector<float> hist(in.size(), std::numeric_limits<float>::quiet_NaN());
+  if (pipe) {
+    char buf[256];
+    int section = 0;
+    size_t idx = 0;
+    while (fgets(buf, sizeof(buf), pipe)) {
+      if (std::strcmp(buf, "@@\n") == 0) {
+        section++;
+        idx = 0;
+        continue;
+      }
+      float v = std::strtof(buf, nullptr);
+      if (section == 0 && idx < macd.size())
+        macd[idx++] = v;
+      else if (section == 1 && idx < signal.size())
+        signal[idx++] = v;
+      else if (section == 2 && idx < hist.size())
+        hist[idx++] = v;
+    }
+    pclose(pipe);
+  }
+  return {macd, signal, hist};
+}
+
 std::vector<float> sar_ref(const std::vector<float> &high,
                            const std::vector<float> &low, float step,
                            float maxAcc) {
@@ -569,13 +645,23 @@ std::vector<float> sar_ref(const std::vector<float> &high,
           return out;
         }
 
-        std::vector<float> typprice_ref(
-            const std::vector<float> &high, const std::vector<float> &low,
-            const std::vector<float> &close) {
+        std::vector<float> typprice_ref(const std::vector<float> &high,
+                                        const std::vector<float> &low,
+                                        const std::vector<float> &close) {
           int N = high.size();
           std::vector<float> out(N, 0.0f);
           for (int i = 0; i < N; ++i)
             out[i] = (high[i] + low[i] + close[i]) / 3.0f;
+          return out;
+        }
+
+        std::vector<float> wclprice_ref(const std::vector<float> &high,
+                                        const std::vector<float> &low,
+                                        const std::vector<float> &close) {
+          int N = high.size();
+          std::vector<float> out(N, 0.0f);
+          for (int i = 0; i < N; ++i)
+            out[i] = (high[i] + low[i] + 2.0f * close[i]) * 0.25f;
           return out;
         }
 

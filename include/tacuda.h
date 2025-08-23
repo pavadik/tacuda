@@ -55,6 +55,8 @@ CTAPI_EXPORT ctStatus_t ct_max(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_min(const float *host_input, float *host_output,
                                int size, int period);
+CTAPI_EXPORT ctStatus_t ct_maxindex(const float *host_input, float *host_output,
+                                    int size, int period);
 CTAPI_EXPORT ctStatus_t ct_stddev(const float *host_input, float *host_output,
                                   int size, int period);
 CTAPI_EXPORT ctStatus_t ct_var(const float *host_input, float *host_output,
@@ -74,6 +76,9 @@ CTAPI_EXPORT ctStatus_t ct_macd(const float *host_input, float *host_macd,
                                 float *host_signal, float *host_hist, int size,
                                 int fastPeriod, int slowPeriod,
                                 int signalPeriod, ctMaType_t type);
+CTAPI_EXPORT ctStatus_t ct_macdfix(const float *host_input, float *host_macd,
+                                   float *host_signal, float *host_hist,
+                                   int size, int signalPeriod);
 CTAPI_EXPORT ctStatus_t ct_mama(const float *host_input, float *host_mama,
                                 float *host_fama, int size, float fastLimit,
                                 float slowLimit);
@@ -177,6 +182,16 @@ CTAPI_EXPORT ctStatus_t ct_typprice(const float *host_high,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size);
+CTAPI_EXPORT ctStatus_t ct_wclprice(const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close, float *host_output,
+                                    int size);
+CTAPI_EXPORT ctStatus_t ct_midpoint(const float *host_input,
+                                    float *host_output, int size,
+                                    int period);
+CTAPI_EXPORT ctStatus_t ct_midprice(const float *host_high,
+                                    const float *host_low, float *host_output,
+                                    int size, int period);
 CTAPI_EXPORT ctStatus_t ct_beta(const float *host_x, const float *host_y,
                                 float *host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_bop(const float *host_open, const float *host_high,
@@ -472,9 +487,11 @@ CTAPI_EXPORT ctStatus_t ct_cdl_unique_3_river(const float *host_open,
                                               const float *host_low,
                                               const float *host_close,
                                               float *host_output, int size);
-CTAPI_EXPORT ctStatus_t ct_cdl_upside_gap_2_crows(
-    const float *host_open, const float *host_high, const float *host_low,
-    const float *host_close, float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_upside_gap_2_crows(const float *host_open,
+                                                  const float *host_high,
+                                                  const float *host_low,
+                                                  const float *host_close,
+                                                  float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_xside_gap_3_methods(
     const float *host_open, const float *host_high, const float *host_low,
     const float *host_close, float *host_output, int size);
@@ -507,6 +524,8 @@ CTAPI_EXPORT ctStatus_t ct_ht_phasor(const float *host_input,
                                      float *host_quadrature, int size);
 CTAPI_EXPORT ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
                                    float *host_leadsine, int size);
+CTAPI_EXPORT ctStatus_t ct_ht_trendline(const float *host_input,
+                                       float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_ht_trendmode(const float *host_input,
                                         float *host_output, int size);
 
