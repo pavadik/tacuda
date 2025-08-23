@@ -1,6 +1,7 @@
 #include <cmath>
 #include <tacuda.h>
 #include <vector>
+#include <gtest/gtest.h>
 
 TEST(Tacuda, WILLRRange) {
   const int N = 100;

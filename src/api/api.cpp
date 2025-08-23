@@ -46,6 +46,7 @@
 #include <indicators/HT_DCPHASE.h>
 #include <indicators/HT_PHASOR.h>
 #include <indicators/HT_SINE.h>
+#include <indicators/HT_TRENDLINE.h>
 #include <indicators/HT_TRENDMODE.h>
 #include <indicators/Hammer.h>
 #include <indicators/HangingMan.h>
@@ -71,6 +72,7 @@
 #include <indicators/MA.h>
 #include <indicators/MACD.h>
 #include <indicators/MACDEXT.h>
+#include <indicators/MACDFIX.h>
 #include <indicators/MAMA.h>
 #include <indicators/MAX.h>
 #include <indicators/MAXINDEX.h>
@@ -83,6 +85,8 @@
 #include <indicators/MatHold.h>
 #include <indicators/MatchingLow.h>
 #include <indicators/MedPrice.h>
+#include <indicators/MIDPOINT.h>
+#include <indicators/MIDPRICE.h>
 #include <indicators/MinusDI.h>
 #include <indicators/MinusDM.h>
 #include <indicators/Momentum.h>
@@ -99,6 +103,7 @@
 #include <indicators/ROC.h>
 #include <indicators/ROCP.h>
 #include <indicators/ROCR.h>
+#include <indicators/ROCR100.h>
 #include <indicators/RSI.h>
 #include <indicators/RickshawMan.h>
 #include <indicators/RiseFall3Methods.h>
@@ -139,10 +144,9 @@
 #include <indicators/VAR.h>
 #include <indicators/WMA.h>
 #include <indicators/WclPrice.h>
+#include <indicators/WILLR.h>
 #include <indicators/XSideGap3Methods.h>
 #include <utils/CudaUtils.h>
-
-extern "C" {
 
 struct CudaDeleter {
   void operator()(float *ptr) const noexcept {
@@ -265,6 +269,8 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
 
   return CT_STATUS_SUCCESS;
 }
+
+extern "C" {
 
 ctStatus_t ct_sma(const float *host_input, float *host_output, int size,
                   int period) {
