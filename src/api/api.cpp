@@ -108,6 +108,11 @@
 #include <indicators/StickSandwich.h>
 #include <indicators/Takuri.h>
 #include <indicators/TasukiGap.h>
+#include <indicators/Thrusting.h>
+#include <indicators/Tristar.h>
+#include <indicators/Unique3River.h>
+#include <indicators/UpsideGap2Crows.h>
+#include <indicators/XSideGap3Methods.h>
 #include <indicators/StdDev.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
@@ -2531,6 +2536,52 @@ ctStatus_t ct_cdl_tasuki_gap(const float *host_open, const float *host_high,
                              const float *host_low, const float *host_close,
                              float *host_output, int size) {
   TasukiGap ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_thrusting(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
+                            float *host_output, int size) {
+  Thrusting ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_tristar(const float *host_open, const float *host_high,
+                          const float *host_low, const float *host_close,
+                          float *host_output, int size) {
+  Tristar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_unique_3_river(const float *host_open,
+                                 const float *host_high,
+                                 const float *host_low,
+                                 const float *host_close, float *host_output,
+                                 int size) {
+  Unique3River ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_upside_gap_2_crows(const float *host_open,
+                                     const float *host_high,
+                                     const float *host_low,
+                                     const float *host_close,
+                                     float *host_output, int size) {
+  UpsideGap2Crows ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_xside_gap_3_methods(const float *host_open,
+                                      const float *host_high,
+                                      const float *host_low,
+                                      const float *host_close,
+                                      float *host_output, int size) {
+  XSideGap3Methods ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }

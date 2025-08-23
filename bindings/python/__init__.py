@@ -311,6 +311,26 @@ _lib.ct_cdl_tasuki_gap.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTE
                                    ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                    ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_tasuki_gap.restype  = ctypes.c_int
+_lib.ct_cdl_thrusting.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_thrusting.restype  = ctypes.c_int
+_lib.ct_cdl_tristar.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_tristar.restype  = ctypes.c_int
+_lib.ct_cdl_unique_3_river.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_unique_3_river.restype  = ctypes.c_int
+_lib.ct_cdl_upside_gap_2_crows.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                           ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                           ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_upside_gap_2_crows.restype  = ctypes.c_int
+_lib.ct_cdl_xside_gap_3_methods.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                            ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_xside_gap_3_methods.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -1251,6 +1271,101 @@ def cdl_piercing(open, high, low, close):
         raise RuntimeError("ct_cdl_piercing failed")
     return out
 
+def cdl_thrusting(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_thrusting(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_thrusting failed")
+    return out
+
+def cdl_tristar(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_tristar(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_tristar failed")
+    return out
+
+def cdl_unique_3_river(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_unique_3_river(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_unique_3_river failed")
+    return out
+
+def cdl_upside_gap_2_crows(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_upside_gap_2_crows(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_upside_gap_2_crows failed")
+    return out
+
+def cdl_xside_gap_3_methods(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_xside_gap_3_methods(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_xside_gap_3_methods failed")
+    return out
+
 def trange(high, low, close):
     import numpy as np
     high = np.asarray(high, dtype=np.float32)
@@ -1354,6 +1469,11 @@ __all__ = [
     "cdl_morning_star",
     "cdl_on_neck",
     "cdl_piercing",
+    "cdl_thrusting",
+    "cdl_tristar",
+    "cdl_unique_3_river",
+    "cdl_upside_gap_2_crows",
+    "cdl_xside_gap_3_methods",
     "trange",
     "summation",
     "t3",
