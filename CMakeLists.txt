@@ -16,6 +16,7 @@ set(INDICATOR_SOURCES
     src/indicators/ROC.cu
     src/indicators/ROCP.cu
     src/indicators/ROCR.cu
+    src/indicators/ROCR100.cu
     src/indicators/SMA.cu
     src/indicators/EMA.cu
     src/indicators/DEMA.cu
@@ -85,6 +86,7 @@ set(INDICATOR_SOURCES
     src/indicators/TSF.cu
     src/indicators/TypPrice.cu
     src/indicators/WclPrice.cu
+    src/indicators/WILLR.cu
     src/indicators/VAR.cu
     src/indicators/Doji.cu
     src/indicators/Hammer.cu
