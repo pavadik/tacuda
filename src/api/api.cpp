@@ -76,15 +76,20 @@
 #include <indicators/MFI.h>
 #include <indicators/MIN.h>
 #include <indicators/Marubozu.h>
+#include <indicators/MatHold.h>
 #include <indicators/MatchingLow.h>
 #include <indicators/MedPrice.h>
 #include <indicators/MinusDI.h>
 #include <indicators/MinusDM.h>
 #include <indicators/Momentum.h>
+#include <indicators/MorningDojiStar.h>
+#include <indicators/MorningStar.h>
 #include <indicators/NATR.h>
 #include <indicators/OBV.h>
+#include <indicators/OnNeck.h>
 #include <indicators/PPO.h>
 #include <indicators/PVO.h>
+#include <indicators/Piercing.h>
 #include <indicators/PlusDI.h>
 #include <indicators/PlusDM.h>
 #include <indicators/ROC.h>
@@ -2395,6 +2400,48 @@ ctStatus_t ct_cdl_matching_low(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
   MatchingLow ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_mat_hold(const float *host_open, const float *host_high,
+                           const float *host_low, const float *host_close,
+                           float *host_output, int size) {
+  MatHold ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_morning_doji_star(const float *host_open,
+                                    const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close, float *host_output,
+                                    int size) {
+  MorningDojiStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_morning_star(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  MorningStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_on_neck(const float *host_open, const float *host_high,
+                          const float *host_low, const float *host_close,
+                          float *host_output, int size) {
+  OnNeck ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_piercing(const float *host_open, const float *host_high,
+                           const float *host_low, const float *host_close,
+                           float *host_output, int size) {
+  Piercing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }

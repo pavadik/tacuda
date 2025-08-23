@@ -271,6 +271,26 @@ _lib.ct_cdl_matching_low.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POIN
                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_matching_low.restype  = ctypes.c_int
+_lib.ct_cdl_mat_hold.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_mat_hold.restype  = ctypes.c_int
+_lib.ct_cdl_morning_doji_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                          ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_morning_doji_star.restype  = ctypes.c_int
+_lib.ct_cdl_morning_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_morning_star.restype  = ctypes.c_int
+_lib.ct_cdl_on_neck.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_on_neck.restype  = ctypes.c_int
+_lib.ct_cdl_piercing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_piercing.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -1116,6 +1136,101 @@ def cdl_matching_low(open, high, low, close):
         raise RuntimeError("ct_cdl_matching_low failed")
     return out
 
+def cdl_mat_hold(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_mat_hold(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_mat_hold failed")
+    return out
+
+def cdl_morning_doji_star(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_morning_doji_star(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_morning_doji_star failed")
+    return out
+
+def cdl_morning_star(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_morning_star(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_morning_star failed")
+    return out
+
+def cdl_on_neck(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_on_neck(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_on_neck failed")
+    return out
+
+def cdl_piercing(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_piercing(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_piercing failed")
+    return out
+
 def trange(high, low, close):
     import numpy as np
     high = np.asarray(high, dtype=np.float32)
@@ -1214,6 +1329,11 @@ __all__ = [
     "cdl_engulfing",
     "cdl_evening_doji_star",
     "cdl_evening_star",
+    "cdl_mat_hold",
+    "cdl_morning_doji_star",
+    "cdl_morning_star",
+    "cdl_on_neck",
+    "cdl_piercing",
     "trange",
     "summation",
     "t3",
