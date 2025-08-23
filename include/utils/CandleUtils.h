@@ -238,8 +238,8 @@ is_evening_doji_star(float o1, float h1, float l1, float c1, float o2, float h2,
   return bullish1 && doji2 && gapUp && bearish3 && closeIntoBody;
 }
 
-__host__ __device__ inline bool
-is_gravestone_doji(float open, float high, float low, float close) {
+__host__ __device__ inline bool is_gravestone_doji(float open, float high,
+                                                   float low, float close) {
   if (!is_doji(open, high, low, close))
     return false;
   float range = high - low;
@@ -253,9 +253,10 @@ __host__ __device__ inline bool is_hanging_man(float open, float high,
   return is_hammer(open, high, low, close);
 }
 
-__host__ __device__ inline bool is_gap_side_side_white(
-    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
-    float c2, float o3, float h3, float l3, float c3) {
+__host__ __device__ inline bool
+is_gap_side_side_white(float o1, float h1, float l1, float c1, float o2,
+                       float h2, float l2, float c2, float o3, float h3,
+                       float l3, float c3) {
   return c1 > o1 && c2 > o2 && c3 > o3 && l2 > h1 && l3 > h1 &&
          fabsf(o2 - o3) <= 1e-3f;
 }
@@ -287,15 +288,14 @@ __host__ __device__ inline float harami_cross(float o1, float h1, float l1,
 }
 
 __host__ __device__ inline bool is_high_wave(float open, float high, float low,
-                                            float close) {
+                                             float close) {
   float range = high - low;
   if (range <= 0.0f)
     return false;
   float body = real_body(open, close);
   float upper = upper_shadow(high, open, close);
   float lower = lower_shadow(low, open, close);
-  return body <= range * 0.3f && upper >= range * 0.4f &&
-         lower >= range * 0.4f;
+  return body <= range * 0.3f && upper >= range * 0.4f && lower >= range * 0.4f;
 }
 
 __host__ __device__ inline float hikkake(float o1, float h1, float l1, float c1,
@@ -312,10 +312,10 @@ __host__ __device__ inline float hikkake(float o1, float h1, float l1, float c1,
   return 0.0f;
 }
 
-__host__ __device__ inline float hikkake_mod(
-    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
-    float c2, float o3, float h3, float l3, float c3, float o4, float h4,
-    float l4, float c4) {
+__host__ __device__ inline float
+hikkake_mod(float o1, float h1, float l1, float c1, float o2, float h2,
+            float l2, float c2, float o3, float h3, float l3, float c3,
+            float o4, float h4, float l4, float c4) {
   bool inside = h2 <= h1 && l2 >= l1;
   bool bullBreak = inside && h3 > h2 && l3 > l2 && c3 > o3 && c4 > h2;
   bool bearBreak = inside && h3 < h2 && l3 < l2 && c3 < o3 && c4 < l2;
@@ -330,6 +330,53 @@ __host__ __device__ inline bool is_homing_pigeon(float o1, float h1, float l1,
                                                  float c1, float o2, float h2,
                                                  float l2, float c2) {
   return c1 < o1 && c2 < o2 && o2 >= c1 && o2 <= o1 && c2 >= c1 && c2 <= o1;
+}
+
+__host__ __device__ inline bool
+is_identical_three_crows(float o1, float h1, float l1, float c1, float o2,
+                         float h2, float l2, float c2, float o3, float h3,
+                         float l3, float c3) {
+  return c1 < o1 && c2 < o2 && c3 < o3 && o2 <= o1 && o2 >= c1 && o3 <= o2 &&
+         o3 >= c2 && c1 > c2 && fabsf(c2 - c3) <= 1e-6f;
+}
+
+__host__ __device__ inline bool is_in_neck(float o1, float h1, float l1,
+                                           float c1, float o2, float h2,
+                                           float l2, float c2) {
+  float body1 = real_body(o1, c1);
+  return c1 < o1 && c2 > o2 && o2 < l1 && c2 >= c1 && c2 <= c1 + body1 * 0.1f;
+}
+
+__host__ __device__ inline bool is_marubozu(float open, float high, float low,
+                                            float close) {
+  return upper_shadow(high, open, close) <= 1e-6f &&
+         lower_shadow(low, open, close) <= 1e-6f;
+}
+
+__host__ __device__ inline bool is_kicking(float o1, float h1, float l1,
+                                           float c1, float o2, float h2,
+                                           float l2, float c2) {
+  bool firstBull = c1 > o1;
+  bool firstBear = c1 < o1;
+  bool secondBull = c2 > o2;
+  bool secondBear = c2 < o2;
+  bool opposite = (firstBull && secondBear) || (firstBear && secondBull);
+  if (!opposite)
+    return false;
+  if (!is_marubozu(o1, h1, l1, c1) || !is_marubozu(o2, h2, l2, c2))
+    return false;
+  if (firstBull)
+    return o2 < l1;
+  else
+    return o2 > h1;
+}
+
+__host__ __device__ inline bool is_kicking_by_length(float o1, float h1,
+                                                     float l1, float c1,
+                                                     float o2, float h2,
+                                                     float l2, float c2) {
+  return is_kicking(o1, h1, l1, c1, o2, h2, l2, c2) &&
+         real_body(o2, c2) > real_body(o1, c1);
 }
 
 #endif

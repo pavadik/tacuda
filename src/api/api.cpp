@@ -36,9 +36,18 @@
 #include <indicators/Doji.h>
 #include <indicators/DojiStar.h>
 #include <indicators/DragonflyDoji.h>
+#include <indicators/EMA.h>
+#include <indicators/Engulfing.h>
+#include <indicators/EveningDojiStar.h>
+#include <indicators/EveningStar.h>
 #include <indicators/GapSideSideWhite.h>
 #include <indicators/GravestoneDoji.h>
-#include <indicators/EMA.h>
+#include <indicators/HT_DCPERIOD.h>
+#include <indicators/HT_DCPHASE.h>
+#include <indicators/HT_PHASOR.h>
+#include <indicators/HT_SINE.h>
+#include <indicators/HT_TRENDMODE.h>
+#include <indicators/Hammer.h>
 #include <indicators/HangingMan.h>
 #include <indicators/Harami.h>
 #include <indicators/HaramiCross.h>
@@ -46,17 +55,12 @@
 #include <indicators/Hikkake.h>
 #include <indicators/HikkakeMod.h>
 #include <indicators/HomingPigeon.h>
-#include <indicators/Engulfing.h>
-#include <indicators/EveningDojiStar.h>
-#include <indicators/EveningStar.h>
-#include <indicators/HT_DCPERIOD.h>
-#include <indicators/HT_DCPHASE.h>
-#include <indicators/HT_PHASOR.h>
-#include <indicators/HT_SINE.h>
-#include <indicators/HT_TRENDMODE.h>
-#include <indicators/Hammer.h>
+#include <indicators/IdenticalThreeCrows.h>
+#include <indicators/InNeck.h>
 #include <indicators/InvertedHammer.h>
 #include <indicators/KAMA.h>
+#include <indicators/Kicking.h>
+#include <indicators/KickingByLength.h>
 #include <indicators/LINEARREG.h>
 #include <indicators/LINEARREG_ANGLE.h>
 #include <indicators/LINEARREG_INTERCEPT.h>
@@ -2243,10 +2247,9 @@ ctStatus_t ct_cdl_gap_side_side_white(const float *host_open,
 }
 
 ctStatus_t ct_cdl_gravestone_doji(const float *host_open,
-                                  const float *host_high,
-                                  const float *host_low,
-                                  const float *host_close,
-                                  float *host_output, int size) {
+                                  const float *host_high, const float *host_low,
+                                  const float *host_close, float *host_output,
+                                  int size) {
   GravestoneDoji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2285,16 +2288,16 @@ ctStatus_t ct_cdl_high_wave(const float *host_open, const float *host_high,
 }
 
 ctStatus_t ct_cdl_hikkake(const float *host_open, const float *host_high,
-                           const float *host_low, const float *host_close,
-                           float *host_output, int size) {
+                          const float *host_low, const float *host_close,
+                          float *host_output, int size) {
   Hikkake ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
 ctStatus_t ct_cdl_hikkake_mod(const float *host_open, const float *host_high,
-                               const float *host_low, const float *host_close,
-                               float *host_output, int size) {
+                              const float *host_low, const float *host_close,
+                              float *host_output, int size) {
   HikkakeMod ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2304,6 +2307,42 @@ ctStatus_t ct_cdl_homing_pigeon(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
   HomingPigeon ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_identical_three_crows(const float *host_open,
+                                        const float *host_high,
+                                        const float *host_low,
+                                        const float *host_close,
+                                        float *host_output, int size) {
+  IdenticalThreeCrows ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_in_neck(const float *host_open, const float *host_high,
+                          const float *host_low, const float *host_close,
+                          float *host_output, int size) {
+  InNeck ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_kicking(const float *host_open, const float *host_high,
+                          const float *host_low, const float *host_close,
+                          float *host_output, int size) {
+  Kicking ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_kicking_by_length(const float *host_open,
+                                    const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close, float *host_output,
+                                    int size) {
+  KickingByLength ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }

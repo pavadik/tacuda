@@ -108,6 +108,10 @@ set(INDICATOR_SOURCES
     src/indicators/Hikkake.cu
     src/indicators/HikkakeMod.cu
     src/indicators/HomingPigeon.cu
+    src/indicators/IdenticalThreeCrows.cu
+    src/indicators/InNeck.cu
+    src/indicators/Kicking.cu
+    src/indicators/KickingByLength.cu
 )
 
 add_library(tacuda SHARED
