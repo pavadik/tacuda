@@ -88,6 +88,26 @@ public static class Native {
   public static extern int ct_stochrsi(float[] input, float[] kOut,
                                        float[] dOut, int size, int rsiPeriod,
                                        int kPeriod, int dPeriod);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_rocp(float[] input, float[] output, int size,
+                                   int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_rocr(float[] input, float[] output, int size,
+                                   int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_minindex(float[] input, float[] output, int size,
+                                       int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_minmax(float[] input, float[] minOut,
+                                     float[] maxOut, int size, int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_minmaxindex(float[] input, float[] minIdx,
+                                          float[] maxIdx, int size, int period);
 }
 
 public class Example {

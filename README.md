@@ -7,7 +7,7 @@ It provides a **stable C API**, **Python bindings** (pybind11), and a **C# bindi
 
 ## Features
 
- - ⚙️ **Indicators**: `SMA`, price transforms (`AVGPRICE`, `MEDPRICE`, `TYPPRICE`, `WCLPRICE`, `MIDPRICE`), oscillators like `MIDPOINT` and `MAXINDEX`, and advanced features such as `MACDFIX` and `HT_TRENDLINE` implemented; the framework is ready for `EMA`, `RSI`, `MACD`, `BBANDS`, `WMA`, `STDDEV`, `MIN/MAX`, etc.
+ - ⚙️ **Indicators**: `SMA`, price transforms (`AVGPRICE`, `MEDPRICE`, `TYPPRICE`, `WCLPRICE`, `MIDPRICE`), oscillators like `MIDPOINT`, `MAXINDEX` and `MININDEX`, range tools `MINMAX`/`MINMAXINDEX`, rate-of-change variants `ROC`, `ROCP`, `ROCR`, and advanced features such as `MACDFIX` and `HT_TRENDLINE` implemented; the framework is ready for `EMA`, `RSI`, `MACD`, `BBANDS`, `WMA`, `STDDEV`, `MIN/MAX`, etc.
  - 🕯️ **Candlestick patterns**: Doji, Hammer, Inverted Hammer, Bullish Engulfing, Bearish Engulfing, Three White Soldiers, Abandoned Baby, Advance Block, Belt Hold, Breakaway, Two Crows, Three Black Crows, Three Inside, Three Line Strike, Three Stars In South.
 - 🧩 **TA-style API**: procedural calls by indicator name with a unified dispatcher.
 - 🧱 **Stable C interface**: `extern "C"` functions (`tacuda_sma_host`, `tacuda_run_indicator_host_c`) with a fixed ABI.
