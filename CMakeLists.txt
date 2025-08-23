@@ -14,6 +14,8 @@ set(INDICATOR_SOURCES
     src/indicators/MACDFIX.cu
     src/indicators/Momentum.cu
     src/indicators/ROC.cu
+    src/indicators/ROCP.cu
+    src/indicators/ROCR.cu
     src/indicators/SMA.cu
     src/indicators/EMA.cu
     src/indicators/DEMA.cu
@@ -45,6 +47,9 @@ set(INDICATOR_SOURCES
     src/indicators/AroonOscillator.cu
     src/indicators/AvgPrice.cu
     src/indicators/MIN.cu
+    src/indicators/MININDEX.cu
+    src/indicators/MINMAX.cu
+    src/indicators/MINMAXINDEX.cu
     src/indicators/MIDPOINT.cu
     src/indicators/MIDPRICE.cu
     src/indicators/MedPrice.cu

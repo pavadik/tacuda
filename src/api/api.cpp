@@ -73,8 +73,12 @@
 #include <indicators/MACDEXT.h>
 #include <indicators/MAMA.h>
 #include <indicators/MAX.h>
+#include <indicators/MAXINDEX.h>
 #include <indicators/MFI.h>
 #include <indicators/MIN.h>
+#include <indicators/MININDEX.h>
+#include <indicators/MINMAX.h>
+#include <indicators/MINMAXINDEX.h>
 #include <indicators/Marubozu.h>
 #include <indicators/MatHold.h>
 #include <indicators/MatchingLow.h>
@@ -93,6 +97,8 @@
 #include <indicators/PlusDI.h>
 #include <indicators/PlusDM.h>
 #include <indicators/ROC.h>
+#include <indicators/ROCP.h>
+#include <indicators/ROCR.h>
 #include <indicators/RSI.h>
 #include <indicators/RickshawMan.h>
 #include <indicators/RiseFall3Methods.h>
@@ -296,6 +302,18 @@ ctStatus_t ct_roc(const float *host_input, float *host_output, int size,
   return run_indicator(roc, host_input, host_output, size);
 }
 
+ctStatus_t ct_rocp(const float *host_input, float *host_output, int size,
+                   int period) {
+  ROCP rocp(period);
+  return run_indicator(rocp, host_input, host_output, size);
+}
+
+ctStatus_t ct_rocr(const float *host_input, float *host_output, int size,
+                   int period) {
+  ROCR rocr(period);
+  return run_indicator(rocr, host_input, host_output, size);
+}
+
 ctStatus_t ct_ema(const float *host_input, float *host_output, int size,
                   int period) {
   EMA ema(period);
@@ -348,6 +366,36 @@ ctStatus_t ct_maxindex(const float *host_input, float *host_output, int size,
                        int period) {
   MAXINDEX mi(period);
   return run_indicator(mi, host_input, host_output, size);
+}
+
+ctStatus_t ct_minindex(const float *host_input, float *host_output, int size,
+                       int period) {
+  MININDEX mi(period);
+  return run_indicator(mi, host_input, host_output, size);
+}
+
+ctStatus_t ct_minmax(const float *host_input, float *host_min, float *host_max,
+                     int size, int period) {
+  MINMAX mm(period);
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_indicator(mm, host_input, tmp.data(), size, 2);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_min, tmp.data(), size * sizeof(float));
+  std::memcpy(host_max, tmp.data() + size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_minmaxindex(const float *host_input, float *host_minidx,
+                          float *host_maxidx, int size, int period) {
+  MINMAXINDEX mm(period);
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_indicator(mm, host_input, tmp.data(), size, 2);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_minidx, tmp.data(), size * sizeof(float));
+  std::memcpy(host_maxidx, tmp.data() + size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_stddev(const float *host_input, float *host_output, int size,

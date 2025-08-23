@@ -214,6 +214,43 @@ _lib.ct_maxindex.argtypes = [
     ctypes.c_int,
 ]
 _lib.ct_maxindex.restype = ctypes.c_int
+_lib.ct_minindex.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_minindex.restype = ctypes.c_int
+_lib.ct_minmax.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_minmax.restype = ctypes.c_int
+_lib.ct_minmaxindex.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_minmaxindex.restype = ctypes.c_int
+_lib.ct_rocp.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_rocp.restype = ctypes.c_int
+_lib.ct_rocr.argtypes = [
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.POINTER(ctypes.c_float),
+    ctypes.c_int,
+    ctypes.c_int,
+]
+_lib.ct_rocr.restype = ctypes.c_int
 _lib.ct_ht_trendline.argtypes = [
     ctypes.POINTER(ctypes.c_float),
     ctypes.POINTER(ctypes.c_float),
@@ -1970,6 +2007,75 @@ def maxindex(x, period):
     return out
 
 
+def minindex(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_minindex(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_minindex failed")
+    return out
+
+
+def minmax(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out_min = np.zeros_like(x)
+    out_max = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pmin = _as_float_ptr(out_min)
+    _, pmax = _as_float_ptr(out_max)
+    rc = _lib.ct_minmax(pin, pmin, pmax, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_minmax failed")
+    return out_min, out_max
+
+
+def minmaxindex(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out_min = np.zeros_like(x)
+    out_max = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pmin = _as_float_ptr(out_min)
+    _, pmax = _as_float_ptr(out_max)
+    rc = _lib.ct_minmaxindex(pin, pmin, pmax, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_minmaxindex failed")
+    return out_min, out_max
+
+
+def rocp(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_rocp(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_rocp failed")
+    return out
+
+
+def rocr(x, period):
+    import numpy as np
+
+    x = np.asarray(x, dtype=np.float32)
+    out = np.zeros_like(x)
+    _, pin = _as_float_ptr(x)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_rocr(pin, pout, x.size, int(period))
+    if rc != 0:
+        raise RuntimeError("ct_rocr failed")
+    return out
+
+
 def ht_trendline(x):
     import numpy as np
 
@@ -2122,6 +2228,11 @@ __all__ = [
     "midpoint",
     "midprice",
     "maxindex",
+    "minindex",
+    "minmax",
+    "minmaxindex",
+    "rocp",
+    "rocr",
     "ht_trendline",
     "macdfix",
     "wclprice",
