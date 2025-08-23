@@ -432,6 +432,31 @@ CTAPI_EXPORT ctStatus_t ct_cdl_short_line(const float *host_open,
                                           const float *host_low,
                                           const float *host_close,
                                           float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_spinning_top(const float *host_open,
+                                            const float *host_high,
+                                            const float *host_low,
+                                            const float *host_close,
+                                            float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_stalled_pattern(const float *host_open,
+                                               const float *host_high,
+                                               const float *host_low,
+                                               const float *host_close,
+                                               float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_stick_sandwich(const float *host_open,
+                                              const float *host_high,
+                                              const float *host_low,
+                                              const float *host_close,
+                                              float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_takuri(const float *host_open,
+                                      const float *host_high,
+                                      const float *host_low,
+                                      const float *host_close,
+                                      float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_tasuki_gap(const float *host_open,
+                                          const float *host_high,
+                                          const float *host_low,
+                                          const float *host_close,
+                                          float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cmo(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,

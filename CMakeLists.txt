@@ -127,6 +127,11 @@ set(INDICATOR_SOURCES
     src/indicators/SeparatingLines.cu
     src/indicators/ShootingStar.cu
     src/indicators/ShortLine.cu
+    src/indicators/SpinningTop.cu
+    src/indicators/StalledPattern.cu
+    src/indicators/StickSandwich.cu
+    src/indicators/Takuri.cu
+    src/indicators/TasukiGap.cu
 )
 
 add_library(tacuda SHARED

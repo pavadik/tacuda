@@ -103,6 +103,11 @@
 #include <indicators/SeparatingLines.h>
 #include <indicators/ShootingStar.h>
 #include <indicators/ShortLine.h>
+#include <indicators/SpinningTop.h>
+#include <indicators/StalledPattern.h>
+#include <indicators/StickSandwich.h>
+#include <indicators/Takuri.h>
+#include <indicators/TasukiGap.h>
 #include <indicators/StdDev.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
@@ -2486,6 +2491,46 @@ ctStatus_t ct_cdl_short_line(const float *host_open, const float *host_high,
                              const float *host_low, const float *host_close,
                              float *host_output, int size) {
   ShortLine ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_spinning_top(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  SpinningTop ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_stalled_pattern(const float *host_open, const float *host_high,
+                                  const float *host_low, const float *host_close,
+                                  float *host_output, int size) {
+  StalledPattern ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_stick_sandwich(const float *host_open, const float *host_high,
+                                 const float *host_low, const float *host_close,
+                                 float *host_output, int size) {
+  StickSandwich ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_takuri(const float *host_open, const float *host_high,
+                         const float *host_low, const float *host_close,
+                         float *host_output, int size) {
+  Takuri ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_tasuki_gap(const float *host_open, const float *host_high,
+                             const float *host_low, const float *host_close,
+                             float *host_output, int size) {
+  TasukiGap ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
