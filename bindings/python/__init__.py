@@ -231,6 +231,26 @@ _lib.ct_cdl_harami.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ct
                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_harami.restype  = ctypes.c_int
+_lib.ct_cdl_harami_cross.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_harami_cross.restype  = ctypes.c_int
+_lib.ct_cdl_high_wave.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_high_wave.restype  = ctypes.c_int
+_lib.ct_cdl_hikkake.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_hikkake.restype  = ctypes.c_int
+_lib.ct_cdl_hikkake_mod.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                    ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                    ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_hikkake_mod.restype  = ctypes.c_int
+_lib.ct_cdl_homing_pigeon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_homing_pigeon.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -884,6 +904,101 @@ def cdl_harami(open, high, low, close):
     rc = _lib.ct_cdl_harami(po, ph, pl, pc, pout, open.size)
     if rc != 0:
         raise RuntimeError("ct_cdl_harami failed")
+    return out
+
+def cdl_harami_cross(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_harami_cross(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_harami_cross failed")
+    return out
+
+def cdl_high_wave(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_high_wave(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_high_wave failed")
+    return out
+
+def cdl_hikkake(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_hikkake(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_hikkake failed")
+    return out
+
+def cdl_hikkake_mod(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_hikkake_mod(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_hikkake_mod failed")
+    return out
+
+def cdl_homing_pigeon(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_homing_pigeon(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_homing_pigeon failed")
     return out
 
 def trange(high, low, close):

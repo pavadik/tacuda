@@ -41,6 +41,11 @@
 #include <indicators/EMA.h>
 #include <indicators/HangingMan.h>
 #include <indicators/Harami.h>
+#include <indicators/HaramiCross.h>
+#include <indicators/HighWave.h>
+#include <indicators/Hikkake.h>
+#include <indicators/HikkakeMod.h>
+#include <indicators/HomingPigeon.h>
 #include <indicators/Engulfing.h>
 #include <indicators/EveningDojiStar.h>
 #include <indicators/EveningStar.h>
@@ -2259,6 +2264,46 @@ ctStatus_t ct_cdl_harami(const float *host_open, const float *host_high,
                          const float *host_low, const float *host_close,
                          float *host_output, int size) {
   Harami ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_harami_cross(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  HaramiCross ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_high_wave(const float *host_open, const float *host_high,
+                            const float *host_low, const float *host_close,
+                            float *host_output, int size) {
+  HighWave ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_hikkake(const float *host_open, const float *host_high,
+                           const float *host_low, const float *host_close,
+                           float *host_output, int size) {
+  Hikkake ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_hikkake_mod(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  HikkakeMod ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_homing_pigeon(const float *host_open, const float *host_high,
+                                const float *host_low, const float *host_close,
+                                float *host_output, int size) {
+  HomingPigeon ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
