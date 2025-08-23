@@ -112,6 +112,11 @@ set(INDICATOR_SOURCES
     src/indicators/InNeck.cu
     src/indicators/Kicking.cu
     src/indicators/KickingByLength.cu
+    src/indicators/LadderBottom.cu
+    src/indicators/LongLeggedDoji.cu
+    src/indicators/LongLine.cu
+    src/indicators/Marubozu.cu
+    src/indicators/MatchingLow.cu
 )
 
 add_library(tacuda SHARED

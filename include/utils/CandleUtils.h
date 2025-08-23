@@ -353,6 +353,47 @@ __host__ __device__ inline bool is_marubozu(float open, float high, float low,
          lower_shadow(low, open, close) <= 1e-6f;
 }
 
+__host__ __device__ inline bool is_matching_low(float o1, float h1, float l1,
+                                               float c1, float o2, float h2,
+                                               float l2, float c2) {
+  return c1 < o1 && c2 < o2 && fabsf(c2 - c1) <= 1e-6f;
+}
+
+__host__ __device__ inline bool is_ladder_bottom(float o1, float h1, float l1,
+                                                 float c1, float o2, float h2,
+                                                 float l2, float c2, float o3,
+                                                 float h3, float l3, float c3,
+                                                 float o4, float h4, float l4,
+                                                 float c4, float o5, float h5,
+                                                 float l5, float c5) {
+  return c1 < o1 && c2 < o2 && c3 < o3 && c1 > c2 && c2 > c3 && c4 < o4 &&
+         c4 > c3 && c5 > o5 && c5 > o4 && c5 > c4;
+}
+
+__host__ __device__ inline bool is_long_legged_doji(float open, float high,
+                                                   float low, float close) {
+  if (!is_doji(open, high, low, close))
+    return false;
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return upper >= range * 0.4f && lower >= range * 0.4f;
+}
+
+__host__ __device__ inline bool is_long_line(float open, float high, float low,
+                                            float close) {
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float body = real_body(open, close);
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return body >= range * 0.7f && upper <= range * 0.15f &&
+         lower <= range * 0.15f;
+}
+
 __host__ __device__ inline bool is_kicking(float o1, float h1, float l1,
                                            float c1, float o2, float h2,
                                            float l2, float c2) {
