@@ -157,7 +157,8 @@ struct CudaDeleter {
 using DeviceBuffer = std::unique_ptr<float, CudaDeleter>;
 
 static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
-                                int size, int outMultiple = 1) {
+                                int size, int outMultiple = 1,
+                                cudaStream_t stream = 0) {
   DeviceBuffer d_in{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -173,22 +174,28 @@ static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
   }
   d_out.reset(tmp);
 
-  err = cudaMemcpy(d_in.get(), h_in, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpyAsync(d_in.get(), h_in, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }
 
   try {
-    ind.calculate(d_in.get(), d_out.get(), size);
+    ind.calculate(d_in.get(), d_out.get(), size, stream);
   } catch (...) {
     return CT_STATUS_KERNEL_FAILED;
   }
 
-  err = cudaMemcpy(h_out, d_out.get(), size * outMultiple * sizeof(float),
-                   cudaMemcpyDeviceToHost);
+  err = cudaMemcpyAsync(h_out, d_out.get(),
+                        size * outMultiple * sizeof(float),
+                        cudaMemcpyDeviceToHost, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaStreamSynchronize(stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_KERNEL_FAILED;
   }
 
   return CT_STATUS_SUCCESS;
@@ -198,7 +205,7 @@ template <typename T>
 static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
                                      const float *h_high, const float *h_low,
                                      const float *h_close, float *h_out,
-                                     int size) {
+                                     int size, cudaStream_t stream = 0) {
   DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr},
       d_close{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -233,38 +240,43 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
   }
   d_out.reset(tmp);
 
-  err = cudaMemcpy(d_open.get(), h_open, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpyAsync(d_open.get(), h_open, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }
-  err = cudaMemcpy(d_high.get(), h_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpyAsync(d_high.get(), h_high, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }
-  err = cudaMemcpy(d_low.get(), h_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpyAsync(d_low.get(), h_low, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }
-  err = cudaMemcpy(d_close.get(), h_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
+  err = cudaMemcpyAsync(d_close.get(), h_close, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
   }
 
   try {
     ind.calculate(d_open.get(), d_high.get(), d_low.get(), d_close.get(),
-                  d_out.get(), size);
+                  d_out.get(), size, stream);
   } catch (...) {
     return CT_STATUS_KERNEL_FAILED;
   }
 
-  err = cudaMemcpy(h_out, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
+  err = cudaMemcpyAsync(h_out, d_out.get(), size * sizeof(float),
+                        cudaMemcpyDeviceToHost, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaStreamSynchronize(stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_KERNEL_FAILED;
   }
 
   return CT_STATUS_SUCCESS;
