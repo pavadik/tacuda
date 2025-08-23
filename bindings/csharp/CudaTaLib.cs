@@ -73,6 +73,14 @@ public static class Native {
                                      float[] output, int size);
 
   [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_wclprice(float[] high, float[] low, float[] close,
+                                       float[] output, int size);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_willr(float[] high, float[] low, float[] close,
+                                    float[] output, int size, int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
   public static extern int ct_sum(float[] input, float[] output, int size,
                                   int period);
 
@@ -96,6 +104,10 @@ public static class Native {
   [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
   public static extern int ct_rocr(float[] input, float[] output, int size,
                                    int period);
+
+  [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
+  public static extern int ct_rocr100(float[] input, float[] output, int size,
+                                      int period);
 
   [DllImport(LIB, CallingConvention = CallingConvention.Cdecl)]
   public static extern int ct_minindex(float[] input, float[] output, int size,

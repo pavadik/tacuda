@@ -43,6 +43,8 @@ CTAPI_EXPORT ctStatus_t ct_rocp(const float *host_input, float *host_output,
                                 int size, int period);
 CTAPI_EXPORT ctStatus_t ct_rocr(const float *host_input, float *host_output,
                                 int size, int period);
+CTAPI_EXPORT ctStatus_t ct_rocr100(const float *host_input, float *host_output,
+                                   int size, int period);
 CTAPI_EXPORT ctStatus_t ct_ema(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_dema(const float *host_input, float *host_output,
@@ -197,6 +199,9 @@ CTAPI_EXPORT ctStatus_t ct_wclprice(const float *host_high,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size);
+CTAPI_EXPORT ctStatus_t ct_willr(const float *host_high, const float *host_low,
+                                 const float *host_close, float *host_output,
+                                 int size, int period);
 CTAPI_EXPORT ctStatus_t ct_midpoint(const float *host_input, float *host_output,
                                     int size, int period);
 CTAPI_EXPORT ctStatus_t ct_midprice(const float *host_high,

@@ -1,13 +1,23 @@
-# tacuda — CUDA-accelerated technical analysis indicators (TA-style)
+#tacuda — CUDA - accelerated technical analysis indicators(TA - style)
 
-A high-performance library of technical indicators “in the spirit of TA-Lib”, executed on **NVIDIA CUDA GPUs**.  
-It provides a **stable C API**, **Python bindings** (pybind11), and a **C# binding** (DllImport). Indicators are pluggable via a registry.
+A high - performance library of technical indicators “in the spirit of TA -
+    Lib”,
+    executed on **NVIDIA CUDA GPUs **.It provides a **stable C API **,
+    **Python bindings **(pybind11),
+    and a **C #binding **(DllImport).Indicators are pluggable via a registry.
 
----
+        -- -
 
-## Features
+        ##Features
 
- - ⚙️ **Indicators**: `SMA`, price transforms (`AVGPRICE`, `MEDPRICE`, `TYPPRICE`, `WCLPRICE`, `MIDPRICE`), oscillators like `MIDPOINT`, `MAXINDEX` and `MININDEX`, range tools `MINMAX`/`MINMAXINDEX`, rate-of-change variants `ROC`, `ROCP`, `ROCR`, and advanced features such as `MACDFIX` and `HT_TRENDLINE` implemented; the framework is ready for `EMA`, `RSI`, `MACD`, `BBANDS`, `WMA`, `STDDEV`, `MIN/MAX`, etc.
+        - ⚙️ **Indicators ** : `SMA`,
+    price
+    transforms(`AVGPRICE`, `MEDPRICE`, `TYPPRICE`, `WCLPRICE`, `MIDPRICE`),
+    oscillators like `MIDPOINT`, `MAXINDEX` and `MININDEX`,
+    range tools `MINMAX`/`MINMAXINDEX`,
+    rate - of - change variants `ROC`, `ROCP`, `ROCR`, `ROCR100`,
+    and momentum oscillators such as `WILLR`,
+    alongside advanced features like `MACDFIX` and `HT_TRENDLINE`; the framework is ready for `EMA`, `RSI`, `MACD`, `BBANDS`, `WMA`, `STDDEV`, `MIN/MAX`, etc.
  - 🕯️ **Candlestick patterns**: Doji, Hammer, Inverted Hammer, Bullish Engulfing, Bearish Engulfing, Three White Soldiers, Abandoned Baby, Advance Block, Belt Hold, Breakaway, Two Crows, Three Black Crows, Three Inside, Three Line Strike, Three Stars In South.
 - 🧩 **TA-style API**: procedural calls by indicator name with a unified dispatcher.
 - 🧱 **Stable C interface**: `extern "C"` functions (`tacuda_sma_host`, `tacuda_run_indicator_host_c`) with a fixed ABI.
@@ -77,10 +87,10 @@ Build the native library (see A), then:
 ```bash
 dotnet build bindings/csharp/ConsoleExample -c Release
 
-# Ensure the native library is discoverable by the process:
-#  - Windows: place tacuda.dll next to the .exe or add its folder to PATH
-#  - Linux:   place libtacuda.so next to the binary or add to LD_LIBRARY_PATH
-#  - macOS:   place libtacuda.dylib next to the binary or add to DYLD_LIBRARY_PATH
+#Ensure the native library is discoverable by the process:
+#- Windows : place tacuda.dll next to the.exe or add its folder to PATH
+#- Linux : place libtacuda.so next to the binary or add to LD_LIBRARY_PATH
+#- macOS : place libtacuda.dylib next to the binary or add to DYLD_LIBRARY_PATH
 
 dotnet run --project bindings/csharp/ConsoleExample
 ```
@@ -92,53 +102,58 @@ dotnet run --project bindings/csharp/ConsoleExample
 ### C++ (host helper)
 
 ```cpp
-#include <vector>
 #include "tacuda/api.h"
 #include "tacuda/indicators/sma.h"
+#include <vector>
 
 int main() {
-    std::vector<float> in = {1,2,3,4,5,6,7,8,9,10}, out;
-    tacuda::SMAParams p{5};
-    auto st = tacuda::run_indicator_host("SMA", in, out, p);
-    return st == tacuda::Status::OK ? 0 : 1;
+  std::vector<float> in = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, out;
+  tacuda::SMAParams p{5};
+  auto st = tacuda::run_indicator_host("SMA", in, out, p);
+  return st == tacuda::Status::OK ? 0 : 1;
 }
 ```
 
-### C API
+    ## #C API
 
 ```c
-#include <stdio.h>
 #include "tacuda/c_api.h"
+#include <stdio.h>
 
-int main() {
-    float in[10]; for (int i=0;i<10;i++) in[i]=(float)(i+1);
-    float out[10];
-    int rc = tacuda_sma_host(in, 10, 5, out);
-    if (rc!=0) { printf("Error: %s\n", tacuda_status_str(rc)); return 1; }
-    for (int i=0;i<10;i++) printf("%g\n", out[i]);
-    return 0;
+    int
+    main() {
+  float in[10];
+  for (int i = 0; i < 10; i++)
+    in[i] = (float)(i + 1);
+  float out[10];
+  int rc = tacuda_sma_host(in, 10, 5, out);
+  if (rc != 0) {
+    printf("Error: %s\n", tacuda_status_str(rc));
+    return 1;
+  }
+  for (int i = 0; i < 10; i++)
+    printf("%g\n", out[i]);
+  return 0;
 }
 ```
 
-### Python
+    ## #Python
 
-```python
-import numpy as np, tacuda
-x = np.arange(1, 11, dtype=np.float32)
-print(tacuda.sma(x, window=5))
+```python import numpy as np,
+    tacuda x = np.arange(1, 11, dtype = np.float32)
+                   print(tacuda.sma(x, window = 5))
 # or via the generic dispatcher:
-print(tacuda.run("SMA", x, window=3))
+                       print(tacuda.run("SMA", x, window = 3))
 ```
 
-### C# (.NET)
+               ## #C #(.NET)
 
-```csharp
-using System;
+```csharp using System;
 using TacudaNet;
 
 class Demo {
   static void Main() {
-    var x = new float[] {1,2,3,4,5,6,7,8,9,10};
+    var x = new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     Console.WriteLine(string.Join(", ", Tacuda.SMA(x, 5)));
     var y = Tacuda.Run("SMA", x, new SMAParams(3));
     Console.WriteLine(string.Join(", ", y));
@@ -146,11 +161,14 @@ class Demo {
 }
 ```
 
----
+    -- -
 
-## Architecture (brief)
+    ##Architecture(brief)
 
-- **Registry**: thread-safe, lazy map from indicator name to `{function pointer, params_size}`.
+    - **Registry ** : thread - safe,
+    lazy map from indicator name to `{
+  function pointer, params_size
+}`.
 - **IndicatorFn**: unified kernel signature  
   `Status (*)(const float* d_in, float* d_out, int n, const void* params_blob, cudaStream_t stream)`.
 - **DeviceBuffer<T>**: RAII for `cudaMalloc/cudaFree` plus async `copy_from_host/copy_to_host`.
@@ -195,7 +213,8 @@ import time, numpy as np, tacuda
 def bench(f, *args, repeats=5):
     xs=[]
     for _ in range(repeats):
-        t0=time.perf_counter(); f(*args); xs.append(time.perf_counter()-t0)
+        t0=time.perf_counter();
+f(*args); xs.append(time.perf_counter()-t0)
     return np.median(xs)
 
 def cpu_sma(x, w):
@@ -237,20 +256,28 @@ if __name__=="__main__":
 
 ## Roadmap
 
-- **0.1**: `EMA`, `RSI`, `MACD`, `BBANDS`; benchmark suite; SMA kernel with prefix-scan optimization.
-- **0.2**: OHLCV interfaces, batched execution, cuDF interop.
-- **0.3**: Windows artifacts, NuGet package.
-- **1.0**: frozen C ABI, PyPI/Conda packages.
+- **0.1**: `EMA`, `RSI`, `MACD`, `BBANDS`;
+benchmark suite;
+SMA kernel with prefix - scan optimization.- **0.2 * * : OHLCV interfaces,
+    batched execution, cuDF interop.- **0.3 * * : Windows artifacts,
+    NuGet package.- **1.0 * * : frozen C ABI,
+    PyPI / Conda packages.
 
----
+                -- -
 
-## License
+                ##License
 
-**Apache-2.0** (see `LICENSE`).
+                    **Apache -
+            2.0 *
+                *(see `LICENSE`)
+                     .
 
----
+                 -- -
 
-## Disclaimer
+                 ##Disclaimer
 
-This project is **not affiliated** with TA-Lib or any other trademark.  
-“TA-style API” refers to surface-level interface similarity only.
+                 This project is * *
+                not affiliated * *with TA
+            - Lib
+        or any other trademark.  
+“TA - style API” refers to surface - level interface similarity only.
