@@ -318,8 +318,8 @@ def my_indicator(data, period=10, factor=1.0):
 - [x] Comprehensive test suite
 
 ### Version 0.2 *(Next)*
-- [ ] **EMA**, **RSI**, **MACD**, **Bollinger Bands**
-- [ ] Optimized SMA with prefix-scan
+- [x] **EMA**, **RSI**, **MACD**, **Bollinger Bands**, **200+ indicators**
+- [x] Optimized SMA with prefix-scan
 - [ ] OHLCV data structure support
 - [ ] Batched execution API
 
@@ -409,6 +409,6 @@ This project is independent and not affiliated with TA-Lib or any other trademar
 
 **[⭐ Star this repo](https://github.com/pavadik/tacuda)** if you find TACUDA useful!
 
-**Made with ❤️ by the Pavel Dikalov**
+**Made with ❤️ by Pavel Dikalov**
 
 </div>
