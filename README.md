@@ -102,7 +102,8 @@ int main() {
 
 ## Benchmarks
 
-See `benchmarks/` for CPU vs GPU comparisons. Recommended practice:
+See `benchmarks/` for CPU vs GPU comparisons (`bench_sma.py`, `bench_wma.py`,
+`bench_momentum.py`, `bench_macd_line.py`). Recommended practice:
 
 - Report the median of multiple runs; show warm vs hot timings.
 - Pin the environment (GPU model, driver, CUDA version).
