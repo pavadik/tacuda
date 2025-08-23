@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdexcept>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 
 __global__ void stochRsiKernel(const float *__restrict__ input,
                                float *__restrict__ rsi,
@@ -68,12 +69,11 @@ void StochRSI::calculate(const float *input, float *output,
       size <= rsiPeriod + kPeriod + dPeriod - 2) {
     throw std::invalid_argument("StochRSI: invalid parameters");
   }
-  float *rsi = nullptr;
-  CUDA_CHECK(cudaMalloc(&rsi, size * sizeof(float)));
+  float *rsi = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
   float *kOut = output;
   float *dOut = output + size;
   stochRsiKernel<<<1, 1, 0, stream>>>(input, rsi, kOut, dOut, rsiPeriod, kPeriod, dPeriod,
                            size);
   CUDA_CHECK(cudaGetLastError());
-  cudaFree(rsi);
+  DeviceBufferPool::instance().release(rsi);
 }

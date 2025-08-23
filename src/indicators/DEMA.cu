@@ -1,6 +1,7 @@
 #include <indicators/DEMA.h>
 #include <indicators/EMA.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 
 __global__ void demaKernel(const float* __restrict__ ema1,
@@ -23,10 +24,8 @@ void DEMA::calculate(const float* input, float* output, int size, cudaStream_t s
 
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-    float* ema1 = nullptr;
-    float* ema2 = nullptr;
-    CUDA_CHECK(cudaMalloc(&ema1, size * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&ema2, size * sizeof(float)));
+    float* ema1 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float* ema2 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
     EMA ema(period);
     ema.calculate(input, ema1, size, stream);
@@ -39,6 +38,6 @@ void DEMA::calculate(const float* input, float* output, int size, cudaStream_t s
     demaKernel<<<grid, block, 0, stream>>>(ema1, ema2, output, period, valid);
     CUDA_CHECK(cudaGetLastError());
 
-    cudaFree(ema1);
-    cudaFree(ema2);
+    DeviceBufferPool::instance().release(ema1);
+    DeviceBufferPool::instance().release(ema2);
 }

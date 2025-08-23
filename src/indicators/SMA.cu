@@ -1,5 +1,6 @@
 #include <indicators/SMA.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 #include <thrust/device_ptr.h>
 #include <thrust/scan.h>
@@ -26,8 +27,7 @@ void SMA::calculate(const float* input, float* output, int size, cudaStream_t st
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
     // Compute prefix sums of the input using Thrust.
-    float* prefix = nullptr;
-    CUDA_CHECK(cudaMalloc(&prefix, size * sizeof(float)));
+    float* prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
     thrust::device_ptr<const float> inPtr(input);
     thrust::device_ptr<float> prePtr(prefix);
     thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
@@ -37,5 +37,5 @@ void SMA::calculate(const float* input, float* output, int size, cudaStream_t st
     smaKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
     CUDA_CHECK(cudaGetLastError());
 
-    CUDA_CHECK(cudaFree(prefix));
+    DeviceBufferPool::instance().release(prefix);
 }

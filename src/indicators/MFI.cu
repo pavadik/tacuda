@@ -1,5 +1,6 @@
 #include <indicators/MFI.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 
 __global__ void mfiKernel(const float* __restrict__ high,
@@ -57,11 +58,10 @@ void MFI::calculate(const float* high, const float* low, const float* close,
         throw std::invalid_argument("MFI: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
-    float* signedMF = nullptr;
-    CUDA_CHECK(cudaMalloc(&signedMF, size * sizeof(float)));
+    float* signedMF = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
     mfiKernel<<<1, 1, 0, stream>>>(high, low, close, volume, signedMF, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaFree(signedMF));
+    DeviceBufferPool::instance().release(signedMF);
 }
 
 void MFI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

@@ -1,5 +1,6 @@
 #include <indicators/BBANDS.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 #include <thrust/device_ptr.h>
 #include <thrust/scan.h>
@@ -48,10 +49,9 @@ void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t
     // Initialize outputs with NaNs so unwritten tail retains NaN semantics
     CUDA_CHECK(cudaMemset(output, 0xFF, 3 * size * sizeof(float)));
 
-    float *prefix = nullptr, *prefixSq = nullptr, *squared = nullptr;
-    CUDA_CHECK(cudaMalloc(&prefix, size * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&squared, size * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&prefixSq, size * sizeof(float)));
+    float *prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float *squared = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float *prefixSq = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
@@ -73,8 +73,8 @@ void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t
                                   period, size, upperMultiplier, lowerMultiplier);
     CUDA_CHECK(cudaGetLastError());
 
-    CUDA_CHECK(cudaFree(prefix));
-    CUDA_CHECK(cudaFree(squared));
-    CUDA_CHECK(cudaFree(prefixSq));
+    DeviceBufferPool::instance().release(prefix);
+    DeviceBufferPool::instance().release(squared);
+    DeviceBufferPool::instance().release(prefixSq);
 }
 

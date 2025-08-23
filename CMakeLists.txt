@@ -155,6 +155,7 @@ set(INDICATOR_SOURCES
 add_library(tacuda SHARED
     ${INDICATOR_SOURCES}
     src/api/api.cpp
+    src/utils/DeviceBufferPool.cu
 )
 
 target_include_directories(tacuda
