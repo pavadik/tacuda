@@ -25,14 +25,13 @@ __global__ void tsfKernel(const float* __restrict__ in,
 
 TSF::TSF(int period) : period(period) {}
 
-void TSF::calculate(const float* input, float* output, int size) noexcept(false) {
+void TSF::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("TSF: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    tsfKernel<<<grid, block>>>(input, output, period, size);
+    tsfKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

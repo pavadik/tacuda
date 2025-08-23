@@ -35,7 +35,7 @@ static void run_ht_phasor_python(const std::vector<float>& in, std::vector<float
     pclose(pipe);
 }
 
-void HT_PHASOR::calculate(const float* input, float* output, int size) noexcept(false) {
+void HT_PHASOR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     std::vector<float> h_in(size), inphase(size, std::numeric_limits<float>::quiet_NaN()), quadrature(size, std::numeric_limits<float>::quiet_NaN());
     CUDA_CHECK(cudaMemcpy(h_in.data(), input, size*sizeof(float), cudaMemcpyDeviceToHost));
     run_ht_phasor_python(h_in, inphase, quadrature);

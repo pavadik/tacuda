@@ -42,7 +42,7 @@ __global__ void macdKernel(const float* __restrict__ input,
 MACD::MACD(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void MACD::calculate(const float* input, float* output, int size) noexcept(false) {
+void MACD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }
@@ -56,7 +56,6 @@ void MACD::calculate(const float* input, float* output, int size) noexcept(false
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    macdKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, size);
+    macdKernel<<<grid, block, 0, stream>>>(input, output, fastPeriod, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

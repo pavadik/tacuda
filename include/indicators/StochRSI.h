@@ -7,7 +7,7 @@ class StochRSI : public Indicator {
 public:
   StochRSI(int rsiPeriod, int kPeriod, int dPeriod);
   void calculate(const float *input, float *output,
-                 int size) noexcept(false) override;
+                 int size, cudaStream_t stream = 0) noexcept(false) override;
 
 private:
   int rsiPeriod;

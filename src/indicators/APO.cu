@@ -32,7 +32,7 @@ __global__ void apoKernel(const float* __restrict__ input,
 APO::APO(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void APO::calculate(const float* input, float* output, int size) noexcept(false) {
+void APO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("APO: invalid periods");
     }
@@ -42,7 +42,6 @@ void APO::calculate(const float* input, float* output, int size) noexcept(false)
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    apoKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, size);
+    apoKernel<<<grid, block, 0, stream>>>(input, output, fastPeriod, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

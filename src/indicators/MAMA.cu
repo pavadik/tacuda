@@ -25,14 +25,13 @@ __global__ void mamaKernel(const float* __restrict__ input,
 MAMA::MAMA(float fastLimit, float slowLimit)
     : fastLimit(fastLimit), slowLimit(slowLimit) {}
 
-void MAMA::calculate(const float* input, float* output, int size) noexcept(false) {
+void MAMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("MAMA: invalid size");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
     float* mama = output;
     float* fama = output + size;
-    mamaKernel<<<1,1>>>(input, mama, fama, fastLimit, slowLimit, size);
+    mamaKernel<<<1, 1, 0, stream>>>(input, mama, fama, fastLimit, slowLimit, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

@@ -16,7 +16,7 @@ __global__ void trixKernel(const float* __restrict__ ema3,
 
 TRIX::TRIX(int period) : period(period) {}
 
-void TRIX::calculate(const float* input, float* output, int size) noexcept(false) {
+void TRIX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || size < 3 * period - 1) {
         throw std::invalid_argument("TRIX: invalid period");
     }
@@ -31,7 +31,7 @@ void TRIX::calculate(const float* input, float* output, int size) noexcept(false
     CUDA_CHECK(cudaMalloc(&ema3, size * sizeof(float)));
 
     EMA ema(period);
-    ema.calculate(input, ema1, size);
+    ema.calculate(input, ema1, size, stream);
     int size2 = size - period + 1;
     ema.calculate(ema1, ema2, size2);
     int size3 = size2 - period + 1;
@@ -40,9 +40,8 @@ void TRIX::calculate(const float* input, float* output, int size) noexcept(false
     int valid = size3 - 1;
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(valid);
-    trixKernel<<<grid, block>>>(ema3, output, valid);
+    trixKernel<<<grid, block, 0, stream>>>(ema3, output, valid);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     cudaFree(ema1);
     cudaFree(ema2);

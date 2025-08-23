@@ -26,18 +26,17 @@ __global__ void obvKernel(const float* __restrict__ price,
 }
 
 void OBV::calculate(const float* price, const float* volume,
-                    float* output, int size) noexcept(false) {
+                    float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("OBV: invalid size");
     }
-    obvKernel<<<1,1>>>(price, volume, output, size);
+    obvKernel<<<1, 1, 0, stream>>>(price, volume, output, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void OBV::calculate(const float* input, float* output, int size) noexcept(false) {
+void OBV::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* price = input;
     const float* volume = input + size;
-    calculate(price, volume, output, size);
+    calculate(price, volume, output, size, stream);
 }
 

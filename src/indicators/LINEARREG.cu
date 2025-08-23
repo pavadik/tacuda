@@ -25,15 +25,14 @@ __global__ void linearregKernel(const float* __restrict__ in,
 
 LINEARREG::LINEARREG(int period) : period(period) {}
 
-void LINEARREG::calculate(const float* input, float* output, int size) noexcept(false) {
+void LINEARREG::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    linearregKernel<<<grid, block>>>(input, output, period, size);
+    linearregKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 

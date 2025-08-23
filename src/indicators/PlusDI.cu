@@ -39,20 +39,19 @@ __global__ void plusDIKernel(const float *__restrict__ high,
 PlusDI::PlusDI(int period) : period(period) {}
 
 void PlusDI::calculate(const float *high, const float *low, const float *close,
-                       float *output, int size) noexcept(false) {
+                       float *output, int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("PlusDI: invalid period");
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
-  plusDIKernel<<<1, 1>>>(high, low, close, output, period, size);
+  plusDIKernel<<<1, 1, 0, stream>>>(high, low, close, output, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 void PlusDI::calculate(const float *input, float *output,
-                       int size) noexcept(false) {
+                       int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;
   const float *close = input + 2 * size;
-  calculate(high, low, close, output, size);
+  calculate(high, low, close, output, size, stream);
 }

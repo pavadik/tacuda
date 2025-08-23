@@ -5,19 +5,19 @@
 
 MA::MA(int period, MAType type) : period(period), type(type) {}
 
-void MA::calculate(const float* input, float* output, int size) noexcept(false) {
+void MA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MA: invalid period");
     }
     switch (type) {
     case MAType::SMA: {
         SMA sma(period);
-        sma.calculate(input, output, size);
+        sma.calculate(input, output, size, stream);
         break;
     }
     case MAType::EMA: {
         EMA ema(period);
-        ema.calculate(input, output, size);
+        ema.calculate(input, output, size, stream);
         break;
     }
     default:

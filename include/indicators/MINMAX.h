@@ -7,7 +7,7 @@ class MINMAX : public Indicator {
 public:
   explicit MINMAX(int period);
   void calculate(const float *input, float *output,
-                 int size) noexcept(false) override;
+                 int size, cudaStream_t stream = 0) noexcept(false) override;
 
 private:
   int period;

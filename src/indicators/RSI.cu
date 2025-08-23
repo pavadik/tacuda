@@ -34,7 +34,7 @@ __global__ void rsiKernel(const float* __restrict__ input,
 
 RSI::RSI(int period) : period(period) {}
 
-void RSI::calculate(const float* input, float* output, int size) noexcept(false) {
+void RSI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("RSI: invalid period");
     }
@@ -42,7 +42,6 @@ void RSI::calculate(const float* input, float* output, int size) noexcept(false)
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    rsiKernel<<<grid, block>>>(input, output, period, size);
+    rsiKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

@@ -17,14 +17,13 @@ __global__ void maxKernel(const float* __restrict__ input,
 
 MAX::MAX(int period) : period(period) {}
 
-void MAX::calculate(const float* input, float* output, int size) noexcept(false) {
+void MAX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MAX: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    maxKernel<<<grid, block>>>(input, output, period, size);
+    maxKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

@@ -7,7 +7,7 @@ class PPO : public Indicator {
 public:
   PPO(int fastPeriod, int slowPeriod);
   void calculate(const float *input, float *output,
-                 int size) noexcept(false) override;
+                 int size, cudaStream_t stream = 0) noexcept(false) override;
 
 private:
   int fastPeriod;

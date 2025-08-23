@@ -14,21 +14,20 @@ __global__ void wclPriceKernel(const float *__restrict__ high,
 
 void WclPrice::calculate(const float *high, const float *low,
                          const float *close, float *output,
-                         int size) noexcept(false) {
+                         int size, cudaStream_t stream) noexcept(false) {
   if (size <= 0) {
     throw std::invalid_argument("WclPrice: invalid size");
   }
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  wclPriceKernel<<<grid, block>>>(high, low, close, output, size);
+  wclPriceKernel<<<grid, block, 0, stream>>>(high, low, close, output, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 void WclPrice::calculate(const float *input, float *output,
-                         int size) noexcept(false) {
+                         int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;
   const float *close = input + 2 * size;
-  calculate(high, low, close, output, size);
+  calculate(high, low, close, output, size, stream);
 }

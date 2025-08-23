@@ -24,14 +24,13 @@ __global__ void minIndexKernel(const float *__restrict__ input,
 MININDEX::MININDEX(int period) : period(period) {}
 
 void MININDEX::calculate(const float *input, float *output,
-                         int size) noexcept(false) {
+                         int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MININDEX: invalid period");
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  minIndexKernel<<<grid, block>>>(input, output, period, size);
+  minIndexKernel<<<grid, block, 0, stream>>>(input, output, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }

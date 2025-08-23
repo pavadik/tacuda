@@ -6,7 +6,7 @@
 TRIMA::TRIMA(int period) : period(period) {}
 
 void TRIMA::calculate(const float *input, float *output,
-                      int size) noexcept(false) {
+                      int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || size < period) {
     throw std::invalid_argument("TRIMA: invalid period");
   }
@@ -18,7 +18,7 @@ void TRIMA::calculate(const float *input, float *output,
   CUDA_CHECK(cudaMalloc(&tmp, size * sizeof(float)));
 
   SMA sma1(p1);
-  sma1.calculate(input, tmp, size);
+  sma1.calculate(input, tmp, size, stream);
   int size2 = size - p1 + 1;
   SMA sma2(p2);
   sma2.calculate(tmp, output, size2);

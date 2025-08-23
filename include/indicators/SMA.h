@@ -6,7 +6,7 @@
 class SMA : public Indicator {
 public:
     explicit SMA(int period);
-    void calculate(const float* input, float* output, int size) noexcept(false) override;
+    void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 private:
     int period;
 };

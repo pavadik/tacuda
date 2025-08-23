@@ -12,7 +12,7 @@ __global__ void momentumKernel(const float* __restrict__ input, float* __restric
 
 Momentum::Momentum(int period) : period(period) {}
 
-void Momentum::calculate(const float* input, float* output, int size) noexcept(false) {
+void Momentum::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("Momentum: invalid period");
     }
@@ -22,7 +22,6 @@ void Momentum::calculate(const float* input, float* output, int size) noexcept(f
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    momentumKernel<<<grid, block>>>(input, output, period, size);
+    momentumKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

@@ -30,14 +30,13 @@ KAMA::KAMA(int period, int fastPeriod, int slowPeriod)
       slowSC(2.0f / (slowPeriod + 1.0f)) {}
 
 void KAMA::calculate(const float *input, float *output,
-                     int size) noexcept(false) {
+                     int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("KAMA: invalid period");
   }
   // Initialize output with NaNs so unwritten tail remains NaN
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-  kamaKernel<<<1, 1>>>(input, output, period, fastSC, slowSC, size);
+  kamaKernel<<<1, 1, 0, stream>>>(input, output, period, fastSC, slowSC, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }

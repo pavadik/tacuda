@@ -7,8 +7,8 @@ class OBV : public Indicator {
 public:
     OBV() = default;
     void calculate(const float* price, const float* volume,
-                   float* output, int size) noexcept(false);
-    void calculate(const float* input, float* output, int size) noexcept(false) override;
+                   float* output, int size, cudaStream_t stream = 0) noexcept(false);
+    void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 };
 
 #endif

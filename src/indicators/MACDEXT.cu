@@ -59,7 +59,7 @@ __global__ void macdSignalKernel(const float* __restrict__ macd,
 MACDEXT::MACDEXT(int fastPeriod, int slowPeriod, int signalPeriod, MAType type)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod), signalPeriod(signalPeriod), type(type) {}
 
-void MACDEXT::calculate(const float* input, float* output, int size) noexcept(false) {
+void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0 || signalPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }
@@ -72,9 +72,8 @@ void MACDEXT::calculate(const float* input, float* output, int size) noexcept(fa
     float* hist = output + 2 * size;
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    macdLineKernel<<<grid, block>>>(input, macd, fastPeriod, slowPeriod, size, type);
+    macdLineKernel<<<grid, block, 0, stream>>>(input, macd, fastPeriod, slowPeriod, size, type);
     CUDA_CHECK(cudaGetLastError());
-    macdSignalKernel<<<grid, block>>>(macd, signal, hist, slowPeriod, signalPeriod, size, type);
+    macdSignalKernel<<<grid, block, 0, stream>>>(macd, signal, hist, slowPeriod, signalPeriod, size, type);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

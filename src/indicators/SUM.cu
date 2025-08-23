@@ -17,7 +17,7 @@ __global__ void sumKernelPrefix(const float *__restrict__ prefix,
 SUM::SUM(int period) : period(period) {}
 
 void SUM::calculate(const float *input, float *output,
-                    int size) noexcept(false) {
+                    int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("SUM: invalid period");
   }
@@ -31,9 +31,8 @@ void SUM::calculate(const float *input, float *output,
 
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  sumKernelPrefix<<<grid, block>>>(prefix, output, period, size);
+  sumKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 
   CUDA_CHECK(cudaFree(prefix));
 }

@@ -19,20 +19,19 @@ __global__ void darkCloudCoverKernel(const float *__restrict__ open,
 
 void DarkCloudCover::calculate(const float *open, const float *high,
                                const float *low, const float *close,
-                               float *output, int size) noexcept(false) {
+                               float *output, int size, cudaStream_t stream) noexcept(false) {
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  darkCloudCoverKernel<<<grid, block>>>(open, high, low, close, output, size);
+  darkCloudCoverKernel<<<grid, block, 0, stream>>>(open, high, low, close, output, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 void DarkCloudCover::calculate(const float *input, float *output,
-                               int size) noexcept(false) {
+                               int size, cudaStream_t stream) noexcept(false) {
   const float *open = input;
   const float *high = input + size;
   const float *low = input + 2 * size;
   const float *close = input + 3 * size;
-  calculate(open, high, low, close, output, size);
+  calculate(open, high, low, close, output, size, stream);
 }

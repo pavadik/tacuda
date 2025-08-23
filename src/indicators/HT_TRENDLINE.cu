@@ -28,7 +28,7 @@ static void run_ht_trendline_python(const std::vector<float>& in, std::vector<fl
     pclose(pipe);
 }
 
-void HT_TRENDLINE::calculate(const float* input, float* output, int size) noexcept(false) {
+void HT_TRENDLINE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     std::vector<float> h_in(size), h_out(size, std::numeric_limits<float>::quiet_NaN());
     CUDA_CHECK(cudaMemcpy(h_in.data(), input, size*sizeof(float), cudaMemcpyDeviceToHost));
     run_ht_trendline_python(h_in, h_out);

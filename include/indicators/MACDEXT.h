@@ -7,7 +7,7 @@
 class MACDEXT : public Indicator {
 public:
     MACDEXT(int fastPeriod, int slowPeriod, int signalPeriod, MAType type);
-    void calculate(const float* input, float* output, int size) noexcept(false) override;
+    void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 private:
     int fastPeriod;
     int slowPeriod;
