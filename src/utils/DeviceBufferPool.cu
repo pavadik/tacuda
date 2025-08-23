@@ -29,8 +29,13 @@ void DeviceBufferPool::release(void* ptr) {
     }
 }
 
-DeviceBufferPool::~DeviceBufferPool() {
-    for (auto& kv : sizes) {
+void DeviceBufferPool::cleanup() {
+    std::lock_guard<std::mutex> lock(mutex);
+    for (auto &kv : sizes) {
         cudaFree(kv.first);
     }
+    freeBuffers.clear();
+    sizes.clear();
 }
+
+DeviceBufferPool::~DeviceBufferPool() { cleanup(); }

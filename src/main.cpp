@@ -6,6 +6,7 @@
 #include "../include/indicators/Momentum.h"
 #include "../include/indicators/MACD.h"
 #include "../include/utils/CudaUtils.h"
+#include "../include/utils/DeviceBufferPool.h"
 
 int main() {
     const int N = 1024;
@@ -46,5 +47,6 @@ int main() {
 
     CUDA_CHECK(cudaFree(d_in));
     CUDA_CHECK(cudaFree(d_out));
+    DeviceBufferPool::instance().cleanup();
     return 0;
 }
