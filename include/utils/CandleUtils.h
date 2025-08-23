@@ -354,24 +354,22 @@ __host__ __device__ inline bool is_marubozu(float open, float high, float low,
 }
 
 __host__ __device__ inline bool is_matching_low(float o1, float h1, float l1,
-                                               float c1, float o2, float h2,
-                                               float l2, float c2) {
+                                                float c1, float o2, float h2,
+                                                float l2, float c2) {
   return c1 < o1 && c2 < o2 && fabsf(c2 - c1) <= 1e-6f;
 }
 
-__host__ __device__ inline bool is_ladder_bottom(float o1, float h1, float l1,
-                                                 float c1, float o2, float h2,
-                                                 float l2, float c2, float o3,
-                                                 float h3, float l3, float c3,
-                                                 float o4, float h4, float l4,
-                                                 float c4, float o5, float h5,
-                                                 float l5, float c5) {
+__host__ __device__ inline bool
+is_ladder_bottom(float o1, float h1, float l1, float c1, float o2, float h2,
+                 float l2, float c2, float o3, float h3, float l3, float c3,
+                 float o4, float h4, float l4, float c4, float o5, float h5,
+                 float l5, float c5) {
   return c1 < o1 && c2 < o2 && c3 < o3 && c1 > c2 && c2 > c3 && c4 < o4 &&
          c4 > c3 && c5 > o5 && c5 > o4 && c5 > c4;
 }
 
 __host__ __device__ inline bool is_long_legged_doji(float open, float high,
-                                                   float low, float close) {
+                                                    float low, float close) {
   if (!is_doji(open, high, low, close))
     return false;
   float range = high - low;
@@ -383,7 +381,7 @@ __host__ __device__ inline bool is_long_legged_doji(float open, float high,
 }
 
 __host__ __device__ inline bool is_long_line(float open, float high, float low,
-                                            float close) {
+                                             float close) {
   float range = high - low;
   if (range <= 0.0f)
     return false;
@@ -418,6 +416,61 @@ __host__ __device__ inline bool is_kicking_by_length(float o1, float h1,
                                                      float l2, float c2) {
   return is_kicking(o1, h1, l1, c1, o2, h2, l2, c2) &&
          real_body(o2, c2) > real_body(o1, c1);
+}
+
+__host__ __device__ inline bool is_short_line(float open, float high, float low,
+                                              float close) {
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float body = real_body(open, close);
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return body <= range * 0.3f && upper <= range * 0.3f && lower <= range * 0.3f;
+}
+
+__host__ __device__ inline bool is_shooting_star(float open, float high,
+                                                 float low, float close) {
+  return is_inverted_hammer(open, high, low, close);
+}
+
+__host__ __device__ inline bool is_rickshaw_man(float open, float high,
+                                                float low, float close) {
+  if (!is_long_legged_doji(open, high, low, close))
+    return false;
+  float mid = (high + low) * 0.5f;
+  float bodyMid = (open + close) * 0.5f;
+  return fabsf(bodyMid - mid) <= (high - low) * 0.1f;
+}
+
+__host__ __device__ inline float separating_lines(float o1, float h1, float l1,
+                                                  float c1, float o2, float h2,
+                                                  float l2, float c2) {
+  bool bullish = c1 < o1 && c2 > o2 && fabsf(o2 - o1) <= 1e-3f && c2 > c1;
+  bool bearish = c1 > o1 && c2 < o2 && fabsf(o2 - o1) <= 1e-3f && c2 < c1;
+  if (bullish)
+    return 1.0f;
+  if (bearish)
+    return -1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline float
+rise_fall_3_methods(float o1, float h1, float l1, float c1, float o2, float h2,
+                    float l2, float c2, float o3, float h3, float l3, float c3,
+                    float o4, float h4, float l4, float c4, float o5, float h5,
+                    float l5, float c5) {
+  bool rising = c1 > o1 && c2 < o2 && c3 < o3 && c4 < o4 && h2 <= h1 &&
+                l2 >= l1 && h3 <= h1 && l3 >= l1 && h4 <= h1 && l4 >= l1 &&
+                c5 > o5 && c5 > c1;
+  bool falling = c1 < o1 && c2 > o2 && c3 > o3 && c4 > o4 && h2 <= h1 &&
+                 l2 >= l1 && h3 <= h1 && l3 >= l1 && h4 <= h1 && l4 >= l1 &&
+                 c5 < o5 && c5 < c1;
+  if (rising)
+    return 1.0f;
+  if (falling)
+    return -1.0f;
+  return 0.0f;
 }
 
 #endif

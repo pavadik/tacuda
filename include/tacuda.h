@@ -358,30 +358,55 @@ CTAPI_EXPORT ctStatus_t ct_cdl_kicking_by_length(const float *host_open,
                                                  const float *host_close,
                                                  float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_ladder_bottom(const float *host_open,
-                                            const float *host_high,
-                                            const float *host_low,
-                                            const float *host_close,
-                                            float *host_output, int size);
+                                             const float *host_high,
+                                             const float *host_low,
+                                             const float *host_close,
+                                             float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_long_legged_doji(const float *host_open,
-                                               const float *host_high,
-                                               const float *host_low,
-                                               const float *host_close,
-                                               float *host_output, int size);
+                                                const float *host_high,
+                                                const float *host_low,
+                                                const float *host_close,
+                                                float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_long_line(const float *host_open,
                                          const float *host_high,
                                          const float *host_low,
                                          const float *host_close,
                                          float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_marubozu(const float *host_open,
-                                       const float *host_high,
-                                       const float *host_low,
-                                       const float *host_close,
-                                       float *host_output, int size);
+                                        const float *host_high,
+                                        const float *host_low,
+                                        const float *host_close,
+                                        float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_matching_low(const float *host_open,
                                             const float *host_high,
                                             const float *host_low,
                                             const float *host_close,
                                             float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_rickshaw_man(const float *host_open,
+                                            const float *host_high,
+                                            const float *host_low,
+                                            const float *host_close,
+                                            float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_rise_fall3_methods(const float *host_open,
+                                                  const float *host_high,
+                                                  const float *host_low,
+                                                  const float *host_close,
+                                                  float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_separating_lines(const float *host_open,
+                                                const float *host_high,
+                                                const float *host_low,
+                                                const float *host_close,
+                                                float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_shooting_star(const float *host_open,
+                                             const float *host_high,
+                                             const float *host_low,
+                                             const float *host_close,
+                                             float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_short_line(const float *host_open,
+                                          const float *host_high,
+                                          const float *host_low,
+                                          const float *host_close,
+                                          float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cmo(const float *host_input, float *host_output,
                                int size, int period);
 CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,

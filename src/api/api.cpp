@@ -61,22 +61,22 @@
 #include <indicators/KAMA.h>
 #include <indicators/Kicking.h>
 #include <indicators/KickingByLength.h>
-#include <indicators/LadderBottom.h>
 #include <indicators/LINEARREG.h>
 #include <indicators/LINEARREG_ANGLE.h>
 #include <indicators/LINEARREG_INTERCEPT.h>
 #include <indicators/LINEARREG_SLOPE.h>
+#include <indicators/LadderBottom.h>
 #include <indicators/LongLeggedDoji.h>
 #include <indicators/LongLine.h>
 #include <indicators/MA.h>
 #include <indicators/MACD.h>
 #include <indicators/MACDEXT.h>
 #include <indicators/MAMA.h>
-#include <indicators/Marubozu.h>
-#include <indicators/MatchingLow.h>
 #include <indicators/MAX.h>
 #include <indicators/MFI.h>
 #include <indicators/MIN.h>
+#include <indicators/Marubozu.h>
+#include <indicators/MatchingLow.h>
 #include <indicators/MedPrice.h>
 #include <indicators/MinusDI.h>
 #include <indicators/MinusDM.h>
@@ -89,10 +89,15 @@
 #include <indicators/PlusDM.h>
 #include <indicators/ROC.h>
 #include <indicators/RSI.h>
+#include <indicators/RickshawMan.h>
+#include <indicators/RiseFall3Methods.h>
 #include <indicators/SAR.h>
 #include <indicators/SAREXT.h>
 #include <indicators/SMA.h>
 #include <indicators/SUM.h>
+#include <indicators/SeparatingLines.h>
+#include <indicators/ShootingStar.h>
+#include <indicators/ShortLine.h>
 #include <indicators/StdDev.h>
 #include <indicators/StochRSI.h>
 #include <indicators/Stochastic.h>
@@ -2363,8 +2368,8 @@ ctStatus_t ct_cdl_ladder_bottom(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_long_legged_doji(const float *host_open,
                                    const float *host_high,
                                    const float *host_low,
-                                   const float *host_close,
-                                   float *host_output, int size) {
+                                   const float *host_close, float *host_output,
+                                   int size) {
   LongLeggedDoji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2379,8 +2384,8 @@ ctStatus_t ct_cdl_long_line(const float *host_open, const float *host_high,
 }
 
 ctStatus_t ct_cdl_marubozu(const float *host_open, const float *host_high,
-                            const float *host_low, const float *host_close,
-                            float *host_output, int size) {
+                           const float *host_low, const float *host_close,
+                           float *host_output, int size) {
   Marubozu ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
@@ -2390,6 +2395,50 @@ ctStatus_t ct_cdl_matching_low(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
   MatchingLow ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_rickshaw_man(const float *host_open, const float *host_high,
+                               const float *host_low, const float *host_close,
+                               float *host_output, int size) {
+  RickshawMan ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_rise_fall3_methods(const float *host_open,
+                                     const float *host_high,
+                                     const float *host_low,
+                                     const float *host_close,
+                                     float *host_output, int size) {
+  RiseFall3Methods ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_separating_lines(const float *host_open,
+                                   const float *host_high,
+                                   const float *host_low,
+                                   const float *host_close, float *host_output,
+                                   int size) {
+  SeparatingLines ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_shooting_star(const float *host_open, const float *host_high,
+                                const float *host_low, const float *host_close,
+                                float *host_output, int size) {
+  ShootingStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_short_line(const float *host_open, const float *host_high,
+                             const float *host_low, const float *host_close,
+                             float *host_output, int size) {
+  ShortLine ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
