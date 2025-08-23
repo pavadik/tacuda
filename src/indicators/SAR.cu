@@ -55,18 +55,17 @@ SAR::SAR(float step, float maxAcceleration)
     : step(step), maxAcceleration(maxAcceleration) {}
 
 void SAR::calculate(const float* high, const float* low,
-                    float* output, int size) noexcept(false) {
+                    float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("SAR: invalid size");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
-    sarKernel<<<1,1>>>(high, low, output, step, maxAcceleration, size);
+    sarKernel<<<1, 1, 0, stream>>>(high, low, output, step, maxAcceleration, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void SAR::calculate(const float* input, float* output, int size) noexcept(false) {
+void SAR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
-    calculate(high, low, output, size);
+    calculate(high, low, output, size, stream);
 }

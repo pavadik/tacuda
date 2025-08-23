@@ -18,7 +18,7 @@ __global__ void wmaKernel(const float* __restrict__ input,
 
 WMA::WMA(int period) : period(period) {}
 
-void WMA::calculate(const float* input, float* output, int size) noexcept(false) {
+void WMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("WMA: invalid period");
     }
@@ -26,7 +26,6 @@ void WMA::calculate(const float* input, float* output, int size) noexcept(false)
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    wmaKernel<<<grid, block>>>(input, output, period, size);
+    wmaKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

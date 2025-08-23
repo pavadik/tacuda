@@ -21,21 +21,20 @@ __global__ void midpriceKernel(const float* __restrict__ high,
 
 MIDPRICE::MIDPRICE(int period) : period(period) {}
 
-void MIDPRICE::calculate(const float* high, const float* low, float* output, int size) noexcept(false) {
+void MIDPRICE::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MIDPRICE: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    midpriceKernel<<<grid, block>>>(high, low, output, period, size);
+    midpriceKernel<<<grid, block, 0, stream>>>(high, low, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void MIDPRICE::calculate(const float* input, float* output, int size) noexcept(false) {
+void MIDPRICE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
-    calculate(high, low, output, size);
+    calculate(high, low, output, size, stream);
 }
 

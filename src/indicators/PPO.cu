@@ -33,7 +33,7 @@ PPO::PPO(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
 void PPO::calculate(const float* input, float* output,
-                    int size) noexcept(false) {
+                    int size, cudaStream_t stream) noexcept(false) {
   if (fastPeriod <= 0 || slowPeriod <= 0) {
     throw std::invalid_argument("PPO: invalid periods");
   }
@@ -43,7 +43,6 @@ void PPO::calculate(const float* input, float* output,
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  ppoKernel<<<grid, block>>>(input, output, fastPeriod, slowPeriod, size);
+  ppoKernel<<<grid, block, 0, stream>>>(input, output, fastPeriod, slowPeriod, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }

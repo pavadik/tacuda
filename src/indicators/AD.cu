@@ -24,19 +24,18 @@ __global__ void adKernel(const float* __restrict__ high,
 }
 
 void AD::calculate(const float* high, const float* low, const float* close,
-                   const float* volume, float* output, int size) noexcept(false) {
+                   const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("AD: invalid size");
     }
-    adKernel<<<1,1>>>(high, low, close, volume, output, size);
+    adKernel<<<1, 1, 0, stream>>>(high, low, close, volume, output, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void AD::calculate(const float* input, float* output, int size) noexcept(false) {
+void AD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;
     const float* volume = input + 3 * size;
-    calculate(high, low, close, volume, output, size);
+    calculate(high, low, close, volume, output, size, stream);
 }

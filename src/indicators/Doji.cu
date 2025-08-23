@@ -17,19 +17,18 @@ __global__ void dojiKernel(const float* __restrict__ open,
 Doji::Doji(float threshold) : threshold(threshold) {}
 
 void Doji::calculate(const float* open, const float* high, const float* low,
-                     const float* close, float* output, int size) noexcept(false) {
+                     const float* close, float* output, int size, cudaStream_t stream) noexcept(false) {
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    dojiKernel<<<grid, block>>>(open, high, low, close, output, size, threshold);
+    dojiKernel<<<grid, block, 0, stream>>>(open, high, low, close, output, size, threshold);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void Doji::calculate(const float* input, float* output, int size) noexcept(false) {
+void Doji::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* open = input;
     const float* high = input + size;
     const float* low = input + 2 * size;
     const float* close = input + 3 * size;
-    calculate(open, high, low, close, output, size);
+    calculate(open, high, low, close, output, size, stream);
 }

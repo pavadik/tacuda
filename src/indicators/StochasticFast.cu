@@ -41,21 +41,20 @@ __global__ void stochfKernel(const float* __restrict__ high,
 StochasticFast::StochasticFast(int kPeriod, int dPeriod) : kPeriod(kPeriod), dPeriod(dPeriod) {}
 
 void StochasticFast::calculate(const float* high, const float* low, const float* close,
-                               float* output, int size) noexcept(false) {
+                               float* output, int size, cudaStream_t stream) noexcept(false) {
     if (kPeriod <= 0 || dPeriod <= 0 || kPeriod > size) {
         throw std::invalid_argument("StochasticFast: invalid periods");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
     float* kOut = output;
     float* dOut = output + size;
-    stochfKernel<<<1,1>>>(high, low, close, kOut, dOut, kPeriod, dPeriod, size);
+    stochfKernel<<<1, 1, 0, stream>>>(high, low, close, kOut, dOut, kPeriod, dPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void StochasticFast::calculate(const float* input, float* output, int size) noexcept(false) {
+void StochasticFast::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;
-    calculate(high, low, close, output, size);
+    calculate(high, low, close, output, size, stream);
 }

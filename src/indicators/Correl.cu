@@ -31,21 +31,20 @@ __global__ void correlKernel(const float* __restrict__ x,
 
 Correl::Correl(int period) : period(period) {}
 
-void Correl::calculate(const float* x, const float* y, float* output, int size) noexcept(false) {
+void Correl::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Correl: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    correlKernel<<<grid, block>>>(x, y, output, period, size);
+    correlKernel<<<grid, block, 0, stream>>>(x, y, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void Correl::calculate(const float* input, float* output, int size) noexcept(false) {
+void Correl::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* x = input;
     const float* y = input + size;
-    calculate(x, y, output, size);
+    calculate(x, y, output, size, stream);
 }
 

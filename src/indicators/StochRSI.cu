@@ -63,7 +63,7 @@ StochRSI::StochRSI(int rsiPeriod, int kPeriod, int dPeriod)
     : rsiPeriod(rsiPeriod), kPeriod(kPeriod), dPeriod(dPeriod) {}
 
 void StochRSI::calculate(const float *input, float *output,
-                         int size) noexcept(false) {
+                         int size, cudaStream_t stream) noexcept(false) {
   if (rsiPeriod <= 0 || kPeriod <= 0 || dPeriod <= 0 ||
       size <= rsiPeriod + kPeriod + dPeriod - 2) {
     throw std::invalid_argument("StochRSI: invalid parameters");
@@ -72,9 +72,8 @@ void StochRSI::calculate(const float *input, float *output,
   CUDA_CHECK(cudaMalloc(&rsi, size * sizeof(float)));
   float *kOut = output;
   float *dOut = output + size;
-  stochRsiKernel<<<1, 1>>>(input, rsi, kOut, dOut, rsiPeriod, kPeriod, dPeriod,
+  stochRsiKernel<<<1, 1, 0, stream>>>(input, rsi, kOut, dOut, rsiPeriod, kPeriod, dPeriod,
                            size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
   cudaFree(rsi);
 }

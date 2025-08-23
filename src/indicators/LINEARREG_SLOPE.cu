@@ -24,15 +24,14 @@ __global__ void linearregSlopeKernel(const float* __restrict__ in,
 
 LINEARREG_SLOPE::LINEARREG_SLOPE(int period) : period(period) {}
 
-void LINEARREG_SLOPE::calculate(const float* input, float* output, int size) noexcept(false) {
+void LINEARREG_SLOPE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG_SLOPE: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    linearregSlopeKernel<<<grid, block>>>(input, output, period, size);
+    linearregSlopeKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 

@@ -20,7 +20,7 @@ __global__ void t3Kernel(const float *__restrict__ e3,
 T3::T3(int period, float vFactor) : period(period), vFactor(vFactor) {}
 
 void T3::calculate(const float *input, float *output,
-                   int size) noexcept(false) {
+                   int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || size < 3 * period - 2) {
     throw std::invalid_argument("T3: invalid period");
   }
@@ -36,7 +36,7 @@ void T3::calculate(const float *input, float *output,
   CUDA_CHECK(cudaMalloc(&e6, size * sizeof(float)));
 
   EMA ema(period);
-  ema.calculate(input, e1, size);
+  ema.calculate(input, e1, size, stream);
   int size2 = size - period + 1;
   ema.calculate(e1, e2, size2);
   int size3 = size2 - period + 1;
@@ -57,10 +57,9 @@ void T3::calculate(const float *input, float *output,
   int valid = size - 3 * period + 3;
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(valid);
-  t3Kernel<<<grid, block>>>(e3, e4, e5, e6, output, c1, c2, c3, c4, period,
+  t3Kernel<<<grid, block, 0, stream>>>(e3, e4, e5, e6, output, c1, c2, c3, c4, period,
                             valid);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 
   cudaFree(e1);
   cudaFree(e2);

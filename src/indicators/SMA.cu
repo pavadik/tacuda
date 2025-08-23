@@ -17,7 +17,7 @@ __global__ void smaKernelPrefix(const float* __restrict__ prefix,
 
 SMA::SMA(int period) : period(period) {}
 
-void SMA::calculate(const float* input, float* output, int size) noexcept(false) {
+void SMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("SMA: invalid period");
     }
@@ -34,9 +34,8 @@ void SMA::calculate(const float* input, float* output, int size) noexcept(false)
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    smaKernelPrefix<<<grid, block>>>(prefix, output, period, size);
+    smaKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     CUDA_CHECK(cudaFree(prefix));
 }

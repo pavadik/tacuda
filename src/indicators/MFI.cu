@@ -52,23 +52,22 @@ __global__ void mfiKernel(const float* __restrict__ high,
 MFI::MFI(int period) : period(period) {}
 
 void MFI::calculate(const float* high, const float* low, const float* close,
-                    const float* volume, float* output, int size) noexcept(false) {
+                    const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MFI: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     float* signedMF = nullptr;
     CUDA_CHECK(cudaMalloc(&signedMF, size * sizeof(float)));
-    mfiKernel<<<1,1>>>(high, low, close, volume, signedMF, output, period, size);
+    mfiKernel<<<1, 1, 0, stream>>>(high, low, close, volume, signedMF, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
     CUDA_CHECK(cudaFree(signedMF));
 }
 
-void MFI::calculate(const float* input, float* output, int size) noexcept(false) {
+void MFI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;
     const float* volume = input + 3 * size;
-    calculate(high, low, close, volume, output, size);
+    calculate(high, low, close, volume, output, size, stream);
 }

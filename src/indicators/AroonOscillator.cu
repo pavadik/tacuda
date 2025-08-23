@@ -37,18 +37,17 @@ __global__ void aroonOscKernel(const float* __restrict__ high,
 AroonOscillator::AroonOscillator(int period) : period(period) {}
 
 void AroonOscillator::calculate(const float* high, const float* low,
-                                float* output, int size) noexcept(false) {
+                                float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("AroonOscillator: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
-    aroonOscKernel<<<1,1>>>(high, low, output, period, size);
+    aroonOscKernel<<<1, 1, 0, stream>>>(high, low, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void AroonOscillator::calculate(const float* input, float* output, int size) noexcept(false) {
+void AroonOscillator::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
-    calculate(high, low, output, size);
+    calculate(high, low, output, size, stream);
 }

@@ -33,7 +33,7 @@ ULTOSC::ULTOSC(int shortPeriod, int mediumPeriod, int longPeriod)
     : shortPeriod(shortPeriod), mediumPeriod(mediumPeriod), longPeriod(longPeriod) {}
 
 void ULTOSC::calculate(const float* high, const float* low, const float* close,
-                       float* output, int size) noexcept(false) {
+                       float* output, int size, cudaStream_t stream) noexcept(false) {
     if (shortPeriod <= 0 || mediumPeriod <= 0 || longPeriod <= 0 ||
         shortPeriod > mediumPeriod || mediumPeriod > longPeriod ||
         longPeriod >= size) {
@@ -42,15 +42,14 @@ void ULTOSC::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    ultoscKernel<<<grid, block>>>(high, low, close, output,
+    ultoscKernel<<<grid, block, 0, stream>>>(high, low, close, output,
                                   shortPeriod, mediumPeriod, longPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void ULTOSC::calculate(const float* input, float* output, int size) noexcept(false) {
+void ULTOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;
-    calculate(high, low, close, output, size);
+    calculate(high, low, close, output, size, stream);
 }

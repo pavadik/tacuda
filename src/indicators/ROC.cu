@@ -14,14 +14,13 @@ __global__ void rocKernel(const float* __restrict__ input, float* __restrict__ o
 
 ROC::ROC(int period) : period(period) {}
 
-void ROC::calculate(const float* input, float* output, int size) noexcept(false) {
+void ROC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("ROC: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    rocKernel<<<grid, block>>>(input, output, period, size);
+    rocKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

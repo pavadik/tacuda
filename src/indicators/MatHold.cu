@@ -22,20 +22,19 @@ __global__ void matHoldKernel(const float *__restrict__ open,
 
 void MatHold::calculate(const float *open, const float *high, const float *low,
                         const float *close, float *output,
-                        int size) noexcept(false) {
+                        int size, cudaStream_t stream) noexcept(false) {
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  matHoldKernel<<<grid, block>>>(open, high, low, close, output, size);
+  matHoldKernel<<<grid, block, 0, stream>>>(open, high, low, close, output, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 void MatHold::calculate(const float *input, float *output,
-                        int size) noexcept(false) {
+                        int size, cudaStream_t stream) noexcept(false) {
   const float *open = input;
   const float *high = input + size;
   const float *low = input + 2 * size;
   const float *close = input + 3 * size;
-  calculate(open, high, low, close, output, size);
+  calculate(open, high, low, close, output, size, stream);
 }

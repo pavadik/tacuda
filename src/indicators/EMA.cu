@@ -22,7 +22,7 @@ __global__ void emaKernel(const float* __restrict__ input,
 
 EMA::EMA(int period) : period(period) {}
 
-void EMA::calculate(const float* input, float* output, int size) noexcept(false) {
+void EMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("EMA: invalid period");
     }
@@ -31,7 +31,6 @@ void EMA::calculate(const float* input, float* output, int size) noexcept(false)
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    emaKernel<<<grid, block>>>(input, output, period, size);
+    emaKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }

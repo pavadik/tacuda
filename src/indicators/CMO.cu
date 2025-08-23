@@ -23,15 +23,14 @@ __global__ void cmoKernel(const float* __restrict__ input,
 
 CMO::CMO(int period) : period(period) {}
 
-void CMO::calculate(const float* input, float* output, int size) noexcept(false) {
+void CMO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("CMO: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    cmoKernel<<<grid, block>>>(input, output, period, size);
+    cmoKernel<<<grid, block, 0, stream>>>(input, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 

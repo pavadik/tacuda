@@ -6,7 +6,7 @@
 class HT_PHASOR : public Indicator {
 public:
     HT_PHASOR() = default;
-    void calculate(const float* input, float* output, int size) noexcept(false) override;
+    void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 };
 
 #endif

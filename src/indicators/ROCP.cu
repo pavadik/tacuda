@@ -15,14 +15,13 @@ __global__ void rocpKernel(const float *__restrict__ input,
 ROCP::ROCP(int period) : period(period) {}
 
 void ROCP::calculate(const float *input, float *output,
-                     int size) noexcept(false) {
+                     int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period >= size) {
     throw std::invalid_argument("ROCP: invalid period");
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  rocpKernel<<<grid, block>>>(input, output, period, size);
+  rocpKernel<<<grid, block, 0, stream>>>(input, output, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }

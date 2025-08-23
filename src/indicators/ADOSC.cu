@@ -54,7 +54,7 @@ ADOSC::ADOSC(int shortPeriod, int longPeriod)
     : shortPeriod(shortPeriod), longPeriod(longPeriod) {}
 
 void ADOSC::calculate(const float* high, const float* low, const float* close,
-                      const float* volume, float* output, int size) noexcept(false) {
+                      const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (shortPeriod <= 0 || longPeriod <= 0) {
         throw std::invalid_argument("ADOSC: invalid periods");
     }
@@ -64,21 +64,20 @@ void ADOSC::calculate(const float* high, const float* low, const float* close,
     float* ad = nullptr;
     CUDA_CHECK(cudaMalloc(&ad, size * sizeof(float)));
 
-    adLineKernel<<<1,1>>>(high, low, close, volume, ad, size);
+    adLineKernel<<<1, 1, 0, stream>>>(high, low, close, volume, ad, size);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    adoscKernel<<<grid, block>>>(ad, output, shortPeriod, longPeriod, size);
+    adoscKernel<<<grid, block, 0, stream>>>(ad, output, shortPeriod, longPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
     CUDA_CHECK(cudaFree(ad));
 }
 
-void ADOSC::calculate(const float* input, float* output, int size) noexcept(false) {
+void ADOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;
     const float* volume = input + 3 * size;
-    calculate(high, low, close, volume, output, size);
+    calculate(high, low, close, volume, output, size, stream);
 }

@@ -29,21 +29,20 @@ __global__ void betaKernel(const float* __restrict__ x,
 
 Beta::Beta(int period) : period(period) {}
 
-void Beta::calculate(const float* x, const float* y, float* output, int size) noexcept(false) {
+void Beta::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Beta: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    betaKernel<<<grid, block>>>(x, y, output, period, size);
+    betaKernel<<<grid, block, 0, stream>>>(x, y, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-void Beta::calculate(const float* input, float* output, int size) noexcept(false) {
+void Beta::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* x = input;
     const float* y = input + size;
-    calculate(x, y, output, size);
+    calculate(x, y, output, size, stream);
 }
 

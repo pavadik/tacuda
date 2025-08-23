@@ -41,7 +41,7 @@ __global__ void bbandsKernel(const float* __restrict__ prefix,
 BBANDS::BBANDS(int period, float upperMultiplier, float lowerMultiplier)
     : period(period), upperMultiplier(upperMultiplier), lowerMultiplier(lowerMultiplier) {}
 
-void BBANDS::calculate(const float* input, float* output, int size) noexcept(false) {
+void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("BBANDS: invalid period");
     }
@@ -55,7 +55,7 @@ void BBANDS::calculate(const float* input, float* output, int size) noexcept(fal
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    squareKernel<<<grid, block>>>(input, squared, size);
+    squareKernel<<<grid, block, 0, stream>>>(input, squared, size);
     CUDA_CHECK(cudaGetLastError());
 
     thrust::device_ptr<const float> inPtr(input);
@@ -69,10 +69,9 @@ void BBANDS::calculate(const float* input, float* output, int size) noexcept(fal
     float* upper = output;
     float* middle = output + size;
     float* lower = output + 2 * size;
-    bbandsKernel<<<grid, block>>>(prefix, prefixSq, upper, middle, lower,
+    bbandsKernel<<<grid, block, 0, stream>>>(prefix, prefixSq, upper, middle, lower,
                                   period, size, upperMultiplier, lowerMultiplier);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     CUDA_CHECK(cudaFree(prefix));
     CUDA_CHECK(cudaFree(squared));

@@ -16,7 +16,7 @@ __global__ void demaKernel(const float* __restrict__ ema1,
 
 DEMA::DEMA(int period) : period(period) {}
 
-void DEMA::calculate(const float* input, float* output, int size) noexcept(false) {
+void DEMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || size < 2 * period - 1) {
         throw std::invalid_argument("DEMA: invalid period");
     }
@@ -29,16 +29,15 @@ void DEMA::calculate(const float* input, float* output, int size) noexcept(false
     CUDA_CHECK(cudaMalloc(&ema2, size * sizeof(float)));
 
     EMA ema(period);
-    ema.calculate(input, ema1, size);
+    ema.calculate(input, ema1, size, stream);
     int size2 = size - period + 1;
     ema.calculate(ema1, ema2, size2);
 
     int valid = size - 2 * period + 2;
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(valid);
-    demaKernel<<<grid, block>>>(ema1, ema2, output, period, valid);
+    demaKernel<<<grid, block, 0, stream>>>(ema1, ema2, output, period, valid);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     cudaFree(ema1);
     cudaFree(ema2);

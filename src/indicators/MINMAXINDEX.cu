@@ -32,7 +32,7 @@ __global__ void minmaxIndexKernel(const float *__restrict__ input,
 MINMAXINDEX::MINMAXINDEX(int period) : period(period) {}
 
 void MINMAXINDEX::calculate(const float *input, float *output,
-                            int size) noexcept(false) {
+                            int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MINMAXINDEX: invalid period");
   }
@@ -41,7 +41,6 @@ void MINMAXINDEX::calculate(const float *input, float *output,
   float *maxOut = output + size;
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  minmaxIndexKernel<<<grid, block>>>(input, minOut, maxOut, period, size);
+  minmaxIndexKernel<<<grid, block, 0, stream>>>(input, minOut, maxOut, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }

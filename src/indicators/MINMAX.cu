@@ -23,7 +23,7 @@ __global__ void minmaxKernel(const float *__restrict__ input,
 MINMAX::MINMAX(int period) : period(period) {}
 
 void MINMAX::calculate(const float *input, float *output,
-                       int size) noexcept(false) {
+                       int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MINMAX: invalid period");
   }
@@ -32,7 +32,6 @@ void MINMAX::calculate(const float *input, float *output,
   float *maxOut = output + size;
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  minmaxKernel<<<grid, block>>>(input, minOut, maxOut, period, size);
+  minmaxKernel<<<grid, block, 0, stream>>>(input, minOut, maxOut, period, size);
   CUDA_CHECK(cudaGetLastError());
-  CUDA_CHECK(cudaDeviceSynchronize());
 }
