@@ -319,7 +319,7 @@ def my_indicator(data, period=10, factor=1.0):
 
 ### Version 0.2 *(Next)*
 - [x] **EMA**, **RSI**, **MACD**, **Bollinger Bands**, **200+ indicators**
-- [x] Optimized SMA with prefix-scan
+- [x] Optimized indicators (like with prefix-scan)
 - [ ] OHLCV data structure support
 - [ ] Batched execution API
 
