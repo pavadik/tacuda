@@ -215,6 +215,22 @@ _lib.ct_cdl_evening_star.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POIN
                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_evening_star.restype  = ctypes.c_int
+_lib.ct_cdl_gap_side_side_white.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                            ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                            ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_gap_side_side_white.restype  = ctypes.c_int
+_lib.ct_cdl_gravestone_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_gravestone_doji.restype  = ctypes.c_int
+_lib.ct_cdl_hanging_man.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                    ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                    ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_hanging_man.restype  = ctypes.c_int
+_lib.ct_cdl_harami.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                               ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                               ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_harami.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -792,6 +808,82 @@ def cdl_evening_star(open, high, low, close):
     rc = _lib.ct_cdl_evening_star(po, ph, pl, pc, pout, open.size)
     if rc != 0:
         raise RuntimeError("ct_cdl_evening_star failed")
+    return out
+
+def cdl_gap_side_side_white(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_gap_side_side_white(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_gap_side_side_white failed")
+    return out
+
+def cdl_gravestone_doji(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_gravestone_doji(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_gravestone_doji failed")
+    return out
+
+def cdl_hanging_man(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_hanging_man(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_hanging_man failed")
+    return out
+
+def cdl_harami(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_harami(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_harami failed")
     return out
 
 def trange(high, low, close):

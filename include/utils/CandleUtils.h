@@ -238,4 +238,39 @@ is_evening_doji_star(float o1, float h1, float l1, float c1, float o2, float h2,
   return bullish1 && doji2 && gapUp && bearish3 && closeIntoBody;
 }
 
+__host__ __device__ inline bool
+is_gravestone_doji(float open, float high, float low, float close) {
+  if (!is_doji(open, high, low, close))
+    return false;
+  float range = high - low;
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return upper >= range * 0.5f && lower <= range * 0.1f;
+}
+
+__host__ __device__ inline bool is_hanging_man(float open, float high,
+                                               float low, float close) {
+  return is_hammer(open, high, low, close);
+}
+
+__host__ __device__ inline bool is_gap_side_side_white(
+    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
+    float c2, float o3, float h3, float l3, float c3) {
+  return c1 > o1 && c2 > o2 && c3 > o3 && l2 > h1 && l3 > h1 &&
+         fabsf(o2 - o3) <= 1e-3f;
+}
+
+__host__ __device__ inline float harami(float prevOpen, float prevClose,
+                                        float open, float close) {
+  bool bullish = prevClose < prevOpen && open > prevClose && close < prevOpen &&
+                 close > open;
+  bool bearish = prevClose > prevOpen && open < prevClose && close > prevOpen &&
+                 close < open;
+  if (bullish)
+    return 1.0f;
+  if (bearish)
+    return -1.0f;
+  return 0.0f;
+}
+
 #endif
