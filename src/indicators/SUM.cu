@@ -3,6 +3,7 @@
 #include <thrust/device_ptr.h>
 #include <thrust/scan.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 
 __global__ void sumKernelPrefix(const float *__restrict__ prefix,
                                 float *__restrict__ output, int period,
@@ -23,8 +24,7 @@ void SUM::calculate(const float *input, float *output,
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-  float *prefix = nullptr;
-  CUDA_CHECK(cudaMalloc(&prefix, size * sizeof(float)));
+  float *prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
   thrust::device_ptr<const float> inPtr(input);
   thrust::device_ptr<float> prePtr(prefix);
   thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
@@ -34,5 +34,5 @@ void SUM::calculate(const float *input, float *output,
   sumKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
   CUDA_CHECK(cudaGetLastError());
 
-  CUDA_CHECK(cudaFree(prefix));
+  DeviceBufferPool::instance().release(prefix);
 }

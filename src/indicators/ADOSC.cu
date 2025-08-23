@@ -1,5 +1,6 @@
 #include <indicators/ADOSC.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 #include <algorithm>
 
@@ -61,8 +62,7 @@ void ADOSC::calculate(const float* high, const float* low, const float* close,
     if (shortPeriod >= longPeriod) {
         throw std::invalid_argument("ADOSC: shortPeriod must be < longPeriod");
     }
-    float* ad = nullptr;
-    CUDA_CHECK(cudaMalloc(&ad, size * sizeof(float)));
+    float* ad = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
     adLineKernel<<<1, 1, 0, stream>>>(high, low, close, volume, ad, size);
     CUDA_CHECK(cudaGetLastError());
@@ -71,7 +71,7 @@ void ADOSC::calculate(const float* high, const float* low, const float* close,
     dim3 grid = defaultGrid(size);
     adoscKernel<<<grid, block, 0, stream>>>(ad, output, shortPeriod, longPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaFree(ad));
+    DeviceBufferPool::instance().release(ad);
 }
 
 void ADOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

@@ -1,6 +1,7 @@
 #include <indicators/ADXR.h>
 #include <indicators/ADX.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 
 __global__ void adxrKernel(const float* __restrict__ adx,
@@ -20,8 +21,7 @@ void ADXR::calculate(const float* high, const float* low, const float* close,
     if (period <= 0 || period > size) {
         throw std::invalid_argument("ADXR: invalid period");
     }
-    float* adx = nullptr;
-    CUDA_CHECK(cudaMalloc(&adx, size * sizeof(float)));
+    float* adx = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
     ADX adxInd(period);
     adxInd.calculate(high, low, close, adx, size, stream);
@@ -31,7 +31,7 @@ void ADXR::calculate(const float* high, const float* low, const float* close,
     dim3 grid = defaultGrid(size);
     adxrKernel<<<grid, block, 0, stream>>>(adx, output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaFree(adx));
+    DeviceBufferPool::instance().release(adx);
 }
 
 void ADXR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

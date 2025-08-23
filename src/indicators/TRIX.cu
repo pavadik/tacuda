@@ -1,6 +1,7 @@
 #include <indicators/TRIX.h>
 #include <indicators/EMA.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 
 __global__ void trixKernel(const float* __restrict__ ema3,
@@ -23,12 +24,9 @@ void TRIX::calculate(const float* input, float* output, int size, cudaStream_t s
 
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-    float* ema1 = nullptr;
-    float* ema2 = nullptr;
-    float* ema3 = nullptr;
-    CUDA_CHECK(cudaMalloc(&ema1, size * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&ema2, size * sizeof(float)));
-    CUDA_CHECK(cudaMalloc(&ema3, size * sizeof(float)));
+    float* ema1 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float* ema2 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float* ema3 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
     EMA ema(period);
     ema.calculate(input, ema1, size, stream);
@@ -43,7 +41,7 @@ void TRIX::calculate(const float* input, float* output, int size, cudaStream_t s
     trixKernel<<<grid, block, 0, stream>>>(ema3, output, valid);
     CUDA_CHECK(cudaGetLastError());
 
-    cudaFree(ema1);
-    cudaFree(ema2);
-    cudaFree(ema3);
+    DeviceBufferPool::instance().release(ema1);
+    DeviceBufferPool::instance().release(ema2);
+    DeviceBufferPool::instance().release(ema3);
 }

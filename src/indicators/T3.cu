@@ -2,6 +2,7 @@
 #include <indicators/T3.h>
 #include <stdexcept>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 
 __global__ void t3Kernel(const float *__restrict__ e3,
                          const float *__restrict__ e4,
@@ -26,14 +27,12 @@ void T3::calculate(const float *input, float *output,
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-  float *e1 = nullptr, *e2 = nullptr, *e3 = nullptr, *e4 = nullptr,
-        *e5 = nullptr, *e6 = nullptr;
-  CUDA_CHECK(cudaMalloc(&e1, size * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&e2, size * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&e3, size * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&e4, size * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&e5, size * sizeof(float)));
-  CUDA_CHECK(cudaMalloc(&e6, size * sizeof(float)));
+  float *e1 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  float *e2 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  float *e3 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  float *e4 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  float *e5 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  float *e6 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
   EMA ema(period);
   ema.calculate(input, e1, size, stream);
@@ -61,10 +60,10 @@ void T3::calculate(const float *input, float *output,
                             valid);
   CUDA_CHECK(cudaGetLastError());
 
-  cudaFree(e1);
-  cudaFree(e2);
-  cudaFree(e3);
-  cudaFree(e4);
-  cudaFree(e5);
-  cudaFree(e6);
+  DeviceBufferPool::instance().release(e1);
+  DeviceBufferPool::instance().release(e2);
+  DeviceBufferPool::instance().release(e3);
+  DeviceBufferPool::instance().release(e4);
+  DeviceBufferPool::instance().release(e5);
+  DeviceBufferPool::instance().release(e6);
 }

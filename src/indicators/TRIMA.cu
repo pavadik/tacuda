@@ -2,6 +2,7 @@
 #include <indicators/TRIMA.h>
 #include <stdexcept>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 
 TRIMA::TRIMA(int period) : period(period) {}
 
@@ -14,8 +15,7 @@ void TRIMA::calculate(const float *input, float *output,
   int p1 = (period + 1) / 2;
   int p2 = (period % 2 == 0) ? (p1 + 1) : p1;
 
-  float *tmp = nullptr;
-  CUDA_CHECK(cudaMalloc(&tmp, size * sizeof(float)));
+  float *tmp = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
 
   SMA sma1(p1);
   sma1.calculate(input, tmp, size, stream);
@@ -23,5 +23,5 @@ void TRIMA::calculate(const float *input, float *output,
   SMA sma2(p2);
   sma2.calculate(tmp, output, size2);
 
-  CUDA_CHECK(cudaFree(tmp));
+  DeviceBufferPool::instance().release(tmp);
 }
