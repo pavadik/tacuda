@@ -273,4 +273,63 @@ __host__ __device__ inline float harami(float prevOpen, float prevClose,
   return 0.0f;
 }
 
+__host__ __device__ inline float harami_cross(float o1, float h1, float l1,
+                                              float c1, float o2, float h2,
+                                              float l2, float c2) {
+  bool doji2 = is_doji(o2, h2, l2, c2);
+  bool bullish = c1 < o1 && doji2 && o2 > c1 && c2 < o1;
+  bool bearish = c1 > o1 && doji2 && o2 < c1 && c2 > o1;
+  if (bullish)
+    return 1.0f;
+  if (bearish)
+    return -1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline bool is_high_wave(float open, float high, float low,
+                                            float close) {
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float body = real_body(open, close);
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return body <= range * 0.3f && upper >= range * 0.4f &&
+         lower >= range * 0.4f;
+}
+
+__host__ __device__ inline float hikkake(float o1, float h1, float l1, float c1,
+                                         float o2, float h2, float l2, float c2,
+                                         float o3, float h3, float l3,
+                                         float c3) {
+  bool inside = h2 <= h1 && l2 >= l1;
+  bool bullish = inside && h3 > h2 && l3 > l2 && c3 > o3;
+  bool bearish = inside && h3 < h2 && l3 < l2 && c3 < o3;
+  if (bullish)
+    return 1.0f;
+  if (bearish)
+    return -1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline float hikkake_mod(
+    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
+    float c2, float o3, float h3, float l3, float c3, float o4, float h4,
+    float l4, float c4) {
+  bool inside = h2 <= h1 && l2 >= l1;
+  bool bullBreak = inside && h3 > h2 && l3 > l2 && c3 > o3 && c4 > h2;
+  bool bearBreak = inside && h3 < h2 && l3 < l2 && c3 < o3 && c4 < l2;
+  if (bullBreak)
+    return 1.0f;
+  if (bearBreak)
+    return -1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline bool is_homing_pigeon(float o1, float h1, float l1,
+                                                 float c1, float o2, float h2,
+                                                 float l2, float c2) {
+  return c1 < o1 && c2 < o2 && o2 >= c1 && o2 <= o1 && c2 >= c1 && c2 <= o1;
+}
+
 #endif

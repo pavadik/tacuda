@@ -103,6 +103,11 @@ set(INDICATOR_SOURCES
     src/indicators/EveningStar.cu
     src/indicators/HangingMan.cu
     src/indicators/Harami.cu
+    src/indicators/HaramiCross.cu
+    src/indicators/HighWave.cu
+    src/indicators/Hikkake.cu
+    src/indicators/HikkakeMod.cu
+    src/indicators/HomingPigeon.cu
 )
 
 add_library(tacuda SHARED
