@@ -251,6 +251,26 @@ _lib.ct_cdl_homing_pigeon.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POI
                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_homing_pigeon.restype  = ctypes.c_int
+_lib.ct_cdl_ladder_bottom.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                      ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_ladder_bottom.restype  = ctypes.c_int
+_lib.ct_cdl_long_legged_doji.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                         ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_long_legged_doji.restype  = ctypes.c_int
+_lib.ct_cdl_long_line.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_long_line.restype  = ctypes.c_int
+_lib.ct_cdl_marubozu.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                 ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_marubozu.restype  = ctypes.c_int
+_lib.ct_cdl_matching_low.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_matching_low.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
@@ -999,6 +1019,101 @@ def cdl_homing_pigeon(open, high, low, close):
     rc = _lib.ct_cdl_homing_pigeon(po, ph, pl, pc, pout, open.size)
     if rc != 0:
         raise RuntimeError("ct_cdl_homing_pigeon failed")
+    return out
+
+def cdl_ladder_bottom(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_ladder_bottom(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_ladder_bottom failed")
+    return out
+
+def cdl_long_legged_doji(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_long_legged_doji(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_long_legged_doji failed")
+    return out
+
+def cdl_long_line(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_long_line(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_long_line failed")
+    return out
+
+def cdl_marubozu(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_marubozu(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_marubozu failed")
+    return out
+
+def cdl_matching_low(open, high, low, close):
+    import numpy as np
+    open = np.asarray(open, dtype=np.float32)
+    high = np.asarray(high, dtype=np.float32)
+    low = np.asarray(low, dtype=np.float32)
+    close = np.asarray(close, dtype=np.float32)
+    if open.shape != high.shape or open.shape != low.shape or open.shape != close.shape:
+        raise ValueError("open, high, low, close must have same shape")
+    out = np.zeros_like(open)
+    _, po = _as_float_ptr(open)
+    _, ph = _as_float_ptr(high)
+    _, pl = _as_float_ptr(low)
+    _, pc = _as_float_ptr(close)
+    _, pout = _as_float_ptr(out)
+    rc = _lib.ct_cdl_matching_low(po, ph, pl, pc, pout, open.size)
+    if rc != 0:
+        raise RuntimeError("ct_cdl_matching_low failed")
     return out
 
 def trange(high, low, close):
