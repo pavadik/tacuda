@@ -382,6 +382,31 @@ CTAPI_EXPORT ctStatus_t ct_cdl_matching_low(const float *host_open,
                                             const float *host_low,
                                             const float *host_close,
                                             float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_mat_hold(const float *host_open,
+                                        const float *host_high,
+                                        const float *host_low,
+                                        const float *host_close,
+                                        float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_morning_doji_star(const float *host_open,
+                                                 const float *host_high,
+                                                 const float *host_low,
+                                                 const float *host_close,
+                                                 float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_morning_star(const float *host_open,
+                                            const float *host_high,
+                                            const float *host_low,
+                                            const float *host_close,
+                                            float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_on_neck(const float *host_open,
+                                       const float *host_high,
+                                       const float *host_low,
+                                       const float *host_close,
+                                       float *host_output, int size);
+CTAPI_EXPORT ctStatus_t ct_cdl_piercing(const float *host_open,
+                                        const float *host_high,
+                                        const float *host_low,
+                                        const float *host_close,
+                                        float *host_output, int size);
 CTAPI_EXPORT ctStatus_t ct_cdl_rickshaw_man(const float *host_open,
                                             const float *host_high,
                                             const float *host_low,

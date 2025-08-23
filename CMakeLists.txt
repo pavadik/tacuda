@@ -117,6 +117,11 @@ set(INDICATOR_SOURCES
     src/indicators/LongLine.cu
     src/indicators/Marubozu.cu
     src/indicators/MatchingLow.cu
+    src/indicators/MatHold.cu
+    src/indicators/MorningDojiStar.cu
+    src/indicators/MorningStar.cu
+    src/indicators/OnNeck.cu
+    src/indicators/Piercing.cu
     src/indicators/RickshawMan.cu
     src/indicators/RiseFall3Methods.cu
     src/indicators/SeparatingLines.cu

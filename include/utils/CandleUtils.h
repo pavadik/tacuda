@@ -184,6 +184,13 @@ __host__ __device__ inline bool is_dark_cloud_cover(float o1, float h1,
   return c1 > o1 && o2 > h1 && c2 < o2 && c2 > o1 && c2 < mid1;
 }
 
+__host__ __device__ inline bool is_piercing(float o1, float h1, float l1,
+                                            float c1, float o2, float h2,
+                                            float l2, float c2) {
+  float mid1 = (o1 + c1) * 0.5f;
+  return c1 < o1 && o2 < l1 && c2 > o2 && c2 > mid1 && c2 < o1;
+}
+
 __host__ __device__ inline bool is_doji_star(float o1, float h1, float l1,
                                              float c1, float o2, float h2,
                                              float l2, float c2) {
@@ -236,6 +243,32 @@ is_evening_doji_star(float o1, float h1, float l1, float c1, float o2, float h2,
   bool bearish3 = c3 < o3;
   bool closeIntoBody = c3 < (o1 + c1) * 0.5f;
   return bullish1 && doji2 && gapUp && bearish3 && closeIntoBody;
+}
+
+__host__ __device__ inline bool is_morning_star(float o1, float h1, float l1,
+                                                float c1, float o2, float h2,
+                                                float l2, float c2, float o3,
+                                                float h3, float l3, float c3) {
+  bool bearish1 = c1 < o1;
+  bool gapDown = h2 < l1;
+  float body1 = real_body(o1, c1);
+  float body2 = real_body(o2, c2);
+  bool smallBody2 = body2 < body1 * 0.5f;
+  bool bullish3 = c3 > o3;
+  bool closeIntoBody = c3 > (o1 + c1) * 0.5f;
+  return bearish1 && gapDown && smallBody2 && bullish3 && closeIntoBody;
+}
+
+__host__ __device__ inline bool
+is_morning_doji_star(float o1, float h1, float l1, float c1, float o2, float h2,
+                     float l2, float c2, float o3, float h3, float l3,
+                     float c3) {
+  bool bearish1 = c1 < o1;
+  bool doji2 = is_doji(o2, h2, l2, c2);
+  bool gapDown = h2 < l1;
+  bool bullish3 = c3 > o3;
+  bool closeIntoBody = c3 > (o1 + c1) * 0.5f;
+  return bearish1 && doji2 && gapDown && bullish3 && closeIntoBody;
 }
 
 __host__ __device__ inline bool is_gravestone_doji(float open, float high,
@@ -347,6 +380,13 @@ __host__ __device__ inline bool is_in_neck(float o1, float h1, float l1,
   return c1 < o1 && c2 > o2 && o2 < l1 && c2 >= c1 && c2 <= c1 + body1 * 0.1f;
 }
 
+__host__ __device__ inline bool is_on_neck(float o1, float h1, float l1,
+                                           float c1, float o2, float h2,
+                                           float l2, float c2) {
+  float body1 = real_body(o1, c1);
+  return c1 < o1 && c2 > o2 && o2 < l1 && fabsf(c2 - l1) <= body1 * 0.1f;
+}
+
 __host__ __device__ inline bool is_marubozu(float open, float high, float low,
                                             float close) {
   return upper_shadow(high, open, close) <= 1e-6f &&
@@ -357,6 +397,22 @@ __host__ __device__ inline bool is_matching_low(float o1, float h1, float l1,
                                                 float c1, float o2, float h2,
                                                 float l2, float c2) {
   return c1 < o1 && c2 < o2 && fabsf(c2 - c1) <= 1e-6f;
+}
+
+__host__ __device__ inline bool
+is_mat_hold(float o1, float h1, float l1, float c1, float o2, float h2,
+            float l2, float c2, float o3, float h3, float l3, float c3,
+            float o4, float h4, float l4, float c4, float o5, float h5,
+            float l5, float c5) {
+  bool firstBull = c1 > o1;
+  bool gapUp = o2 > c1;
+  bool smallBear2 = c2 < o2;
+  bool down3 = c3 < c2;
+  bool down4 = c4 < c3;
+  bool aboveLow = l2 > l1 && l3 > l1 && l4 > l1;
+  bool finalBull = c5 > o5 && c5 > h1;
+  return firstBull && gapUp && smallBear2 && down3 && down4 && aboveLow &&
+         finalBull;
 }
 
 __host__ __device__ inline bool
