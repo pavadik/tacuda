@@ -511,6 +511,60 @@ __host__ __device__ inline float separating_lines(float o1, float h1, float l1,
   return 0.0f;
 }
 
+__host__ __device__ inline bool is_spinning_top(float open, float high, float low,
+                                                float close) {
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float body = real_body(open, close);
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return body <= range * 0.3f && upper >= range * 0.1f && lower >= range * 0.1f;
+}
+
+__host__ __device__ inline bool is_stalled_pattern(float o1, float h1, float l1,
+                                                  float c1, float o2, float h2,
+                                                  float l2, float c2, float o3,
+                                                  float h3, float l3, float c3) {
+  float b2 = real_body(o2, c2);
+  float b3 = real_body(o3, c3);
+  return c1 > o1 && c2 > o2 && c3 > o3 && o2 > c1 && o3 > c2 && h2 > h1 &&
+         h3 > h2 && b3 < b2 * 0.5f;
+}
+
+__host__ __device__ inline bool is_stick_sandwich(float o1, float h1, float l1,
+                                                  float c1, float o2, float h2,
+                                                  float l2, float c2, float o3,
+                                                  float h3, float l3, float c3) {
+  return c1 < o1 && c2 > o2 && c3 < o3 && o2 > c1 &&
+         fabsf(c3 - c1) <= 1e-3f;
+}
+
+__host__ __device__ inline bool is_takuri(float open, float high, float low,
+                                          float close) {
+  float range = high - low;
+  if (range <= 0.0f)
+    return false;
+  float body = real_body(open, close);
+  float upper = upper_shadow(high, open, close);
+  float lower = lower_shadow(low, open, close);
+  return body <= range * 0.1f && upper <= range * 0.1f && lower >= range * 0.6f;
+}
+
+__host__ __device__ inline float
+tasuki_gap(float o1, float h1, float l1, float c1, float o2, float h2,
+           float l2, float c2, float o3, float h3, float l3, float c3) {
+  bool bull = c1 > o1 && c2 > o2 && o2 > c1 && c3 < o3 && o3 >= o2 &&
+              o3 <= c2 && c3 > c1 && c3 < o2;
+  bool bear = c1 < o1 && c2 < o2 && o2 < c1 && c3 > o3 && o3 <= o2 &&
+              o3 >= c2 && c3 < c1 && c3 > o2;
+  if (bull)
+    return 1.0f;
+  if (bear)
+    return -1.0f;
+  return 0.0f;
+}
+
 __host__ __device__ inline float
 rise_fall_3_methods(float o1, float h1, float l1, float c1, float o2, float h2,
                     float l2, float c2, float o3, float h3, float l3, float c3,

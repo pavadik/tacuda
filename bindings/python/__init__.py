@@ -291,6 +291,26 @@ _lib.ct_cdl_piercing.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(
                                  ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
                                  ctypes.POINTER(ctypes.c_float), ctypes.c_int]
 _lib.ct_cdl_piercing.restype  = ctypes.c_int
+_lib.ct_cdl_spinning_top.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                     ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_spinning_top.restype  = ctypes.c_int
+_lib.ct_cdl_stalled_pattern.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                        ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_stalled_pattern.restype  = ctypes.c_int
+_lib.ct_cdl_stick_sandwich.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                       ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_stick_sandwich.restype  = ctypes.c_int
+_lib.ct_cdl_takuri.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_takuri.restype  = ctypes.c_int
+_lib.ct_cdl_tasuki_gap.argtypes = [ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                   ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_float),
+                                   ctypes.POINTER(ctypes.c_float), ctypes.c_int]
+_lib.ct_cdl_tasuki_gap.restype  = ctypes.c_int
 
 def _as_float_ptr(arr):
     import numpy as np
