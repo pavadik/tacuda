@@ -36,7 +36,11 @@
 #include <indicators/Doji.h>
 #include <indicators/DojiStar.h>
 #include <indicators/DragonflyDoji.h>
+#include <indicators/GapSideSideWhite.h>
+#include <indicators/GravestoneDoji.h>
 #include <indicators/EMA.h>
+#include <indicators/HangingMan.h>
+#include <indicators/Harami.h>
 #include <indicators/Engulfing.h>
 #include <indicators/EveningDojiStar.h>
 #include <indicators/EveningStar.h>
@@ -2219,6 +2223,42 @@ ctStatus_t ct_cdl_evening_star(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
   EveningStar ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_gap_side_side_white(const float *host_open,
+                                      const float *host_high,
+                                      const float *host_low,
+                                      const float *host_close,
+                                      float *host_output, int size) {
+  GapSideSideWhite ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_gravestone_doji(const float *host_open,
+                                  const float *host_high,
+                                  const float *host_low,
+                                  const float *host_close,
+                                  float *host_output, int size) {
+  GravestoneDoji ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_hanging_man(const float *host_open, const float *host_high,
+                              const float *host_low, const float *host_close,
+                              float *host_output, int size) {
+  HangingMan ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size);
+}
+
+ctStatus_t ct_cdl_harami(const float *host_open, const float *host_high,
+                         const float *host_low, const float *host_close,
+                         float *host_output, int size) {
+  Harami ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }

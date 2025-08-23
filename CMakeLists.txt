@@ -96,9 +96,13 @@ set(INDICATOR_SOURCES
     src/indicators/DarkCloudCover.cu
     src/indicators/DojiStar.cu
     src/indicators/DragonflyDoji.cu
+    src/indicators/GapSideSideWhite.cu
+    src/indicators/GravestoneDoji.cu
     src/indicators/Engulfing.cu
     src/indicators/EveningDojiStar.cu
     src/indicators/EveningStar.cu
+    src/indicators/HangingMan.cu
+    src/indicators/Harami.cu
 )
 
 add_library(tacuda SHARED
