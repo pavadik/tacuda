@@ -132,6 +132,11 @@ set(INDICATOR_SOURCES
     src/indicators/StickSandwich.cu
     src/indicators/Takuri.cu
     src/indicators/TasukiGap.cu
+    src/indicators/Thrusting.cu
+    src/indicators/Tristar.cu
+    src/indicators/Unique3River.cu
+    src/indicators/UpsideGap2Crows.cu
+    src/indicators/XSideGap3Methods.cu
 )
 
 add_library(tacuda SHARED

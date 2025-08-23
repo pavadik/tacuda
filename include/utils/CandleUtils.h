@@ -551,6 +551,74 @@ __host__ __device__ inline bool is_takuri(float open, float high, float low,
   return body <= range * 0.1f && upper <= range * 0.1f && lower >= range * 0.6f;
 }
 
+__host__ __device__ inline bool is_thrusting(float o1, float h1, float l1,
+                                            float c1, float o2, float h2,
+                                            float l2, float c2) {
+  float mid1 = (o1 + c1) * 0.5f;
+  return c1 < o1 && c2 > o2 && o2 < l1 && c2 > c1 && c2 < mid1;
+}
+
+__host__ __device__ inline float
+tristar(float o1, float h1, float l1, float c1, float o2, float h2, float l2,
+        float c2, float o3, float h3, float l3, float c3) {
+  bool d1 = is_doji(o1, h1, l1, c1);
+  bool d2 = is_doji(o2, h2, l2, c2);
+  bool d3 = is_doji(o3, h3, l3, c3);
+  if (!(d1 && d2 && d3))
+    return 0.0f;
+  bool gapUp = fminf(o2, c2) > fmaxf(o1, c1);
+  bool gapDown = fmaxf(o2, c2) < fminf(o1, c1);
+  if (gapUp && fmaxf(o3, c3) < fmaxf(o2, c2))
+    return -1.0f;
+  if (gapDown && fminf(o3, c3) > fminf(o2, c2))
+    return 1.0f;
+  return 0.0f;
+}
+
+__host__ __device__ inline bool
+is_unique_3_river(float o1, float h1, float l1, float c1, float o2, float h2,
+                  float l2, float c2, float o3, float h3, float l3, float c3) {
+  bool firstBlack = c1 < o1;
+  bool secondBlack = c2 < o2;
+  bool harami = c2 > c1 && o2 <= o1;
+  bool lowerLow = l2 < l1;
+  bool thirdWhite = c3 > o3;
+  bool openNotLower = o3 > l2;
+  return firstBlack && secondBlack && harami && lowerLow && thirdWhite &&
+         openNotLower;
+}
+
+__host__ __device__ inline bool is_upside_gap_2_crows(
+    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
+    float c2, float o3, float h3, float l3, float c3) {
+  bool firstWhite = c1 > o1;
+  bool secondBlack = c2 < o2;
+  bool gapUp = fminf(o2, c2) > fmaxf(o1, c1);
+  bool thirdBlack = c3 < o3;
+  bool engulf = o3 > o2 && c3 < c2;
+  bool closeAboveFirst = c3 > c1;
+  return firstWhite && secondBlack && gapUp && thirdBlack && engulf &&
+         closeAboveFirst;
+}
+
+__host__ __device__ inline float x_side_gap_3_methods(
+    float o1, float h1, float l1, float c1, float o2, float h2, float l2,
+    float c2, float o3, float h3, float l3, float c3) {
+  int color1 = c1 > o1 ? 1 : (c1 < o1 ? -1 : 0);
+  int color2 = c2 > o2 ? 1 : (c2 < o2 ? -1 : 0);
+  int color3 = c3 > o3 ? 1 : (c3 < o3 ? -1 : 0);
+  bool same12 = color1 != 0 && color1 == color2;
+  bool opp3 = color3 == -color2;
+  bool openIn2 = o3 < fmaxf(o2, c2) && o3 > fminf(o2, c2);
+  bool closeIn1 = c3 < fmaxf(o1, c1) && c3 > fminf(o1, c1);
+  bool gapCond =
+      (color1 == 1 && fminf(o2, c2) > fmaxf(o1, c1)) ||
+      (color1 == -1 && fmaxf(o2, c2) < fminf(o1, c1));
+  if (same12 && opp3 && openIn2 && closeIn1 && gapCond)
+    return static_cast<float>(color1);
+  return 0.0f;
+}
+
 __host__ __device__ inline float
 tasuki_gap(float o1, float h1, float l1, float c1, float o2, float h2,
            float l2, float c2, float o3, float h3, float l3, float c3) {
