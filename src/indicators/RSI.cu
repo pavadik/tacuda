@@ -1,24 +1,33 @@
 #include <indicators/RSI.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
+#include <thrust/device_ptr.h>
+#include <thrust/execution_policy.h>
+#include <thrust/scan.h>
 #include <stdexcept>
 
-__global__ void rsiKernel(const float* __restrict__ input,
-                          float* __restrict__ output,
-                          int period, int size) {
+__global__ void diffKernel(const float* __restrict__ input,
+                           float* __restrict__ gainPrefix,
+                           float* __restrict__ lossPrefix,
+                           int size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size - 1) {
+        float diff = input[idx + 1] - input[idx];
+        gainPrefix[idx + 1] = diff > 0.0f ? diff : 0.0f;
+        lossPrefix[idx + 1] = diff < 0.0f ? -diff : 0.0f;
+    }
+}
+
+__global__ void rsiKernelPrefix(const float* __restrict__ gainPrefix,
+                                const float* __restrict__ lossPrefix,
+                                float* __restrict__ output,
+                                int period, int size) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < size - period) {
-        float gain = 0.0f;
-        float loss = 0.0f;
-        for (int i = 0; i < period; ++i) {
-            float diff = input[idx + i + 1] - input[idx + i];
-            if (diff > 0.0f) {
-                gain += diff;
-            } else {
-                loss -= diff; // diff is negative
-            }
-        }
-        float avgGain = gain / period;
-        float avgLoss = loss / period;
+        float sumGain = gainPrefix[idx + period] - gainPrefix[idx];
+        float sumLoss = lossPrefix[idx + period] - lossPrefix[idx];
+        float avgGain = sumGain / period;
+        float avgLoss = sumLoss / period;
         float rsi;
         if (avgLoss == 0.0f) {
             rsi = (avgGain == 0.0f) ? 50.0f : 100.0f;
@@ -40,8 +49,25 @@ void RSI::calculate(const float* input, float* output, int size, cudaStream_t st
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
+    float* gain = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    float* loss = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+
+    CUDA_CHECK(cudaMemsetAsync(gain, 0, size * sizeof(float), stream));
+    CUDA_CHECK(cudaMemsetAsync(loss, 0, size * sizeof(float), stream));
+
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    rsiKernel<<<grid, block, 0, stream>>>(input, output, period, size);
+    diffKernel<<<grid, block, 0, stream>>>(input, gain, loss, size);
     CUDA_CHECK(cudaGetLastError());
+
+    thrust::device_ptr<float> gainPtr(gain);
+    thrust::device_ptr<float> lossPtr(loss);
+    thrust::inclusive_scan(thrust::cuda::par.on(stream), gainPtr, gainPtr + size, gainPtr);
+    thrust::inclusive_scan(thrust::cuda::par.on(stream), lossPtr, lossPtr + size, lossPtr);
+
+    rsiKernelPrefix<<<grid, block, 0, stream>>>(gain, loss, output, period, size);
+    CUDA_CHECK(cudaGetLastError());
+
+    DeviceBufferPool::instance().release(gain);
+    DeviceBufferPool::instance().release(loss);
 }

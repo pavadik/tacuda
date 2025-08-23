@@ -11,7 +11,7 @@
 
 // Helper to compare floating point vectors, ignoring NaNs.
 void expect_approx_equal(const std::vector<float> &a,
-                         const std::vector<float> &b, float eps = 1e-3f) {
+                         const std::vector<float> &b, float eps) {
   ASSERT_EQ(a.size(), b.size());
   for (size_t i = 0; i < a.size(); ++i) {
     if (std::isnan(a[i]) || std::isnan(b[i]))
