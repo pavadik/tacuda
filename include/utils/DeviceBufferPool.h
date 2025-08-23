@@ -13,6 +13,9 @@ public:
     void* acquire(size_t bytes);
     void release(void* ptr);
 
+    // Frees all cached device buffers and resets the pool.
+    void cleanup();
+
     ~DeviceBufferPool();
 
 private:
