@@ -8,28 +8,23 @@ __global__ void cciKernel(const float* __restrict__ high,
                           const float* __restrict__ close,
                           float* __restrict__ output,
                           int period, int size) {
-    if (threadIdx.x == 0 && blockIdx.x == 0) {
-        float nan = nanf("");
-        for (int i = 0; i < size; ++i) {
-            output[i] = nan;
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= period - 1 && idx < size) {
+        float sum = 0.0f;
+        for (int j = 0; j < period; ++j) {
+            int cur = idx - j;
+            sum += (high[cur] + low[cur] + close[cur]) / 3.0f;
         }
-        for (int i = period - 1; i < size; ++i) {
-            float sum = 0.0f;
-            for (int j = 0; j < period; ++j) {
-                int idx = i - j;
-                sum += (high[idx] + low[idx] + close[idx]) / 3.0f;
-            }
-            float sma = sum / period;
-            float dev = 0.0f;
-            for (int j = 0; j < period; ++j) {
-                int idx = i - j;
-                float tp = (high[idx] + low[idx] + close[idx]) / 3.0f;
-                dev += fabsf(tp - sma);
-            }
-            float md = dev / period;
-            float tp_cur = (high[i] + low[i] + close[i]) / 3.0f;
-            output[i] = (md == 0.0f) ? 0.0f : (tp_cur - sma) / (0.015f * md);
+        float sma = sum / period;
+        float dev = 0.0f;
+        for (int j = 0; j < period; ++j) {
+            int cur = idx - j;
+            float tp = (high[cur] + low[cur] + close[cur]) / 3.0f;
+            dev += fabsf(tp - sma);
         }
+        float md = dev / period;
+        float tp_cur = (high[idx] + low[idx] + close[idx]) / 3.0f;
+        output[idx] = (md == 0.0f) ? 0.0f : (tp_cur - sma) / (0.015f * md);
     }
 }
 
@@ -40,7 +35,10 @@ void CCI::calculate(const float* high, const float* low, const float* close,
     if (period <= 0 || period > size) {
         throw std::invalid_argument("CCI: invalid period");
     }
-    cciKernel<<<1, 1, 0, stream>>>(high, low, close, output, period, size);
+    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    dim3 block = defaultBlock();
+    dim3 grid = defaultGrid(size);
+    cciKernel<<<grid, block, 0, stream>>>(high, low, close, output, period, size);
     CUDA_CHECK(cudaGetLastError());
 }
 
