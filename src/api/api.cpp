@@ -205,7 +205,8 @@ template <typename T>
 static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
                                      const float *h_high, const float *h_low,
                                      const float *h_close, float *h_out,
-                                     int size, cudaStream_t stream = 0) {
+                                     int size, int outMultiple = 1,
+                                     cudaStream_t stream = 0) {
   DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr},
       d_close{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -234,7 +235,7 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
   }
   d_close.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
+  err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
   if (err != cudaSuccess) {
     return CT_STATUS_ALLOC_FAILED;
   }
@@ -268,7 +269,80 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
     return CT_STATUS_KERNEL_FAILED;
   }
 
-  err = cudaMemcpyAsync(h_out, d_out.get(), size * sizeof(float),
+  err = cudaMemcpyAsync(h_out, d_out.get(),
+                        size * outMultiple * sizeof(float),
+                        cudaMemcpyDeviceToHost, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaStreamSynchronize(stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
+template <typename T>
+static ctStatus_t run_ohlc_indicator(T &ind, const float *h_high,
+                                     const float *h_low, const float *h_close,
+                                     float *h_out, int size,
+                                     int outMultiple = 1,
+                                     cudaStream_t stream = 0) {
+  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
+      d_out{nullptr};
+  float *tmp = nullptr;
+
+  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_high.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_low.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_close.reset(tmp);
+
+  err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
+  if (err != cudaSuccess) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+  d_out.reset(tmp);
+
+  err = cudaMemcpyAsync(d_high.get(), h_high, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpyAsync(d_low.get(), h_low, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpyAsync(d_close.get(), h_close, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    ind.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size,
+                  stream);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpyAsync(h_out, d_out.get(),
+                        size * outMultiple * sizeof(float),
                         cudaMemcpyDeviceToHost, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
@@ -534,323 +608,64 @@ ctStatus_t ct_bbands(const float *host_input, float *host_upper,
 
 ctStatus_t ct_atr(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
-                  int period, float initial) {
+                  int period, float initial, cudaStream_t stream) {
   ATR atr(period, initial);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    atr.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(atr, host_high, host_low, host_close,
+                            host_output, size, 1, stream);
 }
 
 ctStatus_t ct_natr(const float *host_high, const float *host_low,
                    const float *host_close, float *host_output, int size,
-                   int period) {
+                   int period, cudaStream_t stream) {
   NATR natr(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    natr.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(natr, host_high, host_low, host_close,
+                            host_output, size, 1, stream);
 }
 
 ctStatus_t ct_trange(const float *host_high, const float *host_low,
-                     const float *host_close, float *host_output, int size) {
+                     const float *host_close, float *host_output, int size,
+                     cudaStream_t stream) {
   TRANGE tr;
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  try {
-    tr.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(tr, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 ctStatus_t ct_stochastic(const float *host_high, const float *host_low,
                          const float *host_close, float *host_k, float *host_d,
-                         int size, int kPeriod, int dPeriod) {
+                         int size, int kPeriod, int dPeriod,
+                         cudaStream_t stream) {
   Stochastic stoch(kPeriod, dPeriod);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, 2 * size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    stoch.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(),
-                    size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  std::vector<float> tmpHost(2 * size);
-  err = cudaMemcpy(tmpHost.data(), d_out.get(), 2 * size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  std::memcpy(host_k, tmpHost.data(), size * sizeof(float));
-  std::memcpy(host_d, tmpHost.data() + size, size * sizeof(float));
-
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_ohlc_indicator(stoch, host_high, host_low, host_close,
+                                     tmp.data(), size, 2, stream);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_k, tmp.data(), size * sizeof(float));
+  std::memcpy(host_d, tmp.data() + size, size * sizeof(float));
   return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_stochf(const float *host_high, const float *host_low,
                      const float *host_close, float *host_k, float *host_d,
-                     int size, int kPeriod, int dPeriod) {
+                     int size, int kPeriod, int dPeriod,
+                     cudaStream_t stream) {
   StochasticFast stoch(kPeriod, dPeriod);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, 2 * size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    stoch.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(),
-                    size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  std::vector<float> tmpHost(2 * size);
-  err = cudaMemcpy(tmpHost.data(), d_out.get(), 2 * size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  std::memcpy(host_k, tmpHost.data(), size * sizeof(float));
-  std::memcpy(host_d, tmpHost.data() + size, size * sizeof(float));
-
+  std::vector<float> tmp(2 * size);
+  ctStatus_t rc = run_ohlc_indicator(stoch, host_high, host_low, host_close,
+                                     tmp.data(), size, 2, stream);
+  if (rc != CT_STATUS_SUCCESS)
+    return rc;
+  std::memcpy(host_k, tmp.data(), size * sizeof(float));
+  std::memcpy(host_d, tmp.data() + size, size * sizeof(float));
   return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_stochrsi(const float *host_input, float *host_k, float *host_d,
-                       int size, int rsiPeriod, int kPeriod, int dPeriod) {
+                       int size, int rsiPeriod, int kPeriod, int dPeriod,
+                       cudaStream_t stream) {
   StochRSI st(rsiPeriod, kPeriod, dPeriod);
   std::vector<float> tmp(2 * size);
-  ctStatus_t rc = run_indicator(st, host_input, tmp.data(), size, 2);
+  ctStatus_t rc = run_indicator(st, host_input, tmp.data(), size, 2, stream);
   if (rc != CT_STATUS_SUCCESS)
     return rc;
   std::memcpy(host_k, tmp.data(), size * sizeof(float));
@@ -860,191 +675,26 @@ ctStatus_t ct_stochrsi(const float *host_input, float *host_k, float *host_d,
 
 ctStatus_t ct_cci(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
-                  int period) {
+                  int period, cudaStream_t stream) {
   CCI cci(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    cci.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(cci, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 ctStatus_t ct_adx(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
-                  int period) {
+                  int period, cudaStream_t stream) {
   ADX adx(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    adx.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(adx, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 ctStatus_t ct_adxr(const float *host_high, const float *host_low,
                    const float *host_close, float *host_output, int size,
-                   int period) {
+                   int period, cudaStream_t stream) {
   ADXR adxr(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    adxr.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(adxr, host_high, host_low, host_close,
+                            host_output, size, 1, stream);
 }
 
 ctStatus_t ct_plus_dm(const float *host_high, const float *host_low,
@@ -1149,128 +799,18 @@ ctStatus_t ct_minus_dm(const float *host_high, const float *host_low,
 
 ctStatus_t ct_plus_di(const float *host_high, const float *host_low,
                       const float *host_close, float *host_output, int size,
-                      int period) {
+                      int period, cudaStream_t stream) {
   PlusDI pdi(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    pdi.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(pdi, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 ctStatus_t ct_minus_di(const float *host_high, const float *host_low,
                        const float *host_close, float *host_output, int size,
-                       int period) {
+                       int period, cudaStream_t stream) {
   MinusDI mdi(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    mdi.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(mdi, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 ctStatus_t ct_sar(const float *host_high, const float *host_low,
@@ -2911,65 +2451,10 @@ ctStatus_t ct_correl(const float *host_x, const float *host_y,
 
 ctStatus_t ct_dx(const float *host_high, const float *host_low,
                  const float *host_close, float *host_output, int size,
-                 int period) {
+                 int period, cudaStream_t stream) {
   DX dx(period);
-  DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
-      d_out{nullptr};
-  float *tmp = nullptr;
-
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_high.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_low.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_close.reset(tmp);
-
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
-    return CT_STATUS_ALLOC_FAILED;
-  }
-  d_out.reset(tmp);
-
-  err = cudaMemcpy(d_high.get(), host_high, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_low.get(), host_low, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-  err = cudaMemcpy(d_close.get(), host_close, size * sizeof(float),
-                   cudaMemcpyHostToDevice);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  try {
-    dx.calculate(d_high.get(), d_low.get(), d_close.get(), d_out.get(), size);
-  } catch (...) {
-    return CT_STATUS_KERNEL_FAILED;
-  }
-
-  err = cudaMemcpy(host_output, d_out.get(), size * sizeof(float),
-                   cudaMemcpyDeviceToHost);
-  if (err != cudaSuccess) {
-    return CT_STATUS_COPY_FAILED;
-  }
-
-  return CT_STATUS_SUCCESS;
+  return run_ohlc_indicator(dx, host_high, host_low, host_close, host_output,
+                            size, 1, stream);
 }
 
 } // extern "C"

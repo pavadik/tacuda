@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <cuda_runtime.h>
 
 #if defined(_WIN32)
 #define CTAPI_EXPORT __declspec(dllexport)
@@ -107,34 +108,37 @@ CTAPI_EXPORT ctStatus_t ct_bbands(const float *host_input, float *host_upper,
                                   float lowerMul);
 CTAPI_EXPORT ctStatus_t ct_atr(const float *host_high, const float *host_low,
                                const float *host_close, float *host_output,
-                               int size, int period, float initial);
+                               int size, int period, float initial,
+                               cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_natr(const float *host_high, const float *host_low,
                                 const float *host_close, float *host_output,
-                                int size, int period);
+                                int size, int period,
+                                cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_trange(const float *host_high, const float *host_low,
                                   const float *host_close, float *host_output,
-                                  int size);
+                                  int size, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_stochastic(const float *host_high,
                                       const float *host_low,
                                       const float *host_close, float *host_k,
                                       float *host_d, int size, int kPeriod,
-                                      int dPeriod);
+                                      int dPeriod, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_stochf(const float *host_high, const float *host_low,
                                   const float *host_close, float *host_k,
                                   float *host_d, int size, int kPeriod,
-                                  int dPeriod);
+                                  int dPeriod, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_stochrsi(const float *host_input, float *host_k,
                                     float *host_d, int size, int rsiPeriod,
-                                    int kPeriod, int dPeriod);
+                                    int kPeriod, int dPeriod,
+                                    cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_cci(const float *host_high, const float *host_low,
                                const float *host_close, float *host_output,
-                               int size, int period);
+                               int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_adx(const float *host_high, const float *host_low,
                                const float *host_close, float *host_output,
-                               int size, int period);
+                               int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_adxr(const float *host_high, const float *host_low,
                                 const float *host_close, float *host_output,
-                                int size, int period);
+                                int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_plus_dm(const float *host_high,
                                    const float *host_low, float *host_output,
                                    int size, int period);
@@ -144,11 +148,11 @@ CTAPI_EXPORT ctStatus_t ct_minus_dm(const float *host_high,
 CTAPI_EXPORT ctStatus_t ct_plus_di(const float *host_high,
                                    const float *host_low,
                                    const float *host_close, float *host_output,
-                                   int size, int period);
+                                   int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_minus_di(const float *host_high,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
-                                    int size, int period);
+                                    int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_mfi(const float *host_high, const float *host_low,
                                const float *host_close,
                                const float *host_volume, float *host_output,
@@ -516,7 +520,7 @@ CTAPI_EXPORT ctStatus_t ct_correl(const float *host_x, const float *host_y,
                                   float *host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_dx(const float *host_high, const float *host_low,
                               const float *host_close, float *host_output,
-                              int size, int period);
+                              int size, int period, cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_linearreg(const float *host_input,
                                      float *host_output, int size, int period);
 CTAPI_EXPORT ctStatus_t ct_linearreg_slope(const float *host_input,
