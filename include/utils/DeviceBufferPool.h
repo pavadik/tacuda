@@ -16,6 +16,9 @@ public:
     // Frees all cached device buffers and resets the pool.
     void cleanup();
 
+    // Number of cudaMalloc calls performed by the pool.
+    size_t allocationCount() const;
+
     ~DeviceBufferPool();
 
 private:
@@ -25,6 +28,7 @@ private:
 
     std::unordered_map<size_t, std::vector<void*>> freeBuffers;
     std::unordered_map<void*, size_t> sizes;
+    size_t allocations = 0;
     std::mutex mutex;
 };
 
