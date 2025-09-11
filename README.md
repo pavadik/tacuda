@@ -141,14 +141,22 @@ int main() {
     
     // Execute on GPU
     auto status = tacuda::run_indicator_host("SMA", prices, output, params);
-    
-    if (status == tacuda::Status::OK) {
-        std::cout << "SMA computed successfully!" << std::endl;
-        // Process output...
+
+    std::cout << "SMA computed successfully!" << std::endl;
+    for (float value : output) {
+        std::cout << value << " ";
     }
-    
+    std::cout << std::endl;
+
     return status == tacuda::Status::OK ? 0 : 1;
 }
+```
+
+Expected output:
+
+```text
+SMA computed successfully!
+nan nan nan nan 3 4 5 6 7 8
 ```
 
 ### C# API
