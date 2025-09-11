@@ -17,6 +17,7 @@ void* DeviceBufferPool::acquire(size_t bytes) {
     void* ptr = nullptr;
     CUDA_CHECK(cudaMalloc(&ptr, bytes));
     sizes[ptr] = bytes;
+    ++allocations;
     return ptr;
 }
 
@@ -36,6 +37,12 @@ void DeviceBufferPool::cleanup() {
     }
     freeBuffers.clear();
     sizes.clear();
+    allocations = 0;
 }
 
 DeviceBufferPool::~DeviceBufferPool() { cleanup(); }
+
+size_t DeviceBufferPool::allocationCount() const {
+    std::lock_guard<std::mutex> lock(mutex);
+    return allocations;
+}

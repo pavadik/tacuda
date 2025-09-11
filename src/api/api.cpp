@@ -147,14 +147,14 @@
 #include <indicators/WILLR.h>
 #include <indicators/XSideGap3Methods.h>
 #include <utils/CudaUtils.h>
+#include <utils/DeviceBufferPool.h>
 
-struct CudaDeleter {
+struct PooledDeleter {
   void operator()(float *ptr) const noexcept {
-    if (ptr)
-      cudaFree(ptr);
+    DeviceBufferPool::instance().release(ptr);
   }
 };
-using DeviceBuffer = std::unique_ptr<float, CudaDeleter>;
+using DeviceBuffer = std::unique_ptr<float, PooledDeleter>;
 
 static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
                                 int size, int outMultiple = 1,
@@ -162,19 +162,23 @@ static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
   DeviceBuffer d_in{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_in.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(DeviceBufferPool::instance().acquire(
+        size * outMultiple * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_out.reset(tmp);
 
-  err = cudaMemcpyAsync(d_in.get(), h_in, size * sizeof(float),
+  cudaError_t err = cudaMemcpyAsync(d_in.get(), h_in, size * sizeof(float),
                         cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
@@ -211,37 +215,47 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
       d_close{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_open.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_high.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_low.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_close.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(DeviceBufferPool::instance().acquire(
+        size * outMultiple * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_out.reset(tmp);
 
-  err = cudaMemcpyAsync(d_open.get(), h_open, size * sizeof(float),
+  cudaError_t err = cudaMemcpyAsync(d_open.get(), h_open, size * sizeof(float),
                         cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
@@ -294,31 +308,39 @@ static ctStatus_t run_ohlc_indicator(T &ind, const float *h_high,
       d_out{nullptr};
   float *tmp = nullptr;
 
-  cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_high.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_low.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(
+        DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_close.reset(tmp);
 
-  err = cudaMalloc(&tmp, size * outMultiple * sizeof(float));
-  if (err != cudaSuccess) {
+  try {
+    tmp = static_cast<float *>(DeviceBufferPool::instance().acquire(
+        size * outMultiple * sizeof(float)));
+  } catch (...) {
     return CT_STATUS_ALLOC_FAILED;
   }
   d_out.reset(tmp);
 
-  err = cudaMemcpyAsync(d_high.get(), h_high, size * sizeof(float),
+  cudaError_t err = cudaMemcpyAsync(d_high.get(), h_high, size * sizeof(float),
                         cudaMemcpyHostToDevice, stream);
   if (err != cudaSuccess) {
     return CT_STATUS_COPY_FAILED;
