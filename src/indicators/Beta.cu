@@ -33,7 +33,7 @@ void Beta::calculate(const float* x, const float* y, float* output, int size, cu
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Beta: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     betaKernel<<<grid, block, 0, stream>>>(x, y, output, period, size);

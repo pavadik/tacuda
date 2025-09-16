@@ -29,7 +29,7 @@ void LINEARREG::calculate(const float* input, float* output, int size, cudaStrea
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     linearregKernel<<<grid, block, 0, stream>>>(input, output, period, size);

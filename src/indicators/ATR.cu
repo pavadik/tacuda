@@ -48,7 +48,7 @@ void ATR::calculate(const float* high, const float* low, const float* close,
     if (period <= 0 || period > size) {
         throw std::invalid_argument("ATR: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     atrKernel<<<1, 1, 0, stream>>>(high, low, close, output, period, initial, size);
     CUDA_CHECK(cudaGetLastError());
 }

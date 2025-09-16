@@ -64,7 +64,7 @@ void SAREXT::calculate(const float* high, const float* low,
     if (size <= 0) {
         throw std::invalid_argument("SAREXT: invalid size");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     sarextKernel<<<1, 1, 0, stream>>>(high, low, output, startValue, offsetOnReverse,
                           accInitLong, accLong, accMaxLong,
                           accInitShort, accShort, accMaxShort, size);

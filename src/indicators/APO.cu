@@ -39,7 +39,7 @@ void APO::calculate(const float* input, float* output, int size, cudaStream_t st
     if (fastPeriod >= slowPeriod) {
         throw std::invalid_argument("APO: fastPeriod must be < slowPeriod");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     apoKernel<<<grid, block, 0, stream>>>(input, output, fastPeriod, slowPeriod, size);

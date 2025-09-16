@@ -24,7 +24,7 @@ void SMA::calculate(const float* input, float* output, int size, cudaStream_t st
     }
     // Initialize the entire output array with NaNs so that any unwritten
     // warm-up region retains the expected NaN semantics.
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
     // Compute prefix sums of the input using Thrust.
     auto prefix = acquireDeviceBuffer<float>(size);

@@ -26,7 +26,7 @@ void ADXR::calculate(const float* high, const float* low, const float* close,
     ADX adxInd(period);
     adxInd.calculate(high, low, close, adx.get(), size, stream);
 
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     adxrKernel<<<grid, block, 0, stream>>>(adx.get(), output, period, size);

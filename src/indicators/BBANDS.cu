@@ -47,7 +47,7 @@ void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t
         throw std::invalid_argument("BBANDS: invalid period");
     }
     // Initialize outputs with NaNs so unwritten tail retains NaN semantics
-    CUDA_CHECK(cudaMemset(output, 0xFF, 3 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 3 * size * sizeof(float), stream));
 
     auto prefix = acquireDeviceBuffer<float>(size);
     auto squared = acquireDeviceBuffer<float>(size);

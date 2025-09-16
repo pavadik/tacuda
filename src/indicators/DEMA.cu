@@ -22,7 +22,7 @@ void DEMA::calculate(const float* input, float* output, int size, cudaStream_t s
         throw std::invalid_argument("DEMA: invalid period");
     }
 
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
     auto ema1 = acquireDeviceBuffer<float>(size);
     auto ema2 = acquireDeviceBuffer<float>(size);

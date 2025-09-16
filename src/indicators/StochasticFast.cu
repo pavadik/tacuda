@@ -45,7 +45,7 @@ void StochasticFast::calculate(const float* high, const float* low, const float*
     if (kPeriod <= 0 || dPeriod <= 0 || kPeriod > size) {
         throw std::invalid_argument("StochasticFast: invalid periods");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 2 * size * sizeof(float), stream));
     float* kOut = output;
     float* dOut = output + size;
     stochfKernel<<<1, 1, 0, stream>>>(high, low, close, kOut, dOut, kPeriod, dPeriod, size);

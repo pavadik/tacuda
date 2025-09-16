@@ -36,7 +36,7 @@ void MINMAXINDEX::calculate(const float *input, float *output,
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MINMAXINDEX: invalid period");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 2 * size * sizeof(float), stream));
   float *minOut = output;
   float *maxOut = output + size;
   dim3 block = defaultBlock();

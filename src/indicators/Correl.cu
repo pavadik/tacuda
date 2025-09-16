@@ -35,7 +35,7 @@ void Correl::calculate(const float* x, const float* y, float* output, int size, 
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Correl: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     correlKernel<<<grid, block, 0, stream>>>(x, y, output, period, size);

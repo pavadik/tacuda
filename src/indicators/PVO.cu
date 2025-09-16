@@ -40,7 +40,7 @@ void PVO::calculate(const float* input, float* output,
   if (fastPeriod >= slowPeriod) {
     throw std::invalid_argument("PVO: fastPeriod must be < slowPeriod");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
   pvoKernel<<<grid, block, 0, stream>>>(input, output, fastPeriod, slowPeriod, size);

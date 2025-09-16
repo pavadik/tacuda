@@ -23,7 +23,7 @@ __global__ void concealBabySwallowKernel(const float *__restrict__ open,
 void ConcealBabySwallow::calculate(const float *open, const float *high,
                                    const float *low, const float *close,
                                    float *output, int size, cudaStream_t stream) noexcept(false) {
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
   concealBabySwallowKernel<<<grid, block, 0, stream>>>(open, high, low, close, output,

@@ -25,7 +25,7 @@ void T3::calculate(const float *input, float *output,
   if (period <= 0 || size < 3 * period - 2) {
     throw std::invalid_argument("T3: invalid period");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
   auto e1 = acquireDeviceBuffer<float>(size);
   auto e2 = acquireDeviceBuffer<float>(size);
