@@ -18,6 +18,11 @@ void* DeviceBufferPool::acquire(size_t bytes) {
     if (!vec.empty()) {
         void* ptr = vec.back();
         vec.pop_back();
+        if (cachedBytes >= bytes) {
+            cachedBytes -= bytes;
+        } else {
+            cachedBytes = 0;
+        }
         return ptr;
     }
     void* ptr = nullptr;
@@ -32,7 +37,14 @@ void DeviceBufferPool::release(void* ptr) {
     std::lock_guard<std::mutex> lock(mutex);
     auto it = sizes.find(ptr);
     if (it != sizes.end()) {
-        freeBuffers[it->second].push_back(ptr);
+        const size_t size = it->second;
+        if (cachedBytes + size <= maxCachedBytes) {
+            freeBuffers[size].push_back(ptr);
+            cachedBytes += size;
+        } else {
+            CUDA_CHECK(cudaFree(ptr));
+            sizes.erase(it);
+        }
     }
 }
 
@@ -44,6 +56,32 @@ void DeviceBufferPool::cleanup() {
     freeBuffers.clear();
     sizes.clear();
     allocations = 0;
+    cachedBytes = 0;
+}
+
+void DeviceBufferPool::setMaxCacheBytes(size_t bytes) {
+    std::lock_guard<std::mutex> lock(mutex);
+    maxCachedBytes = bytes;
+    if (cachedBytes <= maxCachedBytes) {
+        return;
+    }
+
+    for (auto it = freeBuffers.begin(); it != freeBuffers.end() && cachedBytes > maxCachedBytes;) {
+        auto& vec = it->second;
+        const size_t bufferSize = it->first;
+        while (!vec.empty() && cachedBytes > maxCachedBytes) {
+            void* ptr = vec.back();
+            vec.pop_back();
+            CUDA_CHECK(cudaFree(ptr));
+            cachedBytes -= bufferSize;
+            sizes.erase(ptr);
+        }
+        if (vec.empty()) {
+            it = freeBuffers.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 DeviceBufferPool::~DeviceBufferPool() {

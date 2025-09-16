@@ -1,3 +1,5 @@
+#include <limits>
+
 #include <tacuda.h>
 #include <utils/DeviceBufferPool.h>
 #include <gtest/gtest.h>
@@ -20,4 +22,23 @@ TEST(DeviceBufferPool, ReusesBuffersInIndicators) {
   EXPECT_EQ(after_first, after_second);
 
   pool.cleanup();
+}
+
+TEST(DeviceBufferPool, RespectsCacheLimit) {
+  auto &pool = DeviceBufferPool::instance();
+  pool.cleanup();
+
+  void *ptr = pool.acquire(1024);
+  ASSERT_NE(ptr, nullptr);
+  EXPECT_EQ(pool.allocationCount(), 1u);
+
+  pool.setMaxCacheBytes(0);
+  pool.release(ptr);
+
+  void *ptr2 = pool.acquire(1024);
+  EXPECT_EQ(pool.allocationCount(), 2u);
+  pool.release(ptr2);
+
+  pool.cleanup();
+  pool.setMaxCacheBytes(std::numeric_limits<size_t>::max());
 }
