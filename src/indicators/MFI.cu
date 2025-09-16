@@ -58,10 +58,9 @@ void MFI::calculate(const float* high, const float* low, const float* close,
         throw std::invalid_argument("MFI: invalid period");
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
-    float* signedMF = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    mfiKernel<<<1, 1, 0, stream>>>(high, low, close, volume, signedMF, output, period, size);
+    auto signedMF = acquireDeviceBuffer<float>(size);
+    mfiKernel<<<1, 1, 0, stream>>>(high, low, close, volume, signedMF.get(), output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    DeviceBufferPool::instance().release(signedMF);
 }
 
 void MFI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

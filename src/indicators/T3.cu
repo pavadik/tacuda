@@ -27,25 +27,25 @@ void T3::calculate(const float *input, float *output,
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-  float *e1 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-  float *e2 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-  float *e3 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-  float *e4 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-  float *e5 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-  float *e6 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  auto e1 = acquireDeviceBuffer<float>(size);
+  auto e2 = acquireDeviceBuffer<float>(size);
+  auto e3 = acquireDeviceBuffer<float>(size);
+  auto e4 = acquireDeviceBuffer<float>(size);
+  auto e5 = acquireDeviceBuffer<float>(size);
+  auto e6 = acquireDeviceBuffer<float>(size);
 
   EMA ema(period);
-  ema.calculate(input, e1, size, stream);
+  ema.calculate(input, e1.get(), size, stream);
   int size2 = size - period + 1;
-  ema.calculate(e1, e2, size2);
+  ema.calculate(e1.get(), e2.get(), size2);
   int size3 = size2 - period + 1;
-  ema.calculate(e2, e3, size3);
+  ema.calculate(e2.get(), e3.get(), size3);
   int size4 = size3 - period + 1;
-  ema.calculate(e3, e4, size4);
+  ema.calculate(e3.get(), e4.get(), size4);
   int size5 = size4 - period + 1;
-  ema.calculate(e4, e5, size5);
+  ema.calculate(e4.get(), e5.get(), size5);
   int size6 = size5 - period + 1;
-  ema.calculate(e5, e6, size6);
+  ema.calculate(e5.get(), e6.get(), size6);
 
   float b = vFactor;
   float c1 = -b * b * b;
@@ -56,14 +56,7 @@ void T3::calculate(const float *input, float *output,
   int valid = size - 3 * period + 3;
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(valid);
-  t3Kernel<<<grid, block, 0, stream>>>(e3, e4, e5, e6, output, c1, c2, c3, c4, period,
+  t3Kernel<<<grid, block, 0, stream>>>(e3.get(), e4.get(), e5.get(), e6.get(), output, c1, c2, c3, c4, period,
                             valid);
   CUDA_CHECK(cudaGetLastError());
-
-  DeviceBufferPool::instance().release(e1);
-  DeviceBufferPool::instance().release(e2);
-  DeviceBufferPool::instance().release(e3);
-  DeviceBufferPool::instance().release(e4);
-  DeviceBufferPool::instance().release(e5);
-  DeviceBufferPool::instance().release(e6);
 }

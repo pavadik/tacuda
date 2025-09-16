@@ -24,15 +24,13 @@ void SUM::calculate(const float *input, float *output,
   }
   CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-  float *prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  auto prefix = acquireDeviceBuffer<float>(size);
   thrust::device_ptr<const float> inPtr(input);
-  thrust::device_ptr<float> prePtr(prefix);
+  thrust::device_ptr<float> prePtr(prefix.get());
   thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
 
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
-  sumKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
+  sumKernelPrefix<<<grid, block, 0, stream>>>(prefix.get(), output, period, size);
   CUDA_CHECK(cudaGetLastError());
-
-  DeviceBufferPool::instance().release(prefix);
 }

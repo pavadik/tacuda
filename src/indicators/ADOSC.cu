@@ -62,16 +62,15 @@ void ADOSC::calculate(const float* high, const float* low, const float* close,
     if (shortPeriod >= longPeriod) {
         throw std::invalid_argument("ADOSC: shortPeriod must be < longPeriod");
     }
-    float* ad = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto ad = acquireDeviceBuffer<float>(size);
 
-    adLineKernel<<<1, 1, 0, stream>>>(high, low, close, volume, ad, size);
+    adLineKernel<<<1, 1, 0, stream>>>(high, low, close, volume, ad.get(), size);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    adoscKernel<<<grid, block, 0, stream>>>(ad, output, shortPeriod, longPeriod, size);
+    adoscKernel<<<grid, block, 0, stream>>>(ad.get(), output, shortPeriod, longPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-    DeviceBufferPool::instance().release(ad);
 }
 
 void ADOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

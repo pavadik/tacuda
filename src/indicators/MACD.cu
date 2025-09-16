@@ -44,21 +44,18 @@ __global__ void emaFinalizeKernel(const float* __restrict__ input,
 static void computeEma(const float* input, float* output, int size, int period, cudaStream_t stream) {
     float alpha = 2.0f / (period + 1.0f);
     float k = 1.0f - alpha;
-    thrust::complex<float>* trans = static_cast<thrust::complex<float>*>(
-        DeviceBufferPool::instance().acquire((size - 1) * sizeof(thrust::complex<float>)));
+    auto trans = acquireDeviceBuffer<thrust::complex<float>>(static_cast<size_t>(std::max(0, size - 1)));
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    emaPrepKernel<<<grid, block, 0, stream>>>(input, trans, alpha, k, size);
+    emaPrepKernel<<<grid, block, 0, stream>>>(input, trans.get(), alpha, k, size);
     CUDA_CHECK(cudaGetLastError());
 
-    thrust::device_ptr<thrust::complex<float>> tPtr(trans);
+    thrust::device_ptr<thrust::complex<float>> tPtr(trans.get());
     thrust::inclusive_scan(thrust::cuda::par.on(stream), tPtr, tPtr + size - 1, tPtr, EmaCombine());
 
-    emaFinalizeKernel<<<grid, block, 0, stream>>>(input, trans, output, size);
+    emaFinalizeKernel<<<grid, block, 0, stream>>>(input, trans.get(), output, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(trans);
 }
 
 __global__ void macdKernel(const float* __restrict__ emaFast,
@@ -86,17 +83,14 @@ void MACD::calculate(const float* input, float* output, int size, cudaStream_t s
     // slowPeriod.
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-    float* emaFast = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float* emaSlow = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto emaFast = acquireDeviceBuffer<float>(size);
+    auto emaSlow = acquireDeviceBuffer<float>(size);
 
-    computeEma(input, emaFast, size, fastPeriod, stream);
-    computeEma(input, emaSlow, size, slowPeriod, stream);
+    computeEma(input, emaFast.get(), size, fastPeriod, stream);
+    computeEma(input, emaSlow.get(), size, slowPeriod, stream);
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    macdKernel<<<grid, block, 0, stream>>>(emaFast, emaSlow, output, slowPeriod, size);
+    macdKernel<<<grid, block, 0, stream>>>(emaFast.get(), emaSlow.get(), output, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(emaFast);
-    DeviceBufferPool::instance().release(emaSlow);
 }

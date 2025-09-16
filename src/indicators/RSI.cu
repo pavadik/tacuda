@@ -49,25 +49,22 @@ void RSI::calculate(const float* input, float* output, int size, cudaStream_t st
     }
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-    float* gain = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float* loss = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto gain = acquireDeviceBuffer<float>(size);
+    auto loss = acquireDeviceBuffer<float>(size);
 
-    CUDA_CHECK(cudaMemsetAsync(gain, 0, size * sizeof(float), stream));
-    CUDA_CHECK(cudaMemsetAsync(loss, 0, size * sizeof(float), stream));
+    CUDA_CHECK(cudaMemsetAsync(gain.get(), 0, size * sizeof(float), stream));
+    CUDA_CHECK(cudaMemsetAsync(loss.get(), 0, size * sizeof(float), stream));
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    diffKernel<<<grid, block, 0, stream>>>(input, gain, loss, size);
+    diffKernel<<<grid, block, 0, stream>>>(input, gain.get(), loss.get(), size);
     CUDA_CHECK(cudaGetLastError());
 
-    thrust::device_ptr<float> gainPtr(gain);
-    thrust::device_ptr<float> lossPtr(loss);
+    thrust::device_ptr<float> gainPtr(gain.get());
+    thrust::device_ptr<float> lossPtr(loss.get());
     thrust::inclusive_scan(thrust::cuda::par.on(stream), gainPtr, gainPtr + size, gainPtr);
     thrust::inclusive_scan(thrust::cuda::par.on(stream), lossPtr, lossPtr + size, lossPtr);
 
-    rsiKernelPrefix<<<grid, block, 0, stream>>>(gain, loss, output, period, size);
+    rsiKernelPrefix<<<grid, block, 0, stream>>>(gain.get(), loss.get(), output, period, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(gain);
-    DeviceBufferPool::instance().release(loss);
 }

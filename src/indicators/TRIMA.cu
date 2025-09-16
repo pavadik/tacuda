@@ -15,13 +15,11 @@ void TRIMA::calculate(const float *input, float *output,
   int p1 = (period + 1) / 2;
   int p2 = (period % 2 == 0) ? (p1 + 1) : p1;
 
-  float *tmp = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  auto tmp = acquireDeviceBuffer<float>(size);
 
   SMA sma1(p1);
-  sma1.calculate(input, tmp, size, stream);
+  sma1.calculate(input, tmp.get(), size, stream);
   int size2 = size - p1 + 1;
   SMA sma2(p2);
-  sma2.calculate(tmp, output, size2);
-
-  DeviceBufferPool::instance().release(tmp);
+  sma2.calculate(tmp.get(), output, size2);
 }

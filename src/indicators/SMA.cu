@@ -27,15 +27,13 @@ void SMA::calculate(const float* input, float* output, int size, cudaStream_t st
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
     // Compute prefix sums of the input using Thrust.
-    float* prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto prefix = acquireDeviceBuffer<float>(size);
     thrust::device_ptr<const float> inPtr(input);
-    thrust::device_ptr<float> prePtr(prefix);
+    thrust::device_ptr<float> prePtr(prefix.get());
     thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    smaKernelPrefix<<<grid, block, 0, stream>>>(prefix, output, period, size);
+    smaKernelPrefix<<<grid, block, 0, stream>>>(prefix.get(), output, period, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(prefix);
 }
