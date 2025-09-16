@@ -81,7 +81,7 @@ void MACD::calculate(const float* input, float* output, int size, cudaStream_t s
     // Warm-up region at the beginning should remain NaN. Initialize the
     // entire output with NaNs and only compute values for indices beyond the
     // slowPeriod.
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
     auto emaFast = acquireDeviceBuffer<float>(size);
     auto emaSlow = acquireDeviceBuffer<float>(size);

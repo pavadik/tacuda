@@ -59,7 +59,7 @@ void SAR::calculate(const float* high, const float* low,
     if (size <= 0) {
         throw std::invalid_argument("SAR: invalid size");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     sarKernel<<<1, 1, 0, stream>>>(high, low, output, step, maxAcceleration, size);
     CUDA_CHECK(cudaGetLastError());
 }

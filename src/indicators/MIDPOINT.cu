@@ -25,7 +25,7 @@ void MIDPOINT::calculate(const float* input, float* output, int size, cudaStream
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MIDPOINT: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     midpointKernel<<<grid, block, 0, stream>>>(input, output, period, size);

@@ -35,7 +35,7 @@ void KAMA::calculate(const float *input, float *output,
     throw std::invalid_argument("KAMA: invalid period");
   }
   // Initialize output with NaNs so unwritten tail remains NaN
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
   kamaKernel<<<1, 1, 0, stream>>>(input, output, period, fastSC, slowSC, size);
   CUDA_CHECK(cudaGetLastError());

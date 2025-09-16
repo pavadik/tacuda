@@ -111,7 +111,7 @@ void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_
     if (fastPeriod >= slowPeriod) {
         throw std::invalid_argument("MACD: fastPeriod must be < slowPeriod");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, 3 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 3 * size * sizeof(float), stream));
     float* macd = output;
     float* signal = output + size;
     float* hist = output + 2 * size;

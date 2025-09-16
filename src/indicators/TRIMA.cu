@@ -11,7 +11,7 @@ void TRIMA::calculate(const float *input, float *output,
   if (period <= 0 || size < period) {
     throw std::invalid_argument("TRIMA: invalid period");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
   int p1 = (period + 1) / 2;
   int p2 = (period % 2 == 0) ? (p1 + 1) : p1;
 

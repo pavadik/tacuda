@@ -49,7 +49,7 @@ void Stochastic::calculate(const float* high, const float* low, const float* clo
     if (kPeriod <= 0 || dPeriod <= 0 || kPeriod + dPeriod - 1 > size) {
         throw std::invalid_argument("Stochastic: invalid periods");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 2 * size * sizeof(float), stream));
     float* kOut = output;
     float* dOut = output + size;
     stochasticKernel<<<1, 1, 0, stream>>>(high, low, close, kOut, dOut, kPeriod, dPeriod, size);

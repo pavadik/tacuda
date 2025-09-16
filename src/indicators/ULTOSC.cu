@@ -39,7 +39,7 @@ void ULTOSC::calculate(const float* high, const float* low, const float* close,
         longPeriod >= size) {
         throw std::invalid_argument("ULTOSC: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
     ultoscKernel<<<grid, block, 0, stream>>>(high, low, close, output,

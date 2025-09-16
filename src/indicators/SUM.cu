@@ -22,7 +22,7 @@ void SUM::calculate(const float *input, float *output,
   if (period <= 0 || period > size) {
     throw std::invalid_argument("SUM: invalid period");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
 
   auto prefix = acquireDeviceBuffer<float>(size);
   thrust::device_ptr<const float> inPtr(input);

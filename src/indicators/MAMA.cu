@@ -29,7 +29,7 @@ void MAMA::calculate(const float* input, float* output, int size, cudaStream_t s
     if (size <= 0) {
         throw std::invalid_argument("MAMA: invalid size");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, 2 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 2 * size * sizeof(float), stream));
     float* mama = output;
     float* fama = output + size;
     mamaKernel<<<1, 1, 0, stream>>>(input, mama, fama, fastLimit, slowLimit, size);

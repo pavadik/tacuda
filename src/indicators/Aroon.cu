@@ -56,7 +56,7 @@ void Aroon::calculate(const float* high, const float* low, float* output, int si
     if (upPeriod <= 0 || upPeriod > size || downPeriod <= 0 || downPeriod > size) {
         throw std::invalid_argument("Aroon: invalid period");
     }
-    CUDA_CHECK(cudaMemset(output, 0xFF, 3 * size * sizeof(float)));
+    CUDA_CHECK(cudaMemsetAsync(output, 0xFF, 3 * size * sizeof(float), stream));
     aroonKernel<<<1, 1, 0, stream>>>(high, low, output, upPeriod, downPeriod, size);
     CUDA_CHECK(cudaGetLastError());
 }

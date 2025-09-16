@@ -40,7 +40,7 @@ void PlusDM::calculate(const float *high, const float *low, float *output,
   if (period <= 0 || period > size) {
     throw std::invalid_argument("PlusDM: invalid period");
   }
-  CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
+  CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
   plusDMKernel<<<1, 1, 0, stream>>>(high, low, output, period, size);
   CUDA_CHECK(cudaGetLastError());
 }
