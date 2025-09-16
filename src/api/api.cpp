@@ -205,6 +205,19 @@ static ctStatus_t run_indicator(tacuda::Indicator &ind, const float *h_in, float
   return CT_STATUS_SUCCESS;
 }
 
+template <typename Indicator>
+static ctStatus_t run_indicator_device(Indicator &ind, const float *d_in,
+                                       float *d_out, int size,
+                                       cudaStream_t stream = 0) {
+  try {
+    ind.calculate(d_in, d_out, size, stream);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
 template <typename T>
 static ctStatus_t run_ohlc_indicator(T &ind, const float *h_open,
                                      const float *h_high, const float *h_low,
@@ -611,6 +624,186 @@ ctStatus_t ct_pvo(const float *host_volume, float *host_output, int size,
                   int fastPeriod, int slowPeriod) {
   tacuda::PVO pvo(fastPeriod, slowPeriod);
   return run_indicator(pvo, host_volume, host_output, size);
+}
+
+ctStatus_t ct_sma_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::SMA sma(period);
+  return run_indicator_device(sma, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_ma_device(const float *device_input, float *device_output,
+                        int size, int period, ctMaType_t type,
+                        cudaStream_t stream) {
+  tacuda::MA ma(period, static_cast<tacuda::MAType>(type));
+  return run_indicator_device(ma, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_wma_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::WMA wma(period);
+  return run_indicator_device(wma, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_momentum_device(const float *device_input,
+                              float *device_output, int size, int period,
+                              cudaStream_t stream) {
+  tacuda::Momentum mom(period);
+  return run_indicator_device(mom, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_change_device(const float *device_input, float *device_output,
+                            int size, int period, cudaStream_t stream) {
+  tacuda::Change ch(period);
+  return run_indicator_device(ch, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_roc_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::ROC roc(period);
+  return run_indicator_device(roc, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_rocp_device(const float *device_input, float *device_output,
+                          int size, int period, cudaStream_t stream) {
+  tacuda::ROCP rocp(period);
+  return run_indicator_device(rocp, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_rocr_device(const float *device_input, float *device_output,
+                          int size, int period, cudaStream_t stream) {
+  tacuda::ROCR rocr(period);
+  return run_indicator_device(rocr, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_rocr100_device(const float *device_input,
+                              float *device_output, int size, int period,
+                              cudaStream_t stream) {
+  tacuda::ROCR100 rocr100(period);
+  return run_indicator_device(rocr100, device_input, device_output, size,
+                              stream);
+}
+
+ctStatus_t ct_ema_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::EMA ema(period);
+  return run_indicator_device(ema, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_dema_device(const float *device_input, float *device_output,
+                          int size, int period, cudaStream_t stream) {
+  tacuda::DEMA dema(period);
+  return run_indicator_device(dema, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_tema_device(const float *device_input, float *device_output,
+                          int size, int period, cudaStream_t stream) {
+  tacuda::TEMA tema(period);
+  return run_indicator_device(tema, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_t3_device(const float *device_input, float *device_output,
+                        int size, int period, float vFactor,
+                        cudaStream_t stream) {
+  tacuda::T3 t3(period, vFactor);
+  return run_indicator_device(t3, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_trima_device(const float *device_input, float *device_output,
+                           int size, int period, cudaStream_t stream) {
+  tacuda::TRIMA trima(period);
+  return run_indicator_device(trima, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_trix_device(const float *device_input, float *device_output,
+                          int size, int period, cudaStream_t stream) {
+  tacuda::TRIX trix(period);
+  return run_indicator_device(trix, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_max_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::MAX mx(period);
+  return run_indicator_device(mx, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_min_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::MIN mn(period);
+  return run_indicator_device(mn, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_maxindex_device(const float *device_input,
+                              float *device_output, int size, int period,
+                              cudaStream_t stream) {
+  tacuda::MAXINDEX mi(period);
+  return run_indicator_device(mi, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_minindex_device(const float *device_input,
+                              float *device_output, int size, int period,
+                              cudaStream_t stream) {
+  tacuda::MININDEX mi(period);
+  return run_indicator_device(mi, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_stddev_device(const float *device_input, float *device_output,
+                            int size, int period, cudaStream_t stream) {
+  tacuda::StdDev sd(period);
+  return run_indicator_device(sd, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_var_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::VAR vr(period);
+  return run_indicator_device(vr, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_sum_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::SUM sum(period);
+  return run_indicator_device(sum, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_rsi_device(const float *device_input, float *device_output,
+                         int size, int period, cudaStream_t stream) {
+  tacuda::RSI rsi(period);
+  return run_indicator_device(rsi, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_kama_device(const float *device_input, float *device_output,
+                          int size, int period, int fastPeriod, int slowPeriod,
+                          cudaStream_t stream) {
+  tacuda::KAMA kama(period, fastPeriod, slowPeriod);
+  return run_indicator_device(kama, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_macd_line_device(const float *device_input,
+                               float *device_output, int size, int fastPeriod,
+                               int slowPeriod, cudaStream_t stream) {
+  tacuda::MACD macd(fastPeriod, slowPeriod);
+  return run_indicator_device(macd, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_apo_device(const float *device_input, float *device_output,
+                         int size, int fastPeriod, int slowPeriod,
+                         cudaStream_t stream) {
+  tacuda::APO apo(fastPeriod, slowPeriod);
+  return run_indicator_device(apo, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_ppo_device(const float *device_input, float *device_output,
+                         int size, int fastPeriod, int slowPeriod,
+                         cudaStream_t stream) {
+  tacuda::PPO ppo(fastPeriod, slowPeriod);
+  return run_indicator_device(ppo, device_input, device_output, size, stream);
+}
+
+ctStatus_t ct_pvo_device(const float *device_volume, float *device_output,
+                         int size, int fastPeriod, int slowPeriod,
+                         cudaStream_t stream) {
+  tacuda::PVO pvo(fastPeriod, slowPeriod);
+  return run_indicator_device(pvo, device_volume, device_output, size, stream);
 }
 
 ctStatus_t ct_bbands(const float *host_input, float *host_upper,
