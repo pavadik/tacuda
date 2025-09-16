@@ -1,6 +1,9 @@
 #include <utils/DeviceBufferPool.h>
 #include <utils/CudaUtils.h>
 
+#include <exception>
+#include <iostream>
+
 DeviceBufferPool& DeviceBufferPool::instance() {
     static DeviceBufferPool pool;
     return pool;
@@ -35,15 +38,22 @@ void DeviceBufferPool::release(void* ptr) {
 
 void DeviceBufferPool::cleanup() {
     std::lock_guard<std::mutex> lock(mutex);
-    for (auto &kv : sizes) {
-        cudaFree(kv.first);
+    for (auto& kv : sizes) {
+        CUDA_CHECK(cudaFree(kv.first));
     }
     freeBuffers.clear();
     sizes.clear();
     allocations = 0;
 }
 
-DeviceBufferPool::~DeviceBufferPool() { cleanup(); }
+DeviceBufferPool::~DeviceBufferPool() {
+    try {
+        cleanup();
+    } catch (const std::exception& err) {
+        std::cerr << "DeviceBufferPool cleanup failed during destruction: "
+                  << err.what() << std::endl;
+    }
+}
 
 size_t DeviceBufferPool::allocationCount() const {
     std::lock_guard<std::mutex> lock(mutex);
