@@ -3,11 +3,14 @@
 
 #include <cuda_runtime.h>
 
+namespace tacuda {
 class Indicator {
 public:
     virtual void calculate(const float* input, float* output, int size,
                            cudaStream_t stream = 0) noexcept(false) = 0;
     virtual ~Indicator() = default;
 };
+
+} // namespace tacuda
 
 #endif

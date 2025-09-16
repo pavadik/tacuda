@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MorningDojiStar : public Indicator {
 public:
   MorningDojiStar() = default;
@@ -11,5 +12,7 @@ public:
   void calculate(const float *input, float *output,
                  int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif

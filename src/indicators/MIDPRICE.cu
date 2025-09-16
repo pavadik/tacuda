@@ -19,9 +19,9 @@ __global__ void midpriceKernel(const float* __restrict__ high,
     }
 }
 
-MIDPRICE::MIDPRICE(int period) : period(period) {}
+tacuda::MIDPRICE::MIDPRICE(int period) : period(period) {}
 
-void MIDPRICE::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MIDPRICE::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MIDPRICE: invalid period");
     }
@@ -32,7 +32,7 @@ void MIDPRICE::calculate(const float* high, const float* low, float* output, int
     CUDA_CHECK(cudaGetLastError());
 }
 
-void MIDPRICE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MIDPRICE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

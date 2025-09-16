@@ -23,9 +23,9 @@ __global__ void linearregInterceptKernel(const float* __restrict__ in,
     }
 }
 
-LINEARREG_INTERCEPT::LINEARREG_INTERCEPT(int period) : period(period) {}
+tacuda::LINEARREG_INTERCEPT::LINEARREG_INTERCEPT(int period) : period(period) {}
 
-void LINEARREG_INTERCEPT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::LINEARREG_INTERCEPT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG_INTERCEPT: invalid period");
     }

@@ -156,7 +156,7 @@ struct PooledDeleter {
 };
 using DeviceBuffer = std::unique_ptr<float, PooledDeleter>;
 
-static ctStatus_t run_indicator(Indicator &ind, const float *h_in, float *h_out,
+static ctStatus_t run_indicator(tacuda::Indicator &ind, const float *h_in, float *h_out,
                                 int size, int outMultiple = 1,
                                 cudaStream_t stream = 0) {
   DeviceBuffer d_in{nullptr}, d_out{nullptr};
@@ -382,121 +382,121 @@ extern "C" {
 
 ctStatus_t ct_sma(const float *host_input, float *host_output, int size,
                   int period) {
-  SMA sma(period);
+  tacuda::SMA sma(period);
   return run_indicator(sma, host_input, host_output, size);
 }
 
 ctStatus_t ct_ma(const float *host_input, float *host_output, int size,
                  int period, ctMaType_t type) {
-  MA ma(period, static_cast<MAType>(type));
+  tacuda::MA ma(period, static_cast<tacuda::MAType>(type));
   return run_indicator(ma, host_input, host_output, size);
 }
 
 ctStatus_t ct_wma(const float *host_input, float *host_output, int size,
                   int period) {
-  WMA wma(period);
+  tacuda::WMA wma(period);
   return run_indicator(wma, host_input, host_output, size);
 }
 
 ctStatus_t ct_momentum(const float *host_input, float *host_output, int size,
                        int period) {
-  Momentum mom(period);
+  tacuda::Momentum mom(period);
   return run_indicator(mom, host_input, host_output, size);
 }
 
 ctStatus_t ct_change(const float *host_input, float *host_output, int size,
                      int period) {
-  Change ch(period);
+  tacuda::Change ch(period);
   return run_indicator(ch, host_input, host_output, size);
 }
 
 ctStatus_t ct_roc(const float *host_input, float *host_output, int size,
                   int period) {
-  ROC roc(period);
+  tacuda::ROC roc(period);
   return run_indicator(roc, host_input, host_output, size);
 }
 
 ctStatus_t ct_rocp(const float *host_input, float *host_output, int size,
                    int period) {
-  ROCP rocp(period);
+  tacuda::ROCP rocp(period);
   return run_indicator(rocp, host_input, host_output, size);
 }
 
 ctStatus_t ct_rocr(const float *host_input, float *host_output, int size,
                    int period) {
-  ROCR rocr(period);
+  tacuda::ROCR rocr(period);
   return run_indicator(rocr, host_input, host_output, size);
 }
 
 ctStatus_t ct_rocr100(const float *host_input, float *host_output, int size,
                       int period) {
-  ROCR100 rocr100(period);
+  tacuda::ROCR100 rocr100(period);
   return run_indicator(rocr100, host_input, host_output, size);
 }
 
 ctStatus_t ct_ema(const float *host_input, float *host_output, int size,
                   int period) {
-  EMA ema(period);
+  tacuda::EMA ema(period);
   return run_indicator(ema, host_input, host_output, size);
 }
 
 ctStatus_t ct_dema(const float *host_input, float *host_output, int size,
                    int period) {
-  DEMA dema(period);
+  tacuda::DEMA dema(period);
   return run_indicator(dema, host_input, host_output, size);
 }
 
 ctStatus_t ct_tema(const float *host_input, float *host_output, int size,
                    int period) {
-  TEMA tema(period);
+  tacuda::TEMA tema(period);
   return run_indicator(tema, host_input, host_output, size);
 }
 
 ctStatus_t ct_t3(const float *host_input, float *host_output, int size,
                  int period, float vFactor) {
-  T3 t3(period, vFactor);
+  tacuda::T3 t3(period, vFactor);
   return run_indicator(t3, host_input, host_output, size);
 }
 
 ctStatus_t ct_trima(const float *host_input, float *host_output, int size,
                     int period) {
-  TRIMA trima(period);
+  tacuda::TRIMA trima(period);
   return run_indicator(trima, host_input, host_output, size);
 }
 
 ctStatus_t ct_trix(const float *host_input, float *host_output, int size,
                    int period) {
-  TRIX trix(period);
+  tacuda::TRIX trix(period);
   return run_indicator(trix, host_input, host_output, size);
 }
 
 ctStatus_t ct_max(const float *host_input, float *host_output, int size,
                   int period) {
-  MAX mx(period);
+  tacuda::MAX mx(period);
   return run_indicator(mx, host_input, host_output, size);
 }
 
 ctStatus_t ct_min(const float *host_input, float *host_output, int size,
                   int period) {
-  MIN mn(period);
+  tacuda::MIN mn(period);
   return run_indicator(mn, host_input, host_output, size);
 }
 
 ctStatus_t ct_maxindex(const float *host_input, float *host_output, int size,
                        int period) {
-  MAXINDEX mi(period);
+  tacuda::MAXINDEX mi(period);
   return run_indicator(mi, host_input, host_output, size);
 }
 
 ctStatus_t ct_minindex(const float *host_input, float *host_output, int size,
                        int period) {
-  MININDEX mi(period);
+  tacuda::MININDEX mi(period);
   return run_indicator(mi, host_input, host_output, size);
 }
 
 ctStatus_t ct_minmax(const float *host_input, float *host_min, float *host_max,
                      int size, int period) {
-  MINMAX mm(period);
+  tacuda::MINMAX mm(period);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(mm, host_input, tmp.data(), size, 2);
   if (rc != CT_STATUS_SUCCESS)
@@ -508,7 +508,7 @@ ctStatus_t ct_minmax(const float *host_input, float *host_min, float *host_max,
 
 ctStatus_t ct_minmaxindex(const float *host_input, float *host_minidx,
                           float *host_maxidx, int size, int period) {
-  MINMAXINDEX mm(period);
+  tacuda::MINMAXINDEX mm(period);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(mm, host_input, tmp.data(), size, 2);
   if (rc != CT_STATUS_SUCCESS)
@@ -520,37 +520,37 @@ ctStatus_t ct_minmaxindex(const float *host_input, float *host_minidx,
 
 ctStatus_t ct_stddev(const float *host_input, float *host_output, int size,
                      int period) {
-  StdDev sd(period);
+  tacuda::StdDev sd(period);
   return run_indicator(sd, host_input, host_output, size);
 }
 
 ctStatus_t ct_var(const float *host_input, float *host_output, int size,
                   int period) {
-  VAR vr(period);
+  tacuda::VAR vr(period);
   return run_indicator(vr, host_input, host_output, size);
 }
 
 ctStatus_t ct_sum(const float *host_input, float *host_output, int size,
                   int period) {
-  SUM sum(period);
+  tacuda::SUM sum(period);
   return run_indicator(sum, host_input, host_output, size);
 }
 
 ctStatus_t ct_rsi(const float *host_input, float *host_output, int size,
                   int period) {
-  RSI rsi(period);
+  tacuda::RSI rsi(period);
   return run_indicator(rsi, host_input, host_output, size);
 }
 
 ctStatus_t ct_kama(const float *host_input, float *host_output, int size,
                    int period, int fastPeriod, int slowPeriod) {
-  KAMA kama(period, fastPeriod, slowPeriod);
+  tacuda::KAMA kama(period, fastPeriod, slowPeriod);
   return run_indicator(kama, host_input, host_output, size);
 }
 
 ctStatus_t ct_macd_line(const float *host_input, float *host_output, int size,
                         int fastPeriod, int slowPeriod) {
-  MACD macd(fastPeriod, slowPeriod);
+  tacuda::MACD macd(fastPeriod, slowPeriod);
   return run_indicator(macd, host_input, host_output, size);
 }
 
@@ -558,7 +558,7 @@ ctStatus_t ct_macd(const float *host_input, float *host_macd,
                    float *host_signal, float *host_hist, int size,
                    int fastPeriod, int slowPeriod, int signalPeriod,
                    ctMaType_t type) {
-  MACDEXT macd(fastPeriod, slowPeriod, signalPeriod, static_cast<MAType>(type));
+  tacuda::MACDEXT macd(fastPeriod, slowPeriod, signalPeriod, static_cast<tacuda::MAType>(type));
   std::vector<float> tmp(3 * size);
   ctStatus_t rc = run_indicator(macd, host_input, tmp.data(), size, 3);
   if (rc != CT_STATUS_SUCCESS)
@@ -572,7 +572,7 @@ ctStatus_t ct_macd(const float *host_input, float *host_macd,
 ctStatus_t ct_macdfix(const float *host_input, float *host_macd,
                       float *host_signal, float *host_hist, int size,
                       int signalPeriod) {
-  MACDFIX macd(signalPeriod);
+  tacuda::MACDFIX macd(signalPeriod);
   std::vector<float> tmp(3 * size);
   ctStatus_t rc = run_indicator(macd, host_input, tmp.data(), size, 3);
   if (rc != CT_STATUS_SUCCESS)
@@ -585,7 +585,7 @@ ctStatus_t ct_macdfix(const float *host_input, float *host_macd,
 
 ctStatus_t ct_mama(const float *host_input, float *host_mama, float *host_fama,
                    int size, float fastLimit, float slowLimit) {
-  MAMA ma(fastLimit, slowLimit);
+  tacuda::MAMA ma(fastLimit, slowLimit);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(ma, host_input, tmp.data(), size, 2);
   if (rc != CT_STATUS_SUCCESS)
@@ -597,26 +597,26 @@ ctStatus_t ct_mama(const float *host_input, float *host_mama, float *host_fama,
 
 ctStatus_t ct_apo(const float *host_input, float *host_output, int size,
                   int fastPeriod, int slowPeriod) {
-  APO apo(fastPeriod, slowPeriod);
+  tacuda::APO apo(fastPeriod, slowPeriod);
   return run_indicator(apo, host_input, host_output, size);
 }
 
 ctStatus_t ct_ppo(const float *host_input, float *host_output, int size,
                   int fastPeriod, int slowPeriod) {
-  PPO ppo(fastPeriod, slowPeriod);
+  tacuda::PPO ppo(fastPeriod, slowPeriod);
   return run_indicator(ppo, host_input, host_output, size);
 }
 
 ctStatus_t ct_pvo(const float *host_volume, float *host_output, int size,
                   int fastPeriod, int slowPeriod) {
-  PVO pvo(fastPeriod, slowPeriod);
+  tacuda::PVO pvo(fastPeriod, slowPeriod);
   return run_indicator(pvo, host_volume, host_output, size);
 }
 
 ctStatus_t ct_bbands(const float *host_input, float *host_upper,
                      float *host_middle, float *host_lower, int size,
                      int period, float upperMul, float lowerMul) {
-  BBANDS bb(period, upperMul, lowerMul);
+  tacuda::BBANDS bb(period, upperMul, lowerMul);
   std::vector<float> tmp(3 * size);
   ctStatus_t rc = run_indicator(bb, host_input, tmp.data(), size, 3);
   if (rc != CT_STATUS_SUCCESS) {
@@ -631,7 +631,7 @@ ctStatus_t ct_bbands(const float *host_input, float *host_upper,
 ctStatus_t ct_atr(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
                   int period, float initial, cudaStream_t stream) {
-  ATR atr(period, initial);
+  tacuda::ATR atr(period, initial);
   return run_ohlc_indicator(atr, host_high, host_low, host_close,
                             host_output, size, 1, stream);
 }
@@ -639,7 +639,7 @@ ctStatus_t ct_atr(const float *host_high, const float *host_low,
 ctStatus_t ct_natr(const float *host_high, const float *host_low,
                    const float *host_close, float *host_output, int size,
                    int period, cudaStream_t stream) {
-  NATR natr(period);
+  tacuda::NATR natr(period);
   return run_ohlc_indicator(natr, host_high, host_low, host_close,
                             host_output, size, 1, stream);
 }
@@ -647,7 +647,7 @@ ctStatus_t ct_natr(const float *host_high, const float *host_low,
 ctStatus_t ct_trange(const float *host_high, const float *host_low,
                      const float *host_close, float *host_output, int size,
                      cudaStream_t stream) {
-  TRANGE tr;
+  tacuda::TRANGE tr;
   return run_ohlc_indicator(tr, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }
@@ -656,7 +656,7 @@ ctStatus_t ct_stochastic(const float *host_high, const float *host_low,
                          const float *host_close, float *host_k, float *host_d,
                          int size, int kPeriod, int dPeriod,
                          cudaStream_t stream) {
-  Stochastic stoch(kPeriod, dPeriod);
+  tacuda::Stochastic stoch(kPeriod, dPeriod);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_ohlc_indicator(stoch, host_high, host_low, host_close,
                                      tmp.data(), size, 2, stream);
@@ -671,7 +671,7 @@ ctStatus_t ct_stochf(const float *host_high, const float *host_low,
                      const float *host_close, float *host_k, float *host_d,
                      int size, int kPeriod, int dPeriod,
                      cudaStream_t stream) {
-  StochasticFast stoch(kPeriod, dPeriod);
+  tacuda::StochasticFast stoch(kPeriod, dPeriod);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_ohlc_indicator(stoch, host_high, host_low, host_close,
                                      tmp.data(), size, 2, stream);
@@ -685,7 +685,7 @@ ctStatus_t ct_stochf(const float *host_high, const float *host_low,
 ctStatus_t ct_stochrsi(const float *host_input, float *host_k, float *host_d,
                        int size, int rsiPeriod, int kPeriod, int dPeriod,
                        cudaStream_t stream) {
-  StochRSI st(rsiPeriod, kPeriod, dPeriod);
+  tacuda::StochRSI st(rsiPeriod, kPeriod, dPeriod);
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(st, host_input, tmp.data(), size, 2, stream);
   if (rc != CT_STATUS_SUCCESS)
@@ -698,7 +698,7 @@ ctStatus_t ct_stochrsi(const float *host_input, float *host_k, float *host_d,
 ctStatus_t ct_cci(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
                   int period, cudaStream_t stream) {
-  CCI cci(period);
+  tacuda::CCI cci(period);
   return run_ohlc_indicator(cci, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }
@@ -706,7 +706,7 @@ ctStatus_t ct_cci(const float *host_high, const float *host_low,
 ctStatus_t ct_adx(const float *host_high, const float *host_low,
                   const float *host_close, float *host_output, int size,
                   int period, cudaStream_t stream) {
-  ADX adx(period);
+  tacuda::ADX adx(period);
   return run_ohlc_indicator(adx, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }
@@ -714,14 +714,14 @@ ctStatus_t ct_adx(const float *host_high, const float *host_low,
 ctStatus_t ct_adxr(const float *host_high, const float *host_low,
                    const float *host_close, float *host_output, int size,
                    int period, cudaStream_t stream) {
-  ADXR adxr(period);
+  tacuda::ADXR adxr(period);
   return run_ohlc_indicator(adxr, host_high, host_low, host_close,
                             host_output, size, 1, stream);
 }
 
 ctStatus_t ct_plus_dm(const float *host_high, const float *host_low,
                       float *host_output, int size, int period) {
-  PlusDM pdm(period);
+  tacuda::PlusDM pdm(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -771,7 +771,7 @@ ctStatus_t ct_plus_dm(const float *host_high, const float *host_low,
 
 ctStatus_t ct_minus_dm(const float *host_high, const float *host_low,
                        float *host_output, int size, int period) {
-  MinusDM mdm(period);
+  tacuda::MinusDM mdm(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -822,7 +822,7 @@ ctStatus_t ct_minus_dm(const float *host_high, const float *host_low,
 ctStatus_t ct_plus_di(const float *host_high, const float *host_low,
                       const float *host_close, float *host_output, int size,
                       int period, cudaStream_t stream) {
-  PlusDI pdi(period);
+  tacuda::PlusDI pdi(period);
   return run_ohlc_indicator(pdi, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }
@@ -830,7 +830,7 @@ ctStatus_t ct_plus_di(const float *host_high, const float *host_low,
 ctStatus_t ct_minus_di(const float *host_high, const float *host_low,
                        const float *host_close, float *host_output, int size,
                        int period, cudaStream_t stream) {
-  MinusDI mdi(period);
+  tacuda::MinusDI mdi(period);
   return run_ohlc_indicator(mdi, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }
@@ -838,7 +838,7 @@ ctStatus_t ct_minus_di(const float *host_high, const float *host_low,
 ctStatus_t ct_sar(const float *host_high, const float *host_low,
                   float *host_output, int size, float step,
                   float maxAcceleration) {
-  SAR sar(step, maxAcceleration);
+  tacuda::SAR sar(step, maxAcceleration);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -891,7 +891,7 @@ ctStatus_t ct_sarext(const float *host_high, const float *host_low,
                      float offsetOnReverse, float accInitLong, float accLong,
                      float accMaxLong, float accInitShort, float accShort,
                      float accMaxShort) {
-  SAREXT sar(startValue, offsetOnReverse, accInitLong, accLong, accMaxLong,
+  tacuda::SAREXT sar(startValue, offsetOnReverse, accInitLong, accLong, accMaxLong,
              accInitShort, accShort, accMaxShort);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -943,7 +943,7 @@ ctStatus_t ct_sarext(const float *host_high, const float *host_low,
 ctStatus_t ct_aroon(const float *host_high, const float *host_low,
                     float *host_up, float *host_down, float *host_osc, int size,
                     int upPeriod, int downPeriod) {
-  Aroon aroon(upPeriod, downPeriod);
+  tacuda::Aroon aroon(upPeriod, downPeriod);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -998,7 +998,7 @@ ctStatus_t ct_aroon(const float *host_high, const float *host_low,
 
 ctStatus_t ct_aroonosc(const float *host_high, const float *host_low,
                        float *host_output, int size, int period) {
-  AroonOscillator ind(period);
+  tacuda::AroonOscillator ind(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -1050,7 +1050,7 @@ ctStatus_t ct_adosc(const float *host_high, const float *host_low,
                     const float *host_close, const float *host_volume,
                     float *host_output, int size, int shortPeriod,
                     int longPeriod) {
-  ADOSC adosc(shortPeriod, longPeriod);
+  tacuda::ADOSC adosc(shortPeriod, longPeriod);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_vol{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -1125,7 +1125,7 @@ ctStatus_t ct_adosc(const float *host_high, const float *host_low,
 ctStatus_t ct_ad(const float *host_high, const float *host_low,
                  const float *host_close, const float *host_volume,
                  float *host_output, int size) {
-  AD ad;
+  tacuda::AD ad;
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_vol{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -1200,7 +1200,7 @@ ctStatus_t ct_ad(const float *host_high, const float *host_low,
 ctStatus_t ct_avgprice(const float *host_open, const float *host_high,
                        const float *host_low, const float *host_close,
                        float *host_output, int size) {
-  AvgPrice ap;
+  tacuda::AvgPrice ap;
   DeviceBuffer d_open{nullptr}, d_high{nullptr}, d_low{nullptr},
       d_close{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -1274,7 +1274,7 @@ ctStatus_t ct_avgprice(const float *host_open, const float *host_high,
 
 ctStatus_t ct_medprice(const float *host_high, const float *host_low,
                        float *host_output, int size) {
-  MedPrice mp;
+  tacuda::MedPrice mp;
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -1324,7 +1324,7 @@ ctStatus_t ct_medprice(const float *host_high, const float *host_low,
 
 ctStatus_t ct_typprice(const float *host_high, const float *host_low,
                        const float *host_close, float *host_output, int size) {
-  TypPrice tp;
+  tacuda::TypPrice tp;
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_out{nullptr};
   float *tmp = nullptr;
@@ -1386,7 +1386,7 @@ ctStatus_t ct_typprice(const float *host_high, const float *host_low,
 
 ctStatus_t ct_wclprice(const float *host_high, const float *host_low,
                        const float *host_close, float *host_output, int size) {
-  WclPrice wc;
+  tacuda::WclPrice wc;
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_out{nullptr};
   float *tmp = nullptr;
@@ -1449,7 +1449,7 @@ ctStatus_t ct_wclprice(const float *host_high, const float *host_low,
 ctStatus_t ct_willr(const float *host_high, const float *host_low,
                     const float *host_close, float *host_output, int size,
                     int period) {
-  WILLR willr(period);
+  tacuda::WILLR willr(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_out{nullptr};
   float *tmp = nullptr;
@@ -1512,13 +1512,13 @@ ctStatus_t ct_willr(const float *host_high, const float *host_low,
 
 ctStatus_t ct_midpoint(const float *host_input, float *host_output, int size,
                        int period) {
-  MIDPOINT mp(period);
+  tacuda::MIDPOINT mp(period);
   return run_indicator(mp, host_input, host_output, size);
 }
 
 ctStatus_t ct_midprice(const float *host_high, const float *host_low,
                        float *host_output, int size, int period) {
-  MIDPRICE mp(period);
+  tacuda::MIDPRICE mp(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
   cudaError_t err = cudaMalloc(&tmp, size * sizeof(float));
@@ -1556,7 +1556,7 @@ ctStatus_t ct_midprice(const float *host_high, const float *host_low,
 ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
                      const float *host_close, float *host_output, int size,
                      int shortPeriod, int mediumPeriod, int longPeriod) {
-  ULTOSC ultosc(shortPeriod, mediumPeriod, longPeriod);
+  tacuda::ULTOSC ultosc(shortPeriod, mediumPeriod, longPeriod);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_out{nullptr};
   float *tmp = nullptr;
@@ -1620,7 +1620,7 @@ ctStatus_t ct_ultosc(const float *host_high, const float *host_low,
 ctStatus_t ct_mfi(const float *host_high, const float *host_low,
                   const float *host_close, const float *host_volume,
                   float *host_output, int size, int period) {
-  MFI mfi(period);
+  tacuda::MFI mfi(period);
   DeviceBuffer d_high{nullptr}, d_low{nullptr}, d_close{nullptr},
       d_vol{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
@@ -1694,7 +1694,7 @@ ctStatus_t ct_mfi(const float *host_high, const float *host_low,
 
 ctStatus_t ct_obv(const float *host_price, const float *host_volume,
                   float *host_output, int size) {
-  OBV obv;
+  tacuda::OBV obv;
   DeviceBuffer d_price{nullptr}, d_volume{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -1744,7 +1744,7 @@ ctStatus_t ct_obv(const float *host_price, const float *host_volume,
 
 ctStatus_t ct_beta(const float *host_x, const float *host_y, float *host_output,
                    int size, int period) {
-  Beta beta(period);
+  tacuda::Beta beta(period);
   DeviceBuffer d_x{nullptr}, d_y{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -1794,19 +1794,19 @@ ctStatus_t ct_beta(const float *host_x, const float *host_y, float *host_output,
 
 ctStatus_t ct_ht_dcperiod(const float *host_input, float *host_output,
                           int size) {
-  HT_DCPERIOD ind;
+  tacuda::HT_DCPERIOD ind;
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_ht_dcphase(const float *host_input, float *host_output,
                          int size) {
-  HT_DCPHASE ind;
+  tacuda::HT_DCPHASE ind;
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_ht_phasor(const float *host_input, float *host_inphase,
                         float *host_quadrature, int size) {
-  HT_PHASOR ind;
+  tacuda::HT_PHASOR ind;
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(ind, host_input, tmp.data(), size, 2);
   if (rc != CT_STATUS_SUCCESS)
@@ -1818,7 +1818,7 @@ ctStatus_t ct_ht_phasor(const float *host_input, float *host_inphase,
 
 ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
                       float *host_leadsine, int size) {
-  HT_SINE ind;
+  tacuda::HT_SINE ind;
   std::vector<float> tmp(2 * size);
   ctStatus_t rc = run_indicator(ind, host_input, tmp.data(), size, 2);
   if (rc != CT_STATUS_SUCCESS)
@@ -1830,50 +1830,50 @@ ctStatus_t ct_ht_sine(const float *host_input, float *host_sine,
 
 ctStatus_t ct_ht_trendline(const float *host_input, float *host_output,
                            int size) {
-  HT_TRENDLINE ind;
+  tacuda::HT_TRENDLINE ind;
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_ht_trendmode(const float *host_input, float *host_output,
                            int size) {
-  HT_TRENDMODE ind;
+  tacuda::HT_TRENDMODE ind;
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_linearreg(const float *host_input, float *host_output, int size,
                         int period) {
-  LINEARREG ind(period);
+  tacuda::LINEARREG ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_linearreg_slope(const float *host_input, float *host_output,
                               int size, int period) {
-  LINEARREG_SLOPE ind(period);
+  tacuda::LINEARREG_SLOPE ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_linearreg_intercept(const float *host_input, float *host_output,
                                   int size, int period) {
-  LINEARREG_INTERCEPT ind(period);
+  tacuda::LINEARREG_INTERCEPT ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_linearreg_angle(const float *host_input, float *host_output,
                               int size, int period) {
-  LINEARREG_ANGLE ind(period);
+  tacuda::LINEARREG_ANGLE ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_tsf(const float *host_input, float *host_output, int size,
                   int period) {
-  TSF ind(period);
+  tacuda::TSF ind(period);
   return run_indicator(ind, host_input, host_output, size);
 }
 
 ctStatus_t ct_bop(const float *host_open, const float *host_high,
                   const float *host_low, const float *host_close,
                   float *host_output, int size) {
-  BOP bop;
+  tacuda::BOP bop;
   return run_ohlc_indicator(bop, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1881,7 +1881,7 @@ ctStatus_t ct_bop(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_doji(const float *host_open, const float *host_high,
                        const float *host_low, const float *host_close,
                        float *host_output, int size) {
-  Doji ind;
+  tacuda::Doji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1889,7 +1889,7 @@ ctStatus_t ct_cdl_doji(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_hammer(const float *host_open, const float *host_high,
                          const float *host_low, const float *host_close,
                          float *host_output, int size) {
-  Hammer ind;
+  tacuda::Hammer ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1898,7 +1898,7 @@ ctStatus_t ct_cdl_inverted_hammer(const float *host_open,
                                   const float *host_high, const float *host_low,
                                   const float *host_close, float *host_output,
                                   int size) {
-  InvertedHammer ind;
+  tacuda::InvertedHammer ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1908,7 +1908,7 @@ ctStatus_t ct_cdl_bullish_engulfing(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  BullishEngulfing ind;
+  tacuda::BullishEngulfing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1918,7 +1918,7 @@ ctStatus_t ct_cdl_bearish_engulfing(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  BearishEngulfing ind;
+  tacuda::BearishEngulfing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1928,7 +1928,7 @@ ctStatus_t ct_cdl_three_white_soldiers(const float *host_open,
                                        const float *host_low,
                                        const float *host_close,
                                        float *host_output, int size) {
-  ThreeWhiteSoldiers ind;
+  tacuda::ThreeWhiteSoldiers ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1936,7 +1936,7 @@ ctStatus_t ct_cdl_three_white_soldiers(const float *host_open,
 ctStatus_t ct_cdl_abandoned_baby(const float *host_open, const float *host_high,
                                  const float *host_low, const float *host_close,
                                  float *host_output, int size) {
-  AbandonedBaby ind;
+  tacuda::AbandonedBaby ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1944,7 +1944,7 @@ ctStatus_t ct_cdl_abandoned_baby(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_advance_block(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
-  AdvanceBlock ind;
+  tacuda::AdvanceBlock ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1952,7 +1952,7 @@ ctStatus_t ct_cdl_advance_block(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_belt_hold(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  BeltHold ind;
+  tacuda::BeltHold ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1960,7 +1960,7 @@ ctStatus_t ct_cdl_belt_hold(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_breakaway(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  Breakaway ind;
+  tacuda::Breakaway ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1968,7 +1968,7 @@ ctStatus_t ct_cdl_breakaway(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_two_crows(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  TwoCrows ind;
+  tacuda::TwoCrows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1978,7 +1978,7 @@ ctStatus_t ct_cdl_three_black_crows(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  ThreeBlackCrows ind;
+  tacuda::ThreeBlackCrows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1986,7 +1986,7 @@ ctStatus_t ct_cdl_three_black_crows(const float *host_open,
 ctStatus_t ct_cdl_three_inside(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  ThreeInside ind;
+  tacuda::ThreeInside ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -1996,7 +1996,7 @@ ctStatus_t ct_cdl_three_line_strike(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  ThreeLineStrike ind;
+  tacuda::ThreeLineStrike ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2006,7 +2006,7 @@ ctStatus_t ct_cdl_three_stars_in_south(const float *host_open,
                                        const float *host_low,
                                        const float *host_close,
                                        float *host_output, int size) {
-  ThreeStarsInSouth ind;
+  tacuda::ThreeStarsInSouth ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2016,7 +2016,7 @@ ctStatus_t ct_cdl_closing_marubozu(const float *host_open,
                                    const float *host_low,
                                    const float *host_close, float *host_output,
                                    int size) {
-  ClosingMarubozu ind;
+  tacuda::ClosingMarubozu ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2026,7 +2026,7 @@ ctStatus_t ct_cdl_conceal_baby_swallow(const float *host_open,
                                        const float *host_low,
                                        const float *host_close,
                                        float *host_output, int size) {
-  ConcealBabySwallow ind;
+  tacuda::ConcealBabySwallow ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2034,7 +2034,7 @@ ctStatus_t ct_cdl_conceal_baby_swallow(const float *host_open,
 ctStatus_t ct_cdl_counterattack(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
-  CounterAttack ind;
+  tacuda::CounterAttack ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2044,7 +2044,7 @@ ctStatus_t ct_cdl_dark_cloud_cover(const float *host_open,
                                    const float *host_low,
                                    const float *host_close, float *host_output,
                                    int size) {
-  DarkCloudCover ind;
+  tacuda::DarkCloudCover ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2052,7 +2052,7 @@ ctStatus_t ct_cdl_dark_cloud_cover(const float *host_open,
 ctStatus_t ct_cdl_doji_star(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  DojiStar ind;
+  tacuda::DojiStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2060,7 +2060,7 @@ ctStatus_t ct_cdl_doji_star(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_dragonfly_doji(const float *host_open, const float *host_high,
                                  const float *host_low, const float *host_close,
                                  float *host_output, int size) {
-  DragonflyDoji ind;
+  tacuda::DragonflyDoji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2068,7 +2068,7 @@ ctStatus_t ct_cdl_dragonfly_doji(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_engulfing(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  Engulfing ind;
+  tacuda::Engulfing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2078,7 +2078,7 @@ ctStatus_t ct_cdl_evening_doji_star(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  EveningDojiStar ind;
+  tacuda::EveningDojiStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2086,7 +2086,7 @@ ctStatus_t ct_cdl_evening_doji_star(const float *host_open,
 ctStatus_t ct_cdl_evening_star(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  EveningStar ind;
+  tacuda::EveningStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2096,7 +2096,7 @@ ctStatus_t ct_cdl_gap_side_side_white(const float *host_open,
                                       const float *host_low,
                                       const float *host_close,
                                       float *host_output, int size) {
-  GapSideSideWhite ind;
+  tacuda::GapSideSideWhite ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2105,7 +2105,7 @@ ctStatus_t ct_cdl_gravestone_doji(const float *host_open,
                                   const float *host_high, const float *host_low,
                                   const float *host_close, float *host_output,
                                   int size) {
-  GravestoneDoji ind;
+  tacuda::GravestoneDoji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2113,7 +2113,7 @@ ctStatus_t ct_cdl_gravestone_doji(const float *host_open,
 ctStatus_t ct_cdl_hanging_man(const float *host_open, const float *host_high,
                               const float *host_low, const float *host_close,
                               float *host_output, int size) {
-  HangingMan ind;
+  tacuda::HangingMan ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2121,7 +2121,7 @@ ctStatus_t ct_cdl_hanging_man(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_harami(const float *host_open, const float *host_high,
                          const float *host_low, const float *host_close,
                          float *host_output, int size) {
-  Harami ind;
+  tacuda::Harami ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2129,7 +2129,7 @@ ctStatus_t ct_cdl_harami(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_harami_cross(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  HaramiCross ind;
+  tacuda::HaramiCross ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2137,7 +2137,7 @@ ctStatus_t ct_cdl_harami_cross(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_high_wave(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  HighWave ind;
+  tacuda::HighWave ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2145,7 +2145,7 @@ ctStatus_t ct_cdl_high_wave(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_hikkake(const float *host_open, const float *host_high,
                           const float *host_low, const float *host_close,
                           float *host_output, int size) {
-  Hikkake ind;
+  tacuda::Hikkake ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2153,7 +2153,7 @@ ctStatus_t ct_cdl_hikkake(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_hikkake_mod(const float *host_open, const float *host_high,
                               const float *host_low, const float *host_close,
                               float *host_output, int size) {
-  HikkakeMod ind;
+  tacuda::HikkakeMod ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2161,7 +2161,7 @@ ctStatus_t ct_cdl_hikkake_mod(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_homing_pigeon(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
-  HomingPigeon ind;
+  tacuda::HomingPigeon ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2171,7 +2171,7 @@ ctStatus_t ct_cdl_identical_three_crows(const float *host_open,
                                         const float *host_low,
                                         const float *host_close,
                                         float *host_output, int size) {
-  IdenticalThreeCrows ind;
+  tacuda::IdenticalThreeCrows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2179,7 +2179,7 @@ ctStatus_t ct_cdl_identical_three_crows(const float *host_open,
 ctStatus_t ct_cdl_in_neck(const float *host_open, const float *host_high,
                           const float *host_low, const float *host_close,
                           float *host_output, int size) {
-  InNeck ind;
+  tacuda::InNeck ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2187,7 +2187,7 @@ ctStatus_t ct_cdl_in_neck(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_kicking(const float *host_open, const float *host_high,
                           const float *host_low, const float *host_close,
                           float *host_output, int size) {
-  Kicking ind;
+  tacuda::Kicking ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2197,7 +2197,7 @@ ctStatus_t ct_cdl_kicking_by_length(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  KickingByLength ind;
+  tacuda::KickingByLength ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2205,7 +2205,7 @@ ctStatus_t ct_cdl_kicking_by_length(const float *host_open,
 ctStatus_t ct_cdl_ladder_bottom(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
-  LadderBottom ind;
+  tacuda::LadderBottom ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2215,7 +2215,7 @@ ctStatus_t ct_cdl_long_legged_doji(const float *host_open,
                                    const float *host_low,
                                    const float *host_close, float *host_output,
                                    int size) {
-  LongLeggedDoji ind;
+  tacuda::LongLeggedDoji ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2223,7 +2223,7 @@ ctStatus_t ct_cdl_long_legged_doji(const float *host_open,
 ctStatus_t ct_cdl_long_line(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  LongLine ind;
+  tacuda::LongLine ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2231,7 +2231,7 @@ ctStatus_t ct_cdl_long_line(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_marubozu(const float *host_open, const float *host_high,
                            const float *host_low, const float *host_close,
                            float *host_output, int size) {
-  Marubozu ind;
+  tacuda::Marubozu ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2239,7 +2239,7 @@ ctStatus_t ct_cdl_marubozu(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_matching_low(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  MatchingLow ind;
+  tacuda::MatchingLow ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2247,7 +2247,7 @@ ctStatus_t ct_cdl_matching_low(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_mat_hold(const float *host_open, const float *host_high,
                            const float *host_low, const float *host_close,
                            float *host_output, int size) {
-  MatHold ind;
+  tacuda::MatHold ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2257,7 +2257,7 @@ ctStatus_t ct_cdl_morning_doji_star(const float *host_open,
                                     const float *host_low,
                                     const float *host_close, float *host_output,
                                     int size) {
-  MorningDojiStar ind;
+  tacuda::MorningDojiStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2265,7 +2265,7 @@ ctStatus_t ct_cdl_morning_doji_star(const float *host_open,
 ctStatus_t ct_cdl_morning_star(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  MorningStar ind;
+  tacuda::MorningStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2273,7 +2273,7 @@ ctStatus_t ct_cdl_morning_star(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_on_neck(const float *host_open, const float *host_high,
                           const float *host_low, const float *host_close,
                           float *host_output, int size) {
-  OnNeck ind;
+  tacuda::OnNeck ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2281,7 +2281,7 @@ ctStatus_t ct_cdl_on_neck(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_piercing(const float *host_open, const float *host_high,
                            const float *host_low, const float *host_close,
                            float *host_output, int size) {
-  Piercing ind;
+  tacuda::Piercing ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2289,7 +2289,7 @@ ctStatus_t ct_cdl_piercing(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_rickshaw_man(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  RickshawMan ind;
+  tacuda::RickshawMan ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2299,7 +2299,7 @@ ctStatus_t ct_cdl_rise_fall3_methods(const float *host_open,
                                      const float *host_low,
                                      const float *host_close,
                                      float *host_output, int size) {
-  RiseFall3Methods ind;
+  tacuda::RiseFall3Methods ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2309,7 +2309,7 @@ ctStatus_t ct_cdl_separating_lines(const float *host_open,
                                    const float *host_low,
                                    const float *host_close, float *host_output,
                                    int size) {
-  SeparatingLines ind;
+  tacuda::SeparatingLines ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2317,7 +2317,7 @@ ctStatus_t ct_cdl_separating_lines(const float *host_open,
 ctStatus_t ct_cdl_shooting_star(const float *host_open, const float *host_high,
                                 const float *host_low, const float *host_close,
                                 float *host_output, int size) {
-  ShootingStar ind;
+  tacuda::ShootingStar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2325,7 +2325,7 @@ ctStatus_t ct_cdl_shooting_star(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_short_line(const float *host_open, const float *host_high,
                              const float *host_low, const float *host_close,
                              float *host_output, int size) {
-  ShortLine ind;
+  tacuda::ShortLine ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2333,7 +2333,7 @@ ctStatus_t ct_cdl_short_line(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_spinning_top(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size) {
-  SpinningTop ind;
+  tacuda::SpinningTop ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2342,7 +2342,7 @@ ctStatus_t ct_cdl_stalled_pattern(const float *host_open,
                                   const float *host_high, const float *host_low,
                                   const float *host_close, float *host_output,
                                   int size) {
-  StalledPattern ind;
+  tacuda::StalledPattern ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2350,7 +2350,7 @@ ctStatus_t ct_cdl_stalled_pattern(const float *host_open,
 ctStatus_t ct_cdl_stick_sandwich(const float *host_open, const float *host_high,
                                  const float *host_low, const float *host_close,
                                  float *host_output, int size) {
-  StickSandwich ind;
+  tacuda::StickSandwich ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2358,7 +2358,7 @@ ctStatus_t ct_cdl_stick_sandwich(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_takuri(const float *host_open, const float *host_high,
                          const float *host_low, const float *host_close,
                          float *host_output, int size) {
-  Takuri ind;
+  tacuda::Takuri ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2366,7 +2366,7 @@ ctStatus_t ct_cdl_takuri(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_tasuki_gap(const float *host_open, const float *host_high,
                              const float *host_low, const float *host_close,
                              float *host_output, int size) {
-  TasukiGap ind;
+  tacuda::TasukiGap ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2374,7 +2374,7 @@ ctStatus_t ct_cdl_tasuki_gap(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_thrusting(const float *host_open, const float *host_high,
                             const float *host_low, const float *host_close,
                             float *host_output, int size) {
-  Thrusting ind;
+  tacuda::Thrusting ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2382,7 +2382,7 @@ ctStatus_t ct_cdl_thrusting(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_tristar(const float *host_open, const float *host_high,
                           const float *host_low, const float *host_close,
                           float *host_output, int size) {
-  Tristar ind;
+  tacuda::Tristar ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2390,7 +2390,7 @@ ctStatus_t ct_cdl_tristar(const float *host_open, const float *host_high,
 ctStatus_t ct_cdl_unique_3_river(const float *host_open, const float *host_high,
                                  const float *host_low, const float *host_close,
                                  float *host_output, int size) {
-  Unique3River ind;
+  tacuda::Unique3River ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2400,7 +2400,7 @@ ctStatus_t ct_cdl_upside_gap_2_crows(const float *host_open,
                                      const float *host_low,
                                      const float *host_close,
                                      float *host_output, int size) {
-  UpsideGap2Crows ind;
+  tacuda::UpsideGap2Crows ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
@@ -2410,20 +2410,20 @@ ctStatus_t ct_cdl_xside_gap_3_methods(const float *host_open,
                                       const float *host_low,
                                       const float *host_close,
                                       float *host_output, int size) {
-  XSideGap3Methods ind;
+  tacuda::XSideGap3Methods ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size);
 }
 
 ctStatus_t ct_cmo(const float *host_input, float *host_output, int size,
                   int period) {
-  CMO cmo(period);
+  tacuda::CMO cmo(period);
   return run_indicator(cmo, host_input, host_output, size);
 }
 
 ctStatus_t ct_correl(const float *host_x, const float *host_y,
                      float *host_output, int size, int period) {
-  Correl correl(period);
+  tacuda::Correl correl(period);
   DeviceBuffer d_x{nullptr}, d_y{nullptr}, d_out{nullptr};
   float *tmp = nullptr;
 
@@ -2474,7 +2474,7 @@ ctStatus_t ct_correl(const float *host_x, const float *host_y,
 ctStatus_t ct_dx(const float *host_high, const float *host_low,
                  const float *host_close, float *host_output, int size,
                  int period, cudaStream_t stream) {
-  DX dx(period);
+  tacuda::DX dx(period);
   return run_ohlc_indicator(dx, host_high, host_low, host_close, host_output,
                             size, 1, stream);
 }

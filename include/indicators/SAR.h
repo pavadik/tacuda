@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class SAR : public Indicator {
 public:
     explicit SAR(float step, float maxAcceleration);
@@ -13,5 +14,7 @@ private:
     float step;
     float maxAcceleration;
 };
+
+} // namespace tacuda
 
 #endif

@@ -50,9 +50,9 @@ __global__ void aroonKernel(const float* __restrict__ high,
     }
 }
 
-Aroon::Aroon(int upPeriod, int downPeriod) : upPeriod(upPeriod), downPeriod(downPeriod) {}
+tacuda::Aroon::Aroon(int upPeriod, int downPeriod) : upPeriod(upPeriod), downPeriod(downPeriod) {}
 
-void Aroon::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Aroon::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (upPeriod <= 0 || upPeriod > size || downPeriod <= 0 || downPeriod > size) {
         throw std::invalid_argument("Aroon: invalid period");
     }
@@ -61,7 +61,7 @@ void Aroon::calculate(const float* high, const float* low, float* output, int si
     CUDA_CHECK(cudaGetLastError());
 }
 
-void Aroon::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Aroon::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

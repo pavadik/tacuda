@@ -68,9 +68,9 @@ __global__ void adxKernel(const float* __restrict__ high,
     output[idx] = adx;
 }
 
-ADX::ADX(int period) : period(period) {}
+tacuda::ADX::ADX(int period) : period(period) {}
 
-void ADX::calculate(const float* high, const float* low, const float* close,
+void tacuda::ADX::calculate(const float* high, const float* low, const float* close,
                     float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("ADX: invalid period");
@@ -82,7 +82,7 @@ void ADX::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void ADX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ADX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

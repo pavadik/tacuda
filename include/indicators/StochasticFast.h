@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class StochasticFast : public Indicator {
 public:
     StochasticFast(int kPeriod, int dPeriod);
@@ -13,5 +14,7 @@ private:
     int kPeriod;
     int dPeriod;
 };
+
+} // namespace tacuda
 
 #endif

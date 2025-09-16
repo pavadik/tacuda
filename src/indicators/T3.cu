@@ -18,9 +18,9 @@ __global__ void t3Kernel(const float *__restrict__ e3,
   }
 }
 
-T3::T3(int period, float vFactor) : period(period), vFactor(vFactor) {}
+tacuda::T3::T3(int period, float vFactor) : period(period), vFactor(vFactor) {}
 
-void T3::calculate(const float *input, float *output,
+void tacuda::T3::calculate(const float *input, float *output,
                    int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || size < 3 * period - 2) {
     throw std::invalid_argument("T3: invalid period");
@@ -34,7 +34,7 @@ void T3::calculate(const float *input, float *output,
   auto e5 = acquireDeviceBuffer<float>(size);
   auto e6 = acquireDeviceBuffer<float>(size);
 
-  EMA ema(period);
+  tacuda::EMA ema(period);
   ema.calculate(input, e1.get(), size, stream);
   int size2 = size - period + 1;
   ema.calculate(e1.get(), e2.get(), size2);

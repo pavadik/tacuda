@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MIN : public Indicator {
 public:
     explicit MIN(int period);
@@ -10,5 +11,7 @@ public:
 private:
     int period;
 };
+
+} // namespace tacuda
 
 #endif

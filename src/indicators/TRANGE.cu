@@ -21,7 +21,7 @@ __global__ void trangeKernel(const float *__restrict__ high,
   }
 }
 
-void TRANGE::calculate(const float *high, const float *low, const float *close,
+void tacuda::TRANGE::calculate(const float *high, const float *low, const float *close,
                        float *output, int size, cudaStream_t stream) noexcept(false) {
   if (size <= 0) {
     throw std::invalid_argument("TRANGE: invalid size");
@@ -32,7 +32,7 @@ void TRANGE::calculate(const float *high, const float *low, const float *close,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void TRANGE::calculate(const float *input, float *output,
+void tacuda::TRANGE::calculate(const float *input, float *output,
                        int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

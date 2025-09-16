@@ -27,9 +27,9 @@ __global__ void betaKernel(const float* __restrict__ x,
     }
 }
 
-Beta::Beta(int period) : period(period) {}
+tacuda::Beta::Beta(int period) : period(period) {}
 
-void Beta::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Beta::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Beta: invalid period");
     }
@@ -40,7 +40,7 @@ void Beta::calculate(const float* x, const float* y, float* output, int size, cu
     CUDA_CHECK(cudaGetLastError());
 }
 
-void Beta::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Beta::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* x = input;
     const float* y = input + size;
     calculate(x, y, output, size, stream);

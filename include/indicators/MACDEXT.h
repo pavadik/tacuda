@@ -4,6 +4,7 @@
 #include "Indicator.h"
 #include "MA.h"
 
+namespace tacuda {
 class MACDEXT : public Indicator {
 public:
     MACDEXT(int fastPeriod, int slowPeriod, int signalPeriod, MAType type);
@@ -14,5 +15,7 @@ private:
     int signalPeriod;
     MAType type;
 };
+
+} // namespace tacuda
 
 #endif

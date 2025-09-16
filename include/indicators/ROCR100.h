@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class ROCR100 : public Indicator {
 public:
   explicit ROCR100(int period);
@@ -12,5 +13,7 @@ public:
 private:
   int period;
 };
+
+} // namespace tacuda
 
 #endif

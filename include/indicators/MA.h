@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 enum class MAType { SMA = 0, EMA = 1 };
 
 class MA : public Indicator {
@@ -13,5 +14,7 @@ private:
     int period;
     MAType type;
 };
+
+} // namespace tacuda
 
 #endif

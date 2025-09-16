@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class PVO : public Indicator {
 public:
   PVO(int fastPeriod, int slowPeriod);
@@ -13,5 +14,7 @@ private:
   int fastPeriod;
   int slowPeriod;
 };
+
+} // namespace tacuda
 
 #endif

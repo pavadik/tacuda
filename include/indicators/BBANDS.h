@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class BBANDS : public Indicator {
 public:
     BBANDS(int period, float upperMultiplier, float lowerMultiplier);
@@ -12,5 +13,7 @@ private:
     float upperMultiplier;
     float lowerMultiplier;
 };
+
+} // namespace tacuda
 
 #endif

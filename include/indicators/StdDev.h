@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class StdDev : public Indicator {
 public:
     explicit StdDev(int period);
@@ -10,5 +11,7 @@ public:
 private:
     int period;
 };
+
+} // namespace tacuda
 
 #endif

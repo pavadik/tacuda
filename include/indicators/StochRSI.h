@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class StochRSI : public Indicator {
 public:
   StochRSI(int rsiPeriod, int kPeriod, int dPeriod);
@@ -14,5 +15,7 @@ private:
   int kPeriod;
   int dPeriod;
 };
+
+} // namespace tacuda
 
 #endif

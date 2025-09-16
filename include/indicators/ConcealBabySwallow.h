@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class ConcealBabySwallow : public Indicator {
 public:
   void calculate(const float *open, const float *high, const float *low,
@@ -10,5 +11,7 @@ public:
   void calculate(const float *input, float *output,
                  int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif

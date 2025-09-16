@@ -3,10 +3,13 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class HT_SINE : public Indicator {
 public:
     HT_SINE() = default;
     void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif

@@ -68,10 +68,10 @@ __global__ void macdKernel(const float* __restrict__ emaFast,
     }
 }
 
-MACD::MACD(int fastPeriod, int slowPeriod)
+tacuda::MACD::MACD(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void MACD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MACD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }

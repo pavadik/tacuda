@@ -23,7 +23,7 @@ __global__ void adKernel(const float* __restrict__ high,
     }
 }
 
-void AD::calculate(const float* high, const float* low, const float* close,
+void tacuda::AD::calculate(const float* high, const float* low, const float* close,
                    const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("AD: invalid size");
@@ -32,7 +32,7 @@ void AD::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void AD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::AD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

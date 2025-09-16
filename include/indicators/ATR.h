@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class ATR : public Indicator {
 public:
     explicit ATR(int period, float initial = 0.0f);
@@ -13,5 +14,7 @@ private:
     int period;
     float initial;
 };
+
+} // namespace tacuda
 
 #endif

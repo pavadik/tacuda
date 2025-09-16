@@ -21,9 +21,9 @@ __global__ void cmoKernel(const float* __restrict__ input,
     }
 }
 
-CMO::CMO(int period) : period(period) {}
+tacuda::CMO::CMO(int period) : period(period) {}
 
-void CMO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::CMO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("CMO: invalid period");
     }

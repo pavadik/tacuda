@@ -26,9 +26,9 @@ __global__ void willrKernel(const float *__restrict__ high,
   }
 }
 
-WILLR::WILLR(int period) : period(period) {}
+tacuda::WILLR::WILLR(int period) : period(period) {}
 
-void WILLR::calculate(const float *high, const float *low, const float *close,
+void tacuda::WILLR::calculate(const float *high, const float *low, const float *close,
                       float *output, int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("WILLR: invalid period");
@@ -38,7 +38,7 @@ void WILLR::calculate(const float *high, const float *low, const float *close,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void WILLR::calculate(const float *input, float *output,
+void tacuda::WILLR::calculate(const float *input, float *output,
                       int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

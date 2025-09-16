@@ -29,9 +29,9 @@ __global__ void minmaxIndexKernel(const float *__restrict__ input,
   }
 }
 
-MINMAXINDEX::MINMAXINDEX(int period) : period(period) {}
+tacuda::MINMAXINDEX::MINMAXINDEX(int period) : period(period) {}
 
-void MINMAXINDEX::calculate(const float *input, float *output,
+void tacuda::MINMAXINDEX::calculate(const float *input, float *output,
                             int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MINMAXINDEX: invalid period");

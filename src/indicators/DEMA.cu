@@ -15,9 +15,9 @@ __global__ void demaKernel(const float* __restrict__ ema1,
     }
 }
 
-DEMA::DEMA(int period) : period(period) {}
+tacuda::DEMA::DEMA(int period) : period(period) {}
 
-void DEMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::DEMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || size < 2 * period - 1) {
         throw std::invalid_argument("DEMA: invalid period");
     }
@@ -27,7 +27,7 @@ void DEMA::calculate(const float* input, float* output, int size, cudaStream_t s
     auto ema1 = acquireDeviceBuffer<float>(size);
     auto ema2 = acquireDeviceBuffer<float>(size);
 
-    EMA ema(period);
+    tacuda::EMA ema(period);
     ema.calculate(input, ema1.get(), size, stream);
     int size2 = size - period + 1;
     ema.calculate(ema1.get(), ema2.get(), size2);

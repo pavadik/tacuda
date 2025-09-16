@@ -50,9 +50,9 @@ __global__ void mfiKernel(const float* __restrict__ high,
     }
 }
 
-MFI::MFI(int period) : period(period) {}
+tacuda::MFI::MFI(int period) : period(period) {}
 
-void MFI::calculate(const float* high, const float* low, const float* close,
+void tacuda::MFI::calculate(const float* high, const float* low, const float* close,
                     const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MFI: invalid period");
@@ -63,7 +63,7 @@ void MFI::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void MFI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MFI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

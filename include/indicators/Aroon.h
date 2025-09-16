@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class Aroon : public Indicator {
 public:
     Aroon(int upPeriod, int downPeriod);
@@ -12,5 +13,7 @@ private:
     int upPeriod;
     int downPeriod;
 };
+
+} // namespace tacuda
 
 #endif

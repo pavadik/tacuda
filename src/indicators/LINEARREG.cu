@@ -23,9 +23,9 @@ __global__ void linearregKernel(const float* __restrict__ in,
     }
 }
 
-LINEARREG::LINEARREG(int period) : period(period) {}
+tacuda::LINEARREG::LINEARREG(int period) : period(period) {}
 
-void LINEARREG::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::LINEARREG::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG: invalid period");
     }

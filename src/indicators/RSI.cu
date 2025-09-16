@@ -41,9 +41,9 @@ __global__ void rsiKernelPrefix(const float* __restrict__ gainPrefix,
     }
 }
 
-RSI::RSI(int period) : period(period) {}
+tacuda::RSI::RSI(int period) : period(period) {}
 
-void RSI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::RSI::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("RSI: invalid period");
     }

@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class Correl : public Indicator {
 public:
     explicit Correl(int period);
@@ -11,5 +12,7 @@ public:
 private:
     int period;
 };
+
+} // namespace tacuda
 
 #endif

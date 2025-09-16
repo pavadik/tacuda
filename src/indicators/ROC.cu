@@ -12,9 +12,9 @@ __global__ void rocKernel(const float* __restrict__ input, float* __restrict__ o
     }
 }
 
-ROC::ROC(int period) : period(period) {}
+tacuda::ROC::ROC(int period) : period(period) {}
 
-void ROC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ROC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("ROC: invalid period");
     }

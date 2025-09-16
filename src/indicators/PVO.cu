@@ -29,10 +29,10 @@ __global__ void pvoKernel(const float* __restrict__ input,
   }
 }
 
-PVO::PVO(int fastPeriod, int slowPeriod)
+tacuda::PVO::PVO(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void PVO::calculate(const float* input, float* output,
+void tacuda::PVO::calculate(const float* input, float* output,
                     int size, cudaStream_t stream) noexcept(false) {
   if (fastPeriod <= 0 || slowPeriod <= 0) {
     throw std::invalid_argument("PVO: invalid periods");

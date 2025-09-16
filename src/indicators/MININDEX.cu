@@ -21,9 +21,9 @@ __global__ void minIndexKernel(const float *__restrict__ input,
   }
 }
 
-MININDEX::MININDEX(int period) : period(period) {}
+tacuda::MININDEX::MININDEX(int period) : period(period) {}
 
-void MININDEX::calculate(const float *input, float *output,
+void tacuda::MININDEX::calculate(const float *input, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MININDEX: invalid period");

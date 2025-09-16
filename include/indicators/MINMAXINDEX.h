@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MINMAXINDEX : public Indicator {
 public:
   explicit MINMAXINDEX(int period);
@@ -12,5 +13,7 @@ public:
 private:
   int period;
 };
+
+} // namespace tacuda
 
 #endif

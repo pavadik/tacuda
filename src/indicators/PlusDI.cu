@@ -36,9 +36,9 @@ __global__ void plusDIKernel(const float *__restrict__ high,
   }
 }
 
-PlusDI::PlusDI(int period) : period(period) {}
+tacuda::PlusDI::PlusDI(int period) : period(period) {}
 
-void PlusDI::calculate(const float *high, const float *low, const float *close,
+void tacuda::PlusDI::calculate(const float *high, const float *low, const float *close,
                        float *output, int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("PlusDI: invalid period");
@@ -48,7 +48,7 @@ void PlusDI::calculate(const float *high, const float *low, const float *close,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void PlusDI::calculate(const float *input, float *output,
+void tacuda::PlusDI::calculate(const float *input, float *output,
                        int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

@@ -15,9 +15,9 @@ __global__ void minKernel(const float* __restrict__ input,
     }
 }
 
-MIN::MIN(int period) : period(period) {}
+tacuda::MIN::MIN(int period) : period(period) {}
 
-void MIN::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MIN::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MIN: invalid period");
     }

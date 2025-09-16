@@ -16,9 +16,9 @@ __global__ void wmaKernel(const float* __restrict__ input,
     }
 }
 
-WMA::WMA(int period) : period(period) {}
+tacuda::WMA::WMA(int period) : period(period) {}
 
-void WMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::WMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("WMA: invalid period");
     }

@@ -14,7 +14,7 @@ __global__ void avgPriceKernel(const float* __restrict__ open,
     }
 }
 
-void AvgPrice::calculate(const float* open, const float* high, const float* low,
+void tacuda::AvgPrice::calculate(const float* open, const float* high, const float* low,
                          const float* close, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("AvgPrice: invalid size");
@@ -25,7 +25,7 @@ void AvgPrice::calculate(const float* open, const float* high, const float* low,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void AvgPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::AvgPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* open = input;
     const float* high = input + size;
     const float* low = input + 2 * size;

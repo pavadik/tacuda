@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class ULTOSC : public Indicator {
 public:
     ULTOSC(int shortPeriod, int mediumPeriod, int longPeriod);
@@ -14,5 +15,7 @@ private:
     int mediumPeriod;
     int longPeriod;
 };
+
+} // namespace tacuda
 
 #endif

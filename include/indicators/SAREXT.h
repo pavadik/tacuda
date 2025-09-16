@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class SAREXT : public Indicator {
 public:
     SAREXT(float startValue, float offsetOnReverse,
@@ -16,5 +17,7 @@ private:
     float accInitLong, accLong, accMaxLong;
     float accInitShort, accShort, accMaxShort;
 };
+
+} // namespace tacuda
 
 #endif

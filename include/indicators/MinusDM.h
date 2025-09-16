@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MinusDM : public Indicator {
 public:
   explicit MinusDM(int period);
@@ -14,5 +15,7 @@ public:
 private:
   int period;
 };
+
+} // namespace tacuda
 
 #endif
