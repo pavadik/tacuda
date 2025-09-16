@@ -2,6 +2,7 @@
 #define DEVICE_BUFFER_POOL_H
 
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <unordered_map>
@@ -17,6 +18,9 @@ public:
     // Frees all cached device buffers and resets the pool.
     void cleanup();
 
+    // Sets the maximum amount of cached device memory in bytes.
+    void setMaxCacheBytes(size_t bytes);
+
     // Number of cudaMalloc calls performed by the pool.
     size_t allocationCount() const;
 
@@ -30,6 +34,8 @@ private:
     std::unordered_map<size_t, std::vector<void*>> freeBuffers;
     std::unordered_map<void*, size_t> sizes;
     size_t allocations = 0;
+    size_t cachedBytes = 0;
+    size_t maxCachedBytes = std::numeric_limits<size_t>::max();
     std::mutex mutex;
 };
 
