@@ -43,21 +43,18 @@ __global__ void emaFinalizeKernel(const float* __restrict__ input,
 static void computeEma(const float* input, float* output, int size, int period, cudaStream_t stream) {
     float alpha = 2.0f / (period + 1.0f);
     float k = 1.0f - alpha;
-    thrust::complex<float>* trans = static_cast<thrust::complex<float>*>(
-        DeviceBufferPool::instance().acquire((size - 1) * sizeof(thrust::complex<float>)));
+    auto trans = acquireDeviceBuffer<thrust::complex<float>>(static_cast<size_t>(std::max(0, size - 1)));
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    emaPrepKernel<<<grid, block, 0, stream>>>(input, trans, alpha, k, size);
+    emaPrepKernel<<<grid, block, 0, stream>>>(input, trans.get(), alpha, k, size);
     CUDA_CHECK(cudaGetLastError());
 
-    thrust::device_ptr<thrust::complex<float>> tPtr(trans);
+    thrust::device_ptr<thrust::complex<float>> tPtr(trans.get());
     thrust::inclusive_scan(thrust::cuda::par.on(stream), tPtr, tPtr + size - 1, tPtr, EmaCombine());
 
-    emaFinalizeKernel<<<grid, block, 0, stream>>>(input, trans, output, size);
+    emaFinalizeKernel<<<grid, block, 0, stream>>>(input, trans.get(), output, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(trans);
 }
 
 __global__ void smaKernelEnd(const float* __restrict__ prefix,
@@ -73,17 +70,15 @@ __global__ void smaKernelEnd(const float* __restrict__ prefix,
 }
 
 static void computeSma(const float* input, float* output, int size, int period, cudaStream_t stream) {
-    float* prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto prefix = acquireDeviceBuffer<float>(size);
     thrust::device_ptr<const float> inPtr(input);
-    thrust::device_ptr<float> prePtr(prefix);
+    thrust::device_ptr<float> prePtr(prefix.get());
     thrust::inclusive_scan(thrust::cuda::par.on(stream), inPtr, inPtr + size, prePtr);
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    smaKernelEnd<<<grid, block, 0, stream>>>(prefix, output, period, size);
+    smaKernelEnd<<<grid, block, 0, stream>>>(prefix.get(), output, period, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(prefix);
 }
 
 __global__ void macdLineKernel(const float* __restrict__ maFast,
@@ -121,20 +116,20 @@ void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_
     float* signal = output + size;
     float* hist = output + 2 * size;
 
-    float* maFast = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float* maSlow = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto maFast = acquireDeviceBuffer<float>(size);
+    auto maSlow = acquireDeviceBuffer<float>(size);
 
     if (type == MAType::EMA) {
-        computeEma(input, maFast, size, fastPeriod, stream);
-        computeEma(input, maSlow, size, slowPeriod, stream);
+        computeEma(input, maFast.get(), size, fastPeriod, stream);
+        computeEma(input, maSlow.get(), size, slowPeriod, stream);
     } else {
-        computeSma(input, maFast, size, fastPeriod, stream);
-        computeSma(input, maSlow, size, slowPeriod, stream);
+        computeSma(input, maFast.get(), size, fastPeriod, stream);
+        computeSma(input, maSlow.get(), size, slowPeriod, stream);
     }
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    macdLineKernel<<<grid, block, 0, stream>>>(maFast, maSlow, macd, slowPeriod, size);
+    macdLineKernel<<<grid, block, 0, stream>>>(maFast.get(), maSlow.get(), macd, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
 
     if (type == MAType::EMA) {
@@ -145,7 +140,4 @@ void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_
 
     histKernel<<<grid, block, 0, stream>>>(macd, signal, hist, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(maFast);
-    DeviceBufferPool::instance().release(maSlow);
 }

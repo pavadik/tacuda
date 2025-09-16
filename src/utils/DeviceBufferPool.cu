@@ -7,6 +7,9 @@ DeviceBufferPool& DeviceBufferPool::instance() {
 }
 
 void* DeviceBufferPool::acquire(size_t bytes) {
+    if (bytes == 0) {
+        return nullptr;
+    }
     std::lock_guard<std::mutex> lock(mutex);
     auto& vec = freeBuffers[bytes];
     if (!vec.empty()) {

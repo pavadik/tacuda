@@ -2,9 +2,10 @@
 #define DEVICE_BUFFER_POOL_H
 
 #include <cstddef>
+#include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
 
 class DeviceBufferPool {
 public:
@@ -31,5 +32,22 @@ private:
     size_t allocations = 0;
     std::mutex mutex;
 };
+
+template <typename T>
+struct DeviceBufferDeleter {
+    void operator()(T* ptr) const noexcept {
+        if (ptr) {
+            DeviceBufferPool::instance().release(ptr);
+        }
+    }
+};
+
+template <typename T>
+using DeviceBufferPtr = std::unique_ptr<T, DeviceBufferDeleter<T>>;
+
+template <typename T>
+DeviceBufferPtr<T> acquireDeviceBuffer(size_t count) {
+    return DeviceBufferPtr<T>(static_cast<T*>(DeviceBufferPool::instance().acquire(count * sizeof(T))));
+}
 
 #endif

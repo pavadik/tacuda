@@ -24,24 +24,20 @@ void TRIX::calculate(const float* input, float* output, int size, cudaStream_t s
 
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
 
-    float* ema1 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float* ema2 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float* ema3 = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto ema1 = acquireDeviceBuffer<float>(size);
+    auto ema2 = acquireDeviceBuffer<float>(size);
+    auto ema3 = acquireDeviceBuffer<float>(size);
 
     EMA ema(period);
-    ema.calculate(input, ema1, size, stream);
+    ema.calculate(input, ema1.get(), size, stream);
     int size2 = size - period + 1;
-    ema.calculate(ema1, ema2, size2);
+    ema.calculate(ema1.get(), ema2.get(), size2);
     int size3 = size2 - period + 1;
-    ema.calculate(ema2, ema3, size3);
+    ema.calculate(ema2.get(), ema3.get(), size3);
 
     int valid = size3 - 1;
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(valid);
-    trixKernel<<<grid, block, 0, stream>>>(ema3, output, valid);
+    trixKernel<<<grid, block, 0, stream>>>(ema3.get(), output, valid);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(ema1);
-    DeviceBufferPool::instance().release(ema2);
-    DeviceBufferPool::instance().release(ema3);
 }

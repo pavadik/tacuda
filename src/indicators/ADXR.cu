@@ -21,17 +21,16 @@ void ADXR::calculate(const float* high, const float* low, const float* close,
     if (period <= 0 || period > size) {
         throw std::invalid_argument("ADXR: invalid period");
     }
-    float* adx = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto adx = acquireDeviceBuffer<float>(size);
 
     ADX adxInd(period);
-    adxInd.calculate(high, low, close, adx, size, stream);
+    adxInd.calculate(high, low, close, adx.get(), size, stream);
 
     CUDA_CHECK(cudaMemset(output, 0xFF, size * sizeof(float)));
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    adxrKernel<<<grid, block, 0, stream>>>(adx, output, period, size);
+    adxrKernel<<<grid, block, 0, stream>>>(adx.get(), output, period, size);
     CUDA_CHECK(cudaGetLastError());
-    DeviceBufferPool::instance().release(adx);
 }
 
 void ADXR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {

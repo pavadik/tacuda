@@ -49,32 +49,28 @@ void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t
     // Initialize outputs with NaNs so unwritten tail retains NaN semantics
     CUDA_CHECK(cudaMemset(output, 0xFF, 3 * size * sizeof(float)));
 
-    float *prefix = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float *squared = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
-    float *prefixSq = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+    auto prefix = acquireDeviceBuffer<float>(size);
+    auto squared = acquireDeviceBuffer<float>(size);
+    auto prefixSq = acquireDeviceBuffer<float>(size);
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);
-    squareKernel<<<grid, block, 0, stream>>>(input, squared, size);
+    squareKernel<<<grid, block, 0, stream>>>(input, squared.get(), size);
     CUDA_CHECK(cudaGetLastError());
 
     thrust::device_ptr<const float> inPtr(input);
-    thrust::device_ptr<float> prePtr(prefix);
+    thrust::device_ptr<float> prePtr(prefix.get());
     thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
 
-    thrust::device_ptr<float> sqPtr(squared);
-    thrust::device_ptr<float> preSqPtr(prefixSq);
+    thrust::device_ptr<float> sqPtr(squared.get());
+    thrust::device_ptr<float> preSqPtr(prefixSq.get());
     thrust::inclusive_scan(sqPtr, sqPtr + size, preSqPtr);
 
     float* upper = output;
     float* middle = output + size;
     float* lower = output + 2 * size;
-    bbandsKernel<<<grid, block, 0, stream>>>(prefix, prefixSq, upper, middle, lower,
+    bbandsKernel<<<grid, block, 0, stream>>>(prefix.get(), prefixSq.get(), upper, middle, lower,
                                   period, size, upperMultiplier, lowerMultiplier);
     CUDA_CHECK(cudaGetLastError());
-
-    DeviceBufferPool::instance().release(prefix);
-    DeviceBufferPool::instance().release(squared);
-    DeviceBufferPool::instance().release(prefixSq);
 }
 

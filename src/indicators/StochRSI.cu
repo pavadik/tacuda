@@ -69,11 +69,10 @@ void StochRSI::calculate(const float *input, float *output,
       size <= rsiPeriod + kPeriod + dPeriod - 2) {
     throw std::invalid_argument("StochRSI: invalid parameters");
   }
-  float *rsi = static_cast<float*>(DeviceBufferPool::instance().acquire(size * sizeof(float)));
+  auto rsi = acquireDeviceBuffer<float>(size);
   float *kOut = output;
   float *dOut = output + size;
-  stochRsiKernel<<<1, 1, 0, stream>>>(input, rsi, kOut, dOut, rsiPeriod, kPeriod, dPeriod,
+  stochRsiKernel<<<1, 1, 0, stream>>>(input, rsi.get(), kOut, dOut, rsiPeriod, kPeriod, dPeriod,
                            size);
   CUDA_CHECK(cudaGetLastError());
-  DeviceBufferPool::instance().release(rsi);
 }
