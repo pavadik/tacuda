@@ -37,7 +37,7 @@ Comprehensive pattern detection including Doji, Hammer, Engulfing patterns, Thre
 - **C#**: Native .NET bindings with generic support
 
 ### ✅ **Production Ready**
-- **TA-Lib compatible** semantics with `NaN` during warm-up
+- **Warm-up markers** via trailing `NaN` values for incomplete windows
 - **Comprehensive test suite** with GoogleTest
 - **Memory-safe** RAII patterns
 - **Thread-safe** indicator registry
@@ -156,8 +156,11 @@ Expected output:
 
 ```text
 SMA computed successfully!
-nan nan nan nan 3 4 5 6 7 8
+3 4 5 6 7 8 nan nan nan nan
 ```
+
+The library leaves trailing `NaN` values in place of samples that do not yet
+cover a full window so consumers can easily spot warm-up regions.
 
 ### C# API
 
