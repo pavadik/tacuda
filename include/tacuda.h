@@ -102,6 +102,98 @@ CTAPI_EXPORT ctStatus_t ct_ppo(const float *host_input, float *host_output,
                                int size, int fastPeriod, int slowPeriod);
 CTAPI_EXPORT ctStatus_t ct_pvo(const float *host_volume, float *host_output,
                                int size, int fastPeriod, int slowPeriod);
+// Device-pointer variants that operate directly on GPU memory.
+CTAPI_EXPORT ctStatus_t ct_sma_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_ma_device(const float *device_input,
+                                     float *device_output, int size,
+                                     int period, ctMaType_t type,
+                                     cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_wma_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_momentum_device(const float *device_input,
+                                           float *device_output, int size,
+                                           int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_change_device(const float *device_input,
+                                         float *device_output, int size,
+                                         int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_roc_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_rocp_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_rocr_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_rocr100_device(const float *device_input,
+                                          float *device_output, int size,
+                                          int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_ema_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_dema_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_tema_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_t3_device(const float *device_input,
+                                     float *device_output, int size,
+                                     int period, float vFactor,
+                                     cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_trima_device(const float *device_input,
+                                        float *device_output, int size,
+                                        int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_trix_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_max_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_min_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_maxindex_device(const float *device_input,
+                                           float *device_output, int size,
+                                           int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_minindex_device(const float *device_input,
+                                           float *device_output, int size,
+                                           int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_stddev_device(const float *device_input,
+                                         float *device_output, int size,
+                                         int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_var_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_sum_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_rsi_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int period, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_kama_device(const float *device_input,
+                                       float *device_output, int size,
+                                       int period, int fastPeriod,
+                                       int slowPeriod, cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_macd_line_device(const float *device_input,
+                                            float *device_output, int size,
+                                            int fastPeriod, int slowPeriod,
+                                            cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_apo_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int fastPeriod, int slowPeriod,
+                                      cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_ppo_device(const float *device_input,
+                                      float *device_output, int size,
+                                      int fastPeriod, int slowPeriod,
+                                      cudaStream_t stream = 0);
+CTAPI_EXPORT ctStatus_t ct_pvo_device(const float *device_volume,
+                                      float *device_output, int size,
+                                      int fastPeriod, int slowPeriod,
+                                      cudaStream_t stream = 0);
 CTAPI_EXPORT ctStatus_t ct_bbands(const float *host_input, float *host_upper,
                                   float *host_middle, float *host_lower,
                                   int size, int period, float upperMul,
