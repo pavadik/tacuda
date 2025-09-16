@@ -23,9 +23,9 @@ __global__ void tsfKernel(const float* __restrict__ in,
     }
 }
 
-TSF::TSF(int period) : period(period) {}
+tacuda::TSF::TSF(int period) : period(period) {}
 
-void TSF::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::TSF::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("TSF: invalid period");
     }

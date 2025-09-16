@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MACD : public Indicator {
 public:
     MACD(int fastPeriod, int slowPeriod);
@@ -11,5 +12,7 @@ private:
     int fastPeriod;
     int slowPeriod;
 };
+
+} // namespace tacuda
 
 #endif

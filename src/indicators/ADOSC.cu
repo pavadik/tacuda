@@ -51,10 +51,10 @@ __global__ void adoscKernel(const float* __restrict__ ad,
     }
 }
 
-ADOSC::ADOSC(int shortPeriod, int longPeriod)
+tacuda::ADOSC::ADOSC(int shortPeriod, int longPeriod)
     : shortPeriod(shortPeriod), longPeriod(longPeriod) {}
 
-void ADOSC::calculate(const float* high, const float* low, const float* close,
+void tacuda::ADOSC::calculate(const float* high, const float* low, const float* close,
                       const float* volume, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (shortPeriod <= 0 || longPeriod <= 0) {
         throw std::invalid_argument("ADOSC: invalid periods");
@@ -73,7 +73,7 @@ void ADOSC::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void ADOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ADOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

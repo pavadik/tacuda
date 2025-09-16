@@ -4,9 +4,9 @@
 #include <utils/CudaUtils.h>
 #include <utils/DeviceBufferPool.h>
 
-TRIMA::TRIMA(int period) : period(period) {}
+tacuda::TRIMA::TRIMA(int period) : period(period) {}
 
-void TRIMA::calculate(const float *input, float *output,
+void tacuda::TRIMA::calculate(const float *input, float *output,
                       int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || size < period) {
     throw std::invalid_argument("TRIMA: invalid period");
@@ -17,9 +17,9 @@ void TRIMA::calculate(const float *input, float *output,
 
   auto tmp = acquireDeviceBuffer<float>(size);
 
-  SMA sma1(p1);
+  tacuda::SMA sma1(p1);
   sma1.calculate(input, tmp.get(), size, stream);
   int size2 = size - p1 + 1;
-  SMA sma2(p2);
+  tacuda::SMA sma2(p2);
   sma2.calculate(tmp.get(), output, size2);
 }

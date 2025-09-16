@@ -52,14 +52,14 @@ __global__ void sarextKernel(const float* __restrict__ high,
     }
 }
 
-SAREXT::SAREXT(float startValue, float offsetOnReverse,
+tacuda::SAREXT::SAREXT(float startValue, float offsetOnReverse,
                float accInitLong, float accLong, float accMaxLong,
                float accInitShort, float accShort, float accMaxShort)
     : startValue(startValue), offsetOnReverse(offsetOnReverse),
       accInitLong(accInitLong), accLong(accLong), accMaxLong(accMaxLong),
       accInitShort(accInitShort), accShort(accShort), accMaxShort(accMaxShort) {}
 
-void SAREXT::calculate(const float* high, const float* low,
+void tacuda::SAREXT::calculate(const float* high, const float* low,
                        float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("SAREXT: invalid size");
@@ -71,7 +71,7 @@ void SAREXT::calculate(const float* high, const float* low,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void SAREXT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::SAREXT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

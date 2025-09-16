@@ -17,7 +17,7 @@ __global__ void threeInsideKernel(const float* __restrict__ open,
     }
 }
 
-void ThreeInside::calculate(const float* open, const float* high, const float* low,
+void tacuda::ThreeInside::calculate(const float* open, const float* high, const float* low,
                             const float* close, float* output, int size, cudaStream_t stream) noexcept(false) {
     CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
@@ -26,7 +26,7 @@ void ThreeInside::calculate(const float* open, const float* high, const float* l
     CUDA_CHECK(cudaGetLastError());
 }
 
-void ThreeInside::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ThreeInside::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* open = input;
     const float* high = input + size;
     const float* low = input + 2 * size;

@@ -292,7 +292,7 @@ static void ht_trendmode_cpu(const std::vector<float>& in, std::vector<int>& out
     }
 }
 
-void HT_TRENDMODE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::HT_TRENDMODE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     std::vector<float> h_in(size);
     CUDA_CHECK(cudaMemcpy(h_in.data(), input, size * sizeof(float), cudaMemcpyDeviceToHost));
     std::vector<int> h_out(size, 0);

@@ -37,9 +37,9 @@ __global__ void minusDIKernel(const float *__restrict__ high,
   }
 }
 
-MinusDI::MinusDI(int period) : period(period) {}
+tacuda::MinusDI::MinusDI(int period) : period(period) {}
 
-void MinusDI::calculate(const float *high, const float *low, const float *close,
+void tacuda::MinusDI::calculate(const float *high, const float *low, const float *close,
                         float *output, int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MinusDI: invalid period");
@@ -49,7 +49,7 @@ void MinusDI::calculate(const float *high, const float *low, const float *close,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void MinusDI::calculate(const float *input, float *output,
+void tacuda::MinusDI::calculate(const float *input, float *output,
                         int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

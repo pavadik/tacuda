@@ -34,9 +34,9 @@ __global__ void minusDMKernel(const float *__restrict__ high,
   }
 }
 
-MinusDM::MinusDM(int period) : period(period) {}
+tacuda::MinusDM::MinusDM(int period) : period(period) {}
 
-void MinusDM::calculate(const float *high, const float *low, float *output,
+void tacuda::MinusDM::calculate(const float *high, const float *low, float *output,
                         int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MinusDM: invalid period");
@@ -46,7 +46,7 @@ void MinusDM::calculate(const float *high, const float *low, float *output,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void MinusDM::calculate(const float *input, float *output,
+void tacuda::MinusDM::calculate(const float *input, float *output,
                         int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

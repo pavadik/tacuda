@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class KickingByLength : public Indicator {
 public:
   KickingByLength() = default;
@@ -11,5 +12,7 @@ public:
   void calculate(const float *input, float *output,
                  int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif

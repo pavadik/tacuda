@@ -13,9 +13,9 @@ __global__ void rocr100Kernel(const float *__restrict__ input,
   }
 }
 
-ROCR100::ROCR100(int period) : period(period) {}
+tacuda::ROCR100::ROCR100(int period) : period(period) {}
 
-void ROCR100::calculate(const float *input, float *output,
+void tacuda::ROCR100::calculate(const float *input, float *output,
                         int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period >= size) {
     throw std::invalid_argument("ROCR100: invalid period");

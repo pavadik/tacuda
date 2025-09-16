@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MAMA : public Indicator {
 public:
     MAMA(float fastLimit, float slowLimit);
@@ -11,5 +12,7 @@ private:
     float fastLimit;
     float slowLimit;
 };
+
+} // namespace tacuda
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class Doji : public Indicator {
 public:
     explicit Doji(float threshold = 0.1f);
@@ -12,5 +13,7 @@ public:
 private:
     float threshold;
 };
+
+} // namespace tacuda
 
 #endif

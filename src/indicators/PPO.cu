@@ -29,10 +29,10 @@ __global__ void ppoKernel(const float* __restrict__ input,
   }
 }
 
-PPO::PPO(int fastPeriod, int slowPeriod)
+tacuda::PPO::PPO(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void PPO::calculate(const float* input, float* output,
+void tacuda::PPO::calculate(const float* input, float* output,
                     int size, cudaStream_t stream) noexcept(false) {
   if (fastPeriod <= 0 || slowPeriod <= 0) {
     throw std::invalid_argument("PPO: invalid periods");

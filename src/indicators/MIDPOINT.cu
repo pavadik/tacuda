@@ -19,9 +19,9 @@ __global__ void midpointKernel(const float* __restrict__ input,
     }
 }
 
-MIDPOINT::MIDPOINT(int period) : period(period) {}
+tacuda::MIDPOINT::MIDPOINT(int period) : period(period) {}
 
-void MIDPOINT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MIDPOINT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MIDPOINT: invalid period");
     }

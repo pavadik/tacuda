@@ -16,9 +16,9 @@ __global__ void smaKernelPrefix(const float* __restrict__ prefix,
     }
 }
 
-SMA::SMA(int period) : period(period) {}
+tacuda::SMA::SMA(int period) : period(period) {}
 
-void SMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::SMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("SMA: invalid period");
     }

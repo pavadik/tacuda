@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class UpsideGap2Crows : public Indicator {
 public:
   UpsideGap2Crows() = default;
@@ -11,6 +12,8 @@ public:
   void calculate(const float *input, float *output,
                  int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif
 

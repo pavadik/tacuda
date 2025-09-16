@@ -22,10 +22,10 @@ __global__ void mamaKernel(const float* __restrict__ input,
     }
 }
 
-MAMA::MAMA(float fastLimit, float slowLimit)
+tacuda::MAMA::MAMA(float fastLimit, float slowLimit)
     : fastLimit(fastLimit), slowLimit(slowLimit) {}
 
-void MAMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MAMA::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("MAMA: invalid size");
     }

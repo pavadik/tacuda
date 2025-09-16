@@ -12,7 +12,7 @@ __global__ void wclPriceKernel(const float *__restrict__ high,
   }
 }
 
-void WclPrice::calculate(const float *high, const float *low,
+void tacuda::WclPrice::calculate(const float *high, const float *low,
                          const float *close, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   if (size <= 0) {
@@ -24,7 +24,7 @@ void WclPrice::calculate(const float *high, const float *low,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void WclPrice::calculate(const float *input, float *output,
+void tacuda::WclPrice::calculate(const float *input, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

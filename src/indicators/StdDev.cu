@@ -20,9 +20,9 @@ __global__ void stddevKernel(const float* __restrict__ input, float* __restrict_
     }
 }
 
-StdDev::StdDev(int period) : period(period) {}
+tacuda::StdDev::StdDev(int period) : period(period) {}
 
-void StdDev::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::StdDev::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("StdDev: invalid period");
     }

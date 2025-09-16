@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class T3 : public Indicator {
 public:
   T3(int period, float vFactor);
@@ -13,5 +14,7 @@ private:
   int period;
   float vFactor;
 };
+
+} // namespace tacuda
 
 #endif

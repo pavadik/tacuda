@@ -14,16 +14,16 @@ __global__ void adxrKernel(const float* __restrict__ adx,
     }
 }
 
-ADXR::ADXR(int period) : period(period) {}
+tacuda::ADXR::ADXR(int period) : period(period) {}
 
-void ADXR::calculate(const float* high, const float* low, const float* close,
+void tacuda::ADXR::calculate(const float* high, const float* low, const float* close,
                      float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("ADXR: invalid period");
     }
     auto adx = acquireDeviceBuffer<float>(size);
 
-    ADX adxInd(period);
+    tacuda::ADX adxInd(period);
     adxInd.calculate(high, low, close, adx.get(), size, stream);
 
     CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
@@ -33,7 +33,7 @@ void ADXR::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void ADXR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ADXR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

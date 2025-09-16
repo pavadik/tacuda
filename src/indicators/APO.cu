@@ -29,10 +29,10 @@ __global__ void apoKernel(const float* __restrict__ input,
     }
 }
 
-APO::APO(int fastPeriod, int slowPeriod)
+tacuda::APO::APO(int fastPeriod, int slowPeriod)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod) {}
 
-void APO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::APO::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0) {
         throw std::invalid_argument("APO: invalid periods");
     }

@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class OBV : public Indicator {
 public:
     OBV() = default;
@@ -10,5 +11,7 @@ public:
                    float* output, int size, cudaStream_t stream = 0) noexcept(false);
     void calculate(const float* input, float* output, int size, cudaStream_t stream = 0) noexcept(false) override;
 };
+
+} // namespace tacuda
 
 #endif

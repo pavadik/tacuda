@@ -20,9 +20,9 @@ __global__ void varKernel(const float* __restrict__ input,
     }
 }
 
-VAR::VAR(int period) : period(period) {}
+tacuda::VAR::VAR(int period) : period(period) {}
 
-void VAR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::VAR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("VAR: invalid period");
     }

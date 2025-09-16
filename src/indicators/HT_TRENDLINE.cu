@@ -220,7 +220,7 @@ static void ht_trendline_cpu(const std::vector<float>& in, std::vector<float>& o
     }
 }
 
-void HT_TRENDLINE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::HT_TRENDLINE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     std::vector<float> h_in(size);
     CUDA_CHECK(cudaMemcpy(h_in.data(), input, size * sizeof(float), cudaMemcpyDeviceToHost));
     std::vector<float> h_out(size, std::numeric_limits<float>::quiet_NaN());

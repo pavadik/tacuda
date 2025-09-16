@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class MIDPRICE : public Indicator {
 public:
     explicit MIDPRICE(int period);
@@ -11,5 +12,7 @@ public:
 private:
     int period;
 };
+
+} // namespace tacuda
 
 #endif

@@ -32,9 +32,9 @@ __global__ void natrKernel(const float *__restrict__ high,
   }
 }
 
-NATR::NATR(int period) : period(period) {}
+tacuda::NATR::NATR(int period) : period(period) {}
 
-void NATR::calculate(const float *high, const float *low, const float *close,
+void tacuda::NATR::calculate(const float *high, const float *low, const float *close,
                      float *output, int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("NATR: invalid period");
@@ -44,7 +44,7 @@ void NATR::calculate(const float *high, const float *low, const float *close,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void NATR::calculate(const float *input, float *output,
+void tacuda::NATR::calculate(const float *input, float *output,
                      int size, cudaStream_t stream) noexcept(false) {
   const float *high = input;
   const float *low = input + size;

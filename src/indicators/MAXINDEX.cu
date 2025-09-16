@@ -21,9 +21,9 @@ __global__ void maxIndexKernel(const float* __restrict__ input,
     }
 }
 
-MAXINDEX::MAXINDEX(int period) : period(period) {}
+tacuda::MAXINDEX::MAXINDEX(int period) : period(period) {}
 
-void MAXINDEX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MAXINDEX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("MAXINDEX: invalid period");
     }

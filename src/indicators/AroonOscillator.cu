@@ -34,9 +34,9 @@ __global__ void aroonOscKernel(const float* __restrict__ high,
     }
 }
 
-AroonOscillator::AroonOscillator(int period) : period(period) {}
+tacuda::AroonOscillator::AroonOscillator(int period) : period(period) {}
 
-void AroonOscillator::calculate(const float* high, const float* low,
+void tacuda::AroonOscillator::calculate(const float* high, const float* low,
                                 float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("AroonOscillator: invalid period");
@@ -46,7 +46,7 @@ void AroonOscillator::calculate(const float* high, const float* low,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void AroonOscillator::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::AroonOscillator::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

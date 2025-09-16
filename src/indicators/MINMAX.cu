@@ -20,9 +20,9 @@ __global__ void minmaxKernel(const float *__restrict__ input,
   }
 }
 
-MINMAX::MINMAX(int period) : period(period) {}
+tacuda::MINMAX::MINMAX(int period) : period(period) {}
 
-void MINMAX::calculate(const float *input, float *output,
+void tacuda::MINMAX::calculate(const float *input, float *output,
                        int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("MINMAX: invalid period");

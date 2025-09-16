@@ -29,10 +29,10 @@ __global__ void ultoscKernel(const float* __restrict__ high,
     }
 }
 
-ULTOSC::ULTOSC(int shortPeriod, int mediumPeriod, int longPeriod)
+tacuda::ULTOSC::ULTOSC(int shortPeriod, int mediumPeriod, int longPeriod)
     : shortPeriod(shortPeriod), mediumPeriod(mediumPeriod), longPeriod(longPeriod) {}
 
-void ULTOSC::calculate(const float* high, const float* low, const float* close,
+void tacuda::ULTOSC::calculate(const float* high, const float* low, const float* close,
                        float* output, int size, cudaStream_t stream) noexcept(false) {
     if (shortPeriod <= 0 || mediumPeriod <= 0 || longPeriod <= 0 ||
         shortPeriod > mediumPeriod || mediumPeriod > longPeriod ||
@@ -47,7 +47,7 @@ void ULTOSC::calculate(const float* high, const float* low, const float* close,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void ULTOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::ULTOSC::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

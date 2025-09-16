@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class KAMA : public Indicator {
 public:
   KAMA(int period, int fastPeriod, int slowPeriod);
@@ -14,5 +15,7 @@ private:
   float fastSC;
   float slowSC;
 };
+
+} // namespace tacuda
 
 #endif

@@ -12,7 +12,7 @@ __global__ void medPriceKernel(const float* __restrict__ high,
     }
 }
 
-void MedPrice::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MedPrice::calculate(const float* high, const float* low, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("MedPrice: invalid size");
     }
@@ -22,7 +22,7 @@ void MedPrice::calculate(const float* high, const float* low, float* output, int
     CUDA_CHECK(cudaGetLastError());
 }
 
-void MedPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MedPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

@@ -101,10 +101,10 @@ __global__ void histKernel(const float* __restrict__ macd,
     }
 }
 
-MACDEXT::MACDEXT(int fastPeriod, int slowPeriod, int signalPeriod, MAType type)
+tacuda::MACDEXT::MACDEXT(int fastPeriod, int slowPeriod, int signalPeriod, tacuda::MAType type)
     : fastPeriod(fastPeriod), slowPeriod(slowPeriod), signalPeriod(signalPeriod), type(type) {}
 
-void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::MACDEXT::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (fastPeriod <= 0 || slowPeriod <= 0 || signalPeriod <= 0) {
         throw std::invalid_argument("MACD: invalid periods");
     }
@@ -119,7 +119,7 @@ void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_
     auto maFast = acquireDeviceBuffer<float>(size);
     auto maSlow = acquireDeviceBuffer<float>(size);
 
-    if (type == MAType::EMA) {
+    if (type == tacuda::MAType::EMA) {
         computeEma(input, maFast.get(), size, fastPeriod, stream);
         computeEma(input, maSlow.get(), size, slowPeriod, stream);
     } else {
@@ -132,7 +132,7 @@ void MACDEXT::calculate(const float* input, float* output, int size, cudaStream_
     macdLineKernel<<<grid, block, 0, stream>>>(maFast.get(), maSlow.get(), macd, slowPeriod, size);
     CUDA_CHECK(cudaGetLastError());
 
-    if (type == MAType::EMA) {
+    if (type == tacuda::MAType::EMA) {
         computeEma(macd + slowPeriod, signal + slowPeriod, size - slowPeriod, signalPeriod, stream);
     } else {
         computeSma(macd + slowPeriod, signal + slowPeriod, size - slowPeriod, signalPeriod, stream);

@@ -18,7 +18,7 @@ __global__ void morningStarKernel(const float *__restrict__ open,
   }
 }
 
-void MorningStar::calculate(const float *open, const float *high,
+void tacuda::MorningStar::calculate(const float *open, const float *high,
                             const float *low, const float *close, float *output,
                             int size, cudaStream_t stream) noexcept(false) {
   CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
@@ -28,7 +28,7 @@ void MorningStar::calculate(const float *open, const float *high,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void MorningStar::calculate(const float *input, float *output,
+void tacuda::MorningStar::calculate(const float *input, float *output,
                             int size, cudaStream_t stream) noexcept(false) {
   const float *open = input;
   const float *high = input + size;

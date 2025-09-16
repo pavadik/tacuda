@@ -4,6 +4,7 @@
 #include "Indicator.h"
 #include "MA.h"
 
+namespace tacuda {
 class MACDFIX : public Indicator {
 public:
     explicit MACDFIX(int signalPeriod);
@@ -11,5 +12,7 @@ public:
 private:
     int signalPeriod;
 };
+
+} // namespace tacuda
 
 #endif

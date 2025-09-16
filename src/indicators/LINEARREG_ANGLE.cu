@@ -23,9 +23,9 @@ __global__ void linearregAngleKernel(const float* __restrict__ in,
     }
 }
 
-LINEARREG_ANGLE::LINEARREG_ANGLE(int period) : period(period) {}
+tacuda::LINEARREG_ANGLE::LINEARREG_ANGLE(int period) : period(period) {}
 
-void LINEARREG_ANGLE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::LINEARREG_ANGLE::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("LINEARREG_ANGLE: invalid period");
     }

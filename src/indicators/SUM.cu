@@ -15,9 +15,9 @@ __global__ void sumKernelPrefix(const float *__restrict__ prefix,
   }
 }
 
-SUM::SUM(int period) : period(period) {}
+tacuda::SUM::SUM(int period) : period(period) {}
 
-void SUM::calculate(const float *input, float *output,
+void tacuda::SUM::calculate(const float *input, float *output,
                     int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("SUM: invalid period");

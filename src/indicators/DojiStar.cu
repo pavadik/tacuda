@@ -17,7 +17,7 @@ __global__ void dojiStarKernel(const float *__restrict__ open,
   }
 }
 
-void DojiStar::calculate(const float *open, const float *high, const float *low,
+void tacuda::DojiStar::calculate(const float *open, const float *high, const float *low,
                          const float *close, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
@@ -27,7 +27,7 @@ void DojiStar::calculate(const float *open, const float *high, const float *low,
   CUDA_CHECK(cudaGetLastError());
 }
 
-void DojiStar::calculate(const float *input, float *output,
+void tacuda::DojiStar::calculate(const float *input, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   const float *open = input;
   const float *high = input + size;

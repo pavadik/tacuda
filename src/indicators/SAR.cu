@@ -51,10 +51,10 @@ __global__ void sarKernel(const float* __restrict__ high,
     }
 }
 
-SAR::SAR(float step, float maxAcceleration)
+tacuda::SAR::SAR(float step, float maxAcceleration)
     : step(step), maxAcceleration(maxAcceleration) {}
 
-void SAR::calculate(const float* high, const float* low,
+void tacuda::SAR::calculate(const float* high, const float* low,
                     float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("SAR: invalid size");
@@ -64,7 +64,7 @@ void SAR::calculate(const float* high, const float* low,
     CUDA_CHECK(cudaGetLastError());
 }
 
-void SAR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::SAR::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     calculate(high, low, output, size, stream);

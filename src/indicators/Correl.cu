@@ -29,9 +29,9 @@ __global__ void correlKernel(const float* __restrict__ x,
     }
 }
 
-Correl::Correl(int period) : period(period) {}
+tacuda::Correl::Correl(int period) : period(period) {}
 
-void Correl::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Correl::calculate(const float* x, const float* y, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("Correl: invalid period");
     }
@@ -42,7 +42,7 @@ void Correl::calculate(const float* x, const float* y, float* output, int size, 
     CUDA_CHECK(cudaGetLastError());
 }
 
-void Correl::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Correl::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* x = input;
     const float* y = input + size;
     calculate(x, y, output, size, stream);

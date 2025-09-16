@@ -42,9 +42,9 @@ __global__ void stochasticKernel(const float* __restrict__ high,
     }
 }
 
-Stochastic::Stochastic(int kPeriod, int dPeriod) : kPeriod(kPeriod), dPeriod(dPeriod) {}
+tacuda::Stochastic::Stochastic(int kPeriod, int dPeriod) : kPeriod(kPeriod), dPeriod(dPeriod) {}
 
-void Stochastic::calculate(const float* high, const float* low, const float* close,
+void tacuda::Stochastic::calculate(const float* high, const float* low, const float* close,
                            float* output, int size, cudaStream_t stream) noexcept(false) {
     if (kPeriod <= 0 || dPeriod <= 0 || kPeriod + dPeriod - 1 > size) {
         throw std::invalid_argument("Stochastic: invalid periods");
@@ -56,7 +56,7 @@ void Stochastic::calculate(const float* high, const float* low, const float* clo
     CUDA_CHECK(cudaGetLastError());
 }
 
-void Stochastic::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Stochastic::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

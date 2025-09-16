@@ -10,9 +10,9 @@ __global__ void momentumKernel(const float* __restrict__ input, float* __restric
     }
 }
 
-Momentum::Momentum(int period) : period(period) {}
+tacuda::Momentum::Momentum(int period) : period(period) {}
 
-void Momentum::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::Momentum::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period >= size) {
         throw std::invalid_argument("Momentum: invalid period");
     }

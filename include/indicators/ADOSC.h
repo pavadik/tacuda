@@ -3,6 +3,7 @@
 
 #include "Indicator.h"
 
+namespace tacuda {
 class ADOSC : public Indicator {
 public:
     ADOSC(int shortPeriod, int longPeriod);
@@ -13,5 +14,7 @@ private:
     int shortPeriod;
     int longPeriod;
 };
+
+} // namespace tacuda
 
 #endif

@@ -15,9 +15,9 @@ __global__ void trixKernel(const float* __restrict__ ema3,
     }
 }
 
-TRIX::TRIX(int period) : period(period) {}
+tacuda::TRIX::TRIX(int period) : period(period) {}
 
-void TRIX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::TRIX::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || size < 3 * period - 1) {
         throw std::invalid_argument("TRIX: invalid period");
     }
@@ -28,7 +28,7 @@ void TRIX::calculate(const float* input, float* output, int size, cudaStream_t s
     auto ema2 = acquireDeviceBuffer<float>(size);
     auto ema3 = acquireDeviceBuffer<float>(size);
 
-    EMA ema(period);
+    tacuda::EMA ema(period);
     ema.calculate(input, ema1.get(), size, stream);
     int size2 = size - period + 1;
     ema.calculate(ema1.get(), ema2.get(), size2);

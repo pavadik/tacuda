@@ -15,7 +15,7 @@ __global__ void bullishEngulfingKernel(const float* __restrict__ open,
     }
 }
 
-void BullishEngulfing::calculate(const float* open, const float* high, const float* low,
+void tacuda::BullishEngulfing::calculate(const float* open, const float* high, const float* low,
                                  const float* close, float* output, int size, cudaStream_t stream) noexcept(false) {
     CUDA_CHECK(cudaMemsetAsync(output, 0xFF, size * sizeof(float), stream));
     dim3 block = defaultBlock();
@@ -24,7 +24,7 @@ void BullishEngulfing::calculate(const float* open, const float* high, const flo
     CUDA_CHECK(cudaGetLastError());
 }
 
-void BullishEngulfing::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::BullishEngulfing::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* open = input;
     const float* high = input + size;
     const float* low = input + 2 * size;

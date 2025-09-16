@@ -39,10 +39,10 @@ __global__ void bbandsKernel(const float* __restrict__ prefix,
     }
 }
 
-BBANDS::BBANDS(int period, float upperMultiplier, float lowerMultiplier)
+tacuda::BBANDS::BBANDS(int period, float upperMultiplier, float lowerMultiplier)
     : period(period), upperMultiplier(upperMultiplier), lowerMultiplier(lowerMultiplier) {}
 
-void BBANDS::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::BBANDS::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     if (period <= 0 || period > size) {
         throw std::invalid_argument("BBANDS: invalid period");
     }

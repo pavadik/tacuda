@@ -60,10 +60,10 @@ __global__ void stochRsiKernel(const float *__restrict__ input,
   }
 }
 
-StochRSI::StochRSI(int rsiPeriod, int kPeriod, int dPeriod)
+tacuda::StochRSI::StochRSI(int rsiPeriod, int kPeriod, int dPeriod)
     : rsiPeriod(rsiPeriod), kPeriod(kPeriod), dPeriod(dPeriod) {}
 
-void StochRSI::calculate(const float *input, float *output,
+void tacuda::StochRSI::calculate(const float *input, float *output,
                          int size, cudaStream_t stream) noexcept(false) {
   if (rsiPeriod <= 0 || kPeriod <= 0 || dPeriod <= 0 ||
       size <= rsiPeriod + kPeriod + dPeriod - 2) {

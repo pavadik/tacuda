@@ -25,11 +25,11 @@ __global__ void kamaKernel(const float *__restrict__ input,
   }
 }
 
-KAMA::KAMA(int period, int fastPeriod, int slowPeriod)
+tacuda::KAMA::KAMA(int period, int fastPeriod, int slowPeriod)
     : period(period), fastSC(2.0f / (fastPeriod + 1.0f)),
       slowSC(2.0f / (slowPeriod + 1.0f)) {}
 
-void KAMA::calculate(const float *input, float *output,
+void tacuda::KAMA::calculate(const float *input, float *output,
                      int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period > size) {
     throw std::invalid_argument("KAMA: invalid period");

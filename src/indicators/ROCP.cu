@@ -12,9 +12,9 @@ __global__ void rocpKernel(const float *__restrict__ input,
   }
 }
 
-ROCP::ROCP(int period) : period(period) {}
+tacuda::ROCP::ROCP(int period) : period(period) {}
 
-void ROCP::calculate(const float *input, float *output,
+void tacuda::ROCP::calculate(const float *input, float *output,
                      int size, cudaStream_t stream) noexcept(false) {
   if (period <= 0 || period >= size) {
     throw std::invalid_argument("ROCP: invalid period");

@@ -13,7 +13,7 @@ __global__ void typPriceKernel(const float* __restrict__ high,
     }
 }
 
-void TypPrice::calculate(const float* high, const float* low, const float* close,
+void tacuda::TypPrice::calculate(const float* high, const float* low, const float* close,
                          float* output, int size, cudaStream_t stream) noexcept(false) {
     if (size <= 0) {
         throw std::invalid_argument("TypPrice: invalid size");
@@ -24,7 +24,7 @@ void TypPrice::calculate(const float* high, const float* low, const float* close
     CUDA_CHECK(cudaGetLastError());
 }
 
-void TypPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::TypPrice::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     const float* high = input;
     const float* low = input + size;
     const float* close = input + 2 * size;

@@ -209,7 +209,7 @@ static void ht_dcperiod_cpu(const std::vector<float>& in, std::vector<float>& ou
     }
 }
 
-void HT_DCPERIOD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
+void tacuda::HT_DCPERIOD::calculate(const float* input, float* output, int size, cudaStream_t stream) noexcept(false) {
     std::vector<float> h_in(size);
     CUDA_CHECK(cudaMemcpy(h_in.data(), input, size * sizeof(float), cudaMemcpyDeviceToHost));
     std::vector<float> h_out(size, std::numeric_limits<float>::quiet_NaN());
