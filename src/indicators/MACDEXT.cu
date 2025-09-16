@@ -41,6 +41,9 @@ __global__ void emaFinalizeKernel(const float* __restrict__ input,
 }
 
 static void computeEma(const float* input, float* output, int size, int period, cudaStream_t stream) {
+    if (size <= 0) {
+        return;
+    }
     float alpha = 2.0f / (period + 1.0f);
     float k = 1.0f - alpha;
     auto trans = acquireDeviceBuffer<thrust::complex<float>>(static_cast<size_t>(std::max(0, size - 1)));
@@ -70,6 +73,9 @@ __global__ void smaKernelEnd(const float* __restrict__ prefix,
 }
 
 static void computeSma(const float* input, float* output, int size, int period, cudaStream_t stream) {
+    if (size <= 0) {
+        return;
+    }
     auto prefix = acquireDeviceBuffer<float>(size);
     thrust::device_ptr<const float> inPtr(input);
     thrust::device_ptr<float> prePtr(prefix.get());

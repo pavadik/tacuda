@@ -3,6 +3,7 @@
 #include <utils/DeviceBufferPool.h>
 #include <stdexcept>
 #include <thrust/device_ptr.h>
+#include <thrust/execution_policy.h>
 #include <thrust/scan.h>
 #include <cmath>
 
@@ -60,11 +61,11 @@ void tacuda::BBANDS::calculate(const float* input, float* output, int size, cuda
 
     thrust::device_ptr<const float> inPtr(input);
     thrust::device_ptr<float> prePtr(prefix.get());
-    thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
+    thrust::inclusive_scan(thrust::cuda::par.on(stream), inPtr, inPtr + size, prePtr);
 
     thrust::device_ptr<float> sqPtr(squared.get());
     thrust::device_ptr<float> preSqPtr(prefixSq.get());
-    thrust::inclusive_scan(sqPtr, sqPtr + size, preSqPtr);
+    thrust::inclusive_scan(thrust::cuda::par.on(stream), sqPtr, sqPtr + size, preSqPtr);
 
     float* upper = output;
     float* middle = output + size;

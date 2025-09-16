@@ -95,3 +95,23 @@ TEST(Tacuda, MACD_ExtLargePeriod) {
     EXPECT_TRUE(std::isnan(hist[i]));
   }
 }
+
+TEST(Tacuda, MACD_ExtBoundaryEqualsSlowPeriod) {
+  const int slowP = 12;
+  const int fastP = 5;
+  const int signalP = 4;
+  const int N = slowP;
+  std::vector<float> x(N);
+  for (int i = 0; i < N; ++i)
+    x[i] = std::cos(0.2f * i);
+
+  std::vector<float> macd(N, 0.0f), signal(N, 0.0f), hist(N, 0.0f);
+  ctStatus_t rc = ct_macd(x.data(), macd.data(), signal.data(), hist.data(), N,
+                          fastP, slowP, signalP, CT_MA_EMA);
+  ASSERT_EQ(rc, CT_STATUS_SUCCESS);
+  for (int i = 0; i < N; ++i) {
+    EXPECT_TRUE(std::isnan(macd[i]));
+    EXPECT_TRUE(std::isnan(signal[i]));
+    EXPECT_TRUE(std::isnan(hist[i]));
+  }
+}

@@ -1,6 +1,7 @@
 #include <indicators/SUM.h>
 #include <stdexcept>
 #include <thrust/device_ptr.h>
+#include <thrust/execution_policy.h>
 #include <thrust/scan.h>
 #include <utils/CudaUtils.h>
 #include <utils/DeviceBufferPool.h>
@@ -27,7 +28,7 @@ void tacuda::SUM::calculate(const float *input, float *output,
   auto prefix = acquireDeviceBuffer<float>(size);
   thrust::device_ptr<const float> inPtr(input);
   thrust::device_ptr<float> prePtr(prefix.get());
-  thrust::inclusive_scan(inPtr, inPtr + size, prePtr);
+  thrust::inclusive_scan(thrust::cuda::par.on(stream), inPtr, inPtr + size, prePtr);
 
   dim3 block = defaultBlock();
   dim3 grid = defaultGrid(size);
