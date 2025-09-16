@@ -317,31 +317,33 @@ def my_indicator(data, period=10, factor=1.0):
 
 ---
 
+## ✅ Status & TODO
+
+- [x] CUDA implementations for moving averages, momentum, volatility, and price transforms (SMA/EMA/WMA, ROC family, StdDev, BBANDS, etc.)
+- [x] 140+ GPU kernels covering oscillators and candlestick patterns with TA-Lib compatible semantics
+- [x] Python (ctypes) and .NET 7 bindings generated from the public C ABI
+- [x] GoogleTest suite comparing against TA-Lib reference outputs and exercising the device buffer pool
+- [ ] Columnar OHLCV convenience container to avoid manual array packing in host APIs
+- [ ] Batched/multi-symbol execution entry points with stream-aware scheduling
+- [ ] Packaging for common ecosystems (PyPI wheel, NuGet, Conda, binary releases)
+- [ ] Documented production deployment guide and formalized C ABI stability window
+
 ## 🗺️ Roadmap
 
-### Version 0.1 *(Current)*
-- [x] Core SMA implementation
-- [x] Basic candlestick patterns  
-- [x] Python & C# bindings
-- [x] Comprehensive test suite
+### Short-term *(v0.2)*
+- Deliver native OHLCV helpers and update bindings to accept structured inputs
+- Expose batched indicator execution for processing portfolios on a single launch
+- Expand benchmark harness with reproducible datasets and publish comparative numbers
 
-### Version 0.2 *(Next)*
-- [x] **EMA**, **RSI**, **MACD**, **Bollinger Bands**, **200+ indicators**
-- [x] Optimized indicators (like with prefix-scan)
-- [ ] OHLCV data structure support
-- [ ] Batched execution API
+### Mid-term *(v0.3)*
+- Ship prebuilt binaries for Linux and Windows with CI-based validation
+- Introduce CUDA stream pools and heuristics for overlapping transfers with compute
+- Provide optional cuDF / columnar dataframe adapters for RAPIDS ecosystems
 
-### Version 0.3 *(Future)*
-- [ ] cuDF DataFrame integration
-- [ ] Windows binary releases
-- [ ] NuGet package distribution
-- [ ] Advanced memory optimization
-
-### Version 1.0 *(Long-term)*
-- [ ] Frozen C ABI guarantee
-- [ ] PyPI package distribution
-- [ ] Conda-forge integration
-- [ ] Production deployment guide
+### Long-term *(v1.0)*
+- Guarantee a stable, versioned C ABI and semantic versioning policy
+- Release first-party packages to PyPI, Conda-Forge, and NuGet
+- Produce an operations guide covering deployment, monitoring, and upgrade strategies
 
 ---
 
