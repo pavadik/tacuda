@@ -175,6 +175,7 @@ target_link_libraries(example_app PRIVATE tacuda CUDA::cudart)
 #Tests(simple CTest with a small program using the C API)
 if (BUILD_TESTING)
   enable_testing()
+  find_package(Python3 COMPONENTS Interpreter REQUIRED)
   include(FetchContent)
   FetchContent_Declare(
     googletest
@@ -190,6 +191,11 @@ if (BUILD_TESTING)
   target_link_libraries(test_basic PRIVATE tacuda GTest::gtest_main)
   include(GoogleTest)
   gtest_discover_tests(test_basic)
+
+  add_test(
+    NAME bindings_up_to_date
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bindings/generate_bindings.py --check
+  )
 endif()
 
 # Install and export
