@@ -37,15 +37,15 @@ void tacuda::T3::calculate(const float *input, float *output,
   tacuda::EMA ema(period);
   ema.calculate(input, e1.get(), size, stream);
   int size2 = size - period + 1;
-  ema.calculate(e1.get(), e2.get(), size2);
+  ema.calculate(e1.get(), e2.get(), size2, stream);
   int size3 = size2 - period + 1;
-  ema.calculate(e2.get(), e3.get(), size3);
+  ema.calculate(e2.get(), e3.get(), size3, stream);
   int size4 = size3 - period + 1;
-  ema.calculate(e3.get(), e4.get(), size4);
+  ema.calculate(e3.get(), e4.get(), size4, stream);
   int size5 = size4 - period + 1;
-  ema.calculate(e4.get(), e5.get(), size5);
+  ema.calculate(e4.get(), e5.get(), size5, stream);
   int size6 = size5 - period + 1;
-  ema.calculate(e5.get(), e6.get(), size6);
+  ema.calculate(e5.get(), e6.get(), size6, stream);
 
   float b = vFactor;
   float c1 = -b * b * b;
