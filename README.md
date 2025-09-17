@@ -100,6 +100,17 @@ export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH
 dotnet run --project bindings/csharp/ConsoleExample
 ```
 
+### Binding generation workflow
+
+Python and C# bindings are generated from the public header.  After editing
+`include/tacuda.h`, regenerate the artefacts and commit the results:
+
+```bash
+python bindings/generate_bindings.py
+```
+
+CTest contains a guard that fails if the checked-in bindings are stale.
+
 ---
 
 ## 🚀 Quick Start
