@@ -31,9 +31,9 @@ void tacuda::TRIX::calculate(const float* input, float* output, int size, cudaSt
     tacuda::EMA ema(period);
     ema.calculate(input, ema1.get(), size, stream);
     int size2 = size - period + 1;
-    ema.calculate(ema1.get(), ema2.get(), size2);
+    ema.calculate(ema1.get(), ema2.get(), size2, stream);
     int size3 = size2 - period + 1;
-    ema.calculate(ema2.get(), ema3.get(), size3);
+    ema.calculate(ema2.get(), ema3.get(), size3, stream);
 
     int valid = size3 - 1;
     dim3 block = defaultBlock();

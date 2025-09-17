@@ -218,9 +218,32 @@ def benchmark_sma():
 **Typical Results** *(NVIDIA RTX 4090)*:
 ```
 Window   5: CPU 0.0234s | GPU 0.0031s | 7.5x faster
-Window  14: CPU 0.0267s | GPU 0.0033s | 8.1x faster  
+Window  14: CPU 0.0267s | GPU 0.0033s | 8.1x faster
 Window  50: CPU 0.0312s | GPU 0.0035s | 8.9x faster
 Window 200: CPU 0.0445s | GPU 0.0041s | 10.9x faster
+```
+
+### ⚙️ Exponential Moving Average Acceleration
+
+The EMA family of indicators now share a single CUDA implementation based on a
+prefix-scan formulation of the linear recurrence:
+
+```
+EMA[i] = α · x[i] + (1 − α) · EMA[i − 1]
+```
+
+Instead of iterating sequentially, we interpret each update as an affine
+transformation and compute the cumulative product of these transforms with
+`thrust::inclusive_scan`. This yields all intermediate EMA values in parallel,
+which are then re-used across EMA, DEMA, TEMA, T3, TRIX and MACD calculations.
+The shared helper keeps warm-up regions initialised to `NaN` while guaranteeing
+identical numerical outputs to the previous per-kernel loops.
+
+To reproduce the performance improvement for large smoothing periods, run the
+dedicated benchmark:
+
+```bash
+python benchmarks/bench_ema.py
 ```
 
 ---

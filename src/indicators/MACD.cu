@@ -1,62 +1,9 @@
-#include <algorithm>
 #include <stdexcept>
 #include <indicators/MACD.h>
+#include <indicators/detail/ema_common.cuh>
 #include <utils/CudaUtils.h>
 #include <utils/DeviceBufferPool.h>
-#include <thrust/complex.h>
-#include <thrust/device_ptr.h>
-#include <thrust/execution_policy.h>
-#include <thrust/scan.h>
-
-struct EmaCombine {
-    __host__ __device__ thrust::complex<float> operator()(const thrust::complex<float>& prev,
-                                                          const thrust::complex<float>& curr) const {
-        // curr ⊗ prev = (curr.a * prev.a, curr.a * prev.b + curr.b)
-        float a = curr.real() * prev.real();
-        float b = curr.real() * prev.imag() + curr.imag();
-        return {a, b};
-    }
-};
-
-__global__ void emaPrepKernel(const float* __restrict__ input,
-                              thrust::complex<float>* __restrict__ trans,
-                              float alpha, float k, int size) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x + 1;
-    if (idx < size) {
-        trans[idx - 1] = thrust::complex<float>(k, alpha * input[idx]);
-    }
-}
-
-__global__ void emaFinalizeKernel(const float* __restrict__ input,
-                                  const thrust::complex<float>* __restrict__ trans,
-                                  float* __restrict__ ema,
-                                  int size) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    float first = input[0];
-    if (idx == 0) {
-        ema[0] = first;
-    } else if (idx < size) {
-        auto t = trans[idx - 1];
-        ema[idx] = t.real() * first + t.imag();
-    }
-}
-
-static void computeEma(const float* input, float* output, int size, int period, cudaStream_t stream) {
-    float alpha = 2.0f / (period + 1.0f);
-    float k = 1.0f - alpha;
-    auto trans = acquireDeviceBuffer<thrust::complex<float>>(static_cast<size_t>(std::max(0, size - 1)));
-
-    dim3 block = defaultBlock();
-    dim3 grid = defaultGrid(size);
-    emaPrepKernel<<<grid, block, 0, stream>>>(input, trans.get(), alpha, k, size);
-    CUDA_CHECK(cudaGetLastError());
-
-    thrust::device_ptr<thrust::complex<float>> tPtr(trans.get());
-    thrust::inclusive_scan(thrust::cuda::par.on(stream), tPtr, tPtr + size - 1, tPtr, EmaCombine());
-
-    emaFinalizeKernel<<<grid, block, 0, stream>>>(input, trans.get(), output, size);
-    CUDA_CHECK(cudaGetLastError());
-}
+using tacuda::indicators::detail::computeEmaDevice;
 
 __global__ void macdKernel(const float* __restrict__ emaFast,
                            const float* __restrict__ emaSlow,
@@ -86,8 +33,8 @@ void tacuda::MACD::calculate(const float* input, float* output, int size, cudaSt
     auto emaFast = acquireDeviceBuffer<float>(size);
     auto emaSlow = acquireDeviceBuffer<float>(size);
 
-    computeEma(input, emaFast.get(), size, fastPeriod, stream);
-    computeEma(input, emaSlow.get(), size, slowPeriod, stream);
+    computeEmaDevice(input, emaFast.get(), size, fastPeriod, stream);
+    computeEmaDevice(input, emaSlow.get(), size, slowPeriod, stream);
 
     dim3 block = defaultBlock();
     dim3 grid = defaultGrid(size);

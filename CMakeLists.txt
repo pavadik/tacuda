@@ -12,6 +12,7 @@ set(INDICATOR_SOURCES
     src/indicators/MACD.cu
     src/indicators/MACDEXT.cu
     src/indicators/MACDFIX.cu
+    src/indicators/detail/ema_common.cu
     src/indicators/Momentum.cu
     src/indicators/ROC.cu
     src/indicators/ROCP.cu
