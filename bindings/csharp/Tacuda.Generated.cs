@@ -24,6 +24,9 @@ internal static partial class NativeMethods
     internal static extern int ct_ma(float[] host_input, float[] host_output, int size, int period, int type, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_mavp(float[] host_input, float[] host_periods, float[] host_output, int size, int minPeriod, int maxPeriod, int type, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_wma(float[] host_input, float[] host_output, int size, int period, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -82,6 +85,9 @@ internal static partial class NativeMethods
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_stddev(float[] host_input, float[] host_output, int size, int period, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_avgdev(float[] host_input, float[] host_output, int size, int period, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_var(float[] host_input, float[] host_output, int size, int period, IntPtr stream = default);
@@ -201,6 +207,9 @@ internal static partial class NativeMethods
     internal static extern int ct_pvo_device(float[] device_volume, float[] device_output, int size, int fastPeriod, int slowPeriod, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_accbands(float[] host_high, float[] host_low, float[] host_close, float[] host_upper, float[] host_middle, float[] host_lower, int size, int period, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_bbands(float[] host_input, float[] host_upper, float[] host_middle, float[] host_lower, int size, int period, float upperMul, float lowerMul, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -246,7 +255,16 @@ internal static partial class NativeMethods
     internal static extern int ct_mfi(float[] host_high, float[] host_low, float[] host_close, float[] host_volume, float[] host_output, int size, int period, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_imi(float[] host_open, float[] host_close, float[] host_output, int size, int period, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_obv(float[] host_price, float[] host_volume, float[] host_output, int size, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_nvi(float[] host_close, float[] host_volume, float[] host_output, int size, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_pvi(float[] host_close, float[] host_volume, float[] host_output, int size, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_sar(float[] host_high, float[] host_low, float[] host_output, int size, float step, float maxAcceleration, IntPtr stream = default);
@@ -334,6 +352,9 @@ internal static partial class NativeMethods
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_cdl_three_inside(float[] host_open, float[] host_high, float[] host_low, float[] host_close, float[] host_output, int size, IntPtr stream = default);
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+    internal static extern int ct_cdl_three_outside(float[] host_open, float[] host_high, float[] host_low, float[] host_close, float[] host_output, int size, IntPtr stream = default);
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     internal static extern int ct_cdl_three_line_strike(float[] host_open, float[] host_high, float[] host_low, float[] host_close, float[] host_output, int size, IntPtr stream = default);

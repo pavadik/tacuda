@@ -28,6 +28,13 @@ typedef enum ctStatus {
 typedef enum ctMaType {
   CT_MA_SMA = 0,
   CT_MA_EMA = 1,
+  CT_MA_WMA = 2,
+  CT_MA_DEMA = 3,
+  CT_MA_TEMA = 4,
+  CT_MA_TRIMA = 5,
+  CT_MA_KAMA = 6,
+  CT_MA_MAMA = 7,
+  CT_MA_T3 = 8,
 } ctMaType_t;
 
 // All APIs copy host->device->host internally for ease of binding.
@@ -35,6 +42,10 @@ CTAPI_EXPORT ctStatus_t ct_sma(const float *host_input, float *host_output,
                                int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_ma(const float *host_input, float *host_output,
                               int size, int period, ctMaType_t type, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_mavp(const float *host_input,
+                                const float *host_periods, float *host_output,
+                                int size, int minPeriod, int maxPeriod,
+                                ctMaType_t type, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_wma(const float *host_input, float *host_output,
                                int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_momentum(const float *host_input, float *host_output,
@@ -75,6 +86,8 @@ CTAPI_EXPORT ctStatus_t ct_minmaxindex(const float *host_input,
                                        float *host_minidx, float *host_maxidx,
                                        int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_stddev(const float *host_input, float *host_output,
+                                  int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_avgdev(const float *host_input, float *host_output,
                                   int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_var(const float *host_input, float *host_output,
                                int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
@@ -197,6 +210,12 @@ CTAPI_EXPORT ctStatus_t ct_pvo_device(const float *device_volume,
                                       float *device_output, int size,
                                       int fastPeriod, int slowPeriod,
                                       cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_accbands(const float *host_high,
+                                    const float *host_low,
+                                    const float *host_close,
+                                    float *host_upper, float *host_middle,
+                                    float *host_lower, int size, int period,
+                                    cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_bbands(const float *host_input, float *host_upper,
                                   float *host_middle, float *host_lower,
                                   int size, int period, float upperMul,
@@ -252,7 +271,16 @@ CTAPI_EXPORT ctStatus_t ct_mfi(const float *host_high, const float *host_low,
                                const float *host_close,
                                const float *host_volume, float *host_output,
                                int size, int period, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_imi(const float *host_open, const float *host_close,
+                               float *host_output, int size, int period,
+                               cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_obv(const float *host_price,
+                               const float *host_volume, float *host_output,
+                               int size, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_nvi(const float *host_close,
+                               const float *host_volume, float *host_output,
+                               int size, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_pvi(const float *host_close,
                                const float *host_volume, float *host_output,
                                int size, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_sar(const float *host_high, const float *host_low,
@@ -374,6 +402,11 @@ CTAPI_EXPORT ctStatus_t ct_cdl_three_inside(const float *host_open,
                                             const float *host_low,
                                             const float *host_close,
                                             float *host_output, int size, cudaStream_t stream CTAPI_STREAM_DEFAULT);
+CTAPI_EXPORT ctStatus_t ct_cdl_three_outside(const float *host_open,
+                                             const float *host_high,
+                                             const float *host_low,
+                                             const float *host_close,
+                                             float *host_output, int size, cudaStream_t stream CTAPI_STREAM_DEFAULT);
 CTAPI_EXPORT ctStatus_t ct_cdl_three_line_strike(const float *host_open,
                                                  const float *host_high,
                                                  const float *host_low,
