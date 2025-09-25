@@ -72,6 +72,9 @@ void tacuda::IMI::calculate(const float* open, const float* close, float* output
 void tacuda::IMI::calculate(const float* input, float* output, int size,
                             cudaStream_t stream) noexcept(false) {
     const float* open = input;
-    const float* close = input + 3 * size; // assuming OHLC layout
+    // Expects input to be a contiguous array of floats in column-major OHLC layout:
+    // [O1, O2, ..., On, H1, ..., Hn, L1, ..., Ln, C1, ..., Cn], each section of length 'size'.
+    // Only Open and Close are used: 'open' points to the start, 'close' points to input + 3 * size.
+    const float* close = input + 3 * size;
     calculate(open, close, output, size, stream);
 }

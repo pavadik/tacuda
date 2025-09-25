@@ -28,6 +28,13 @@ typedef enum ctStatus {
 typedef enum ctMaType {
   CT_MA_SMA = 0,
   CT_MA_EMA = 1,
+  CT_MA_WMA = 2,
+  CT_MA_DEMA = 3,
+  CT_MA_TEMA = 4,
+  CT_MA_TRIMA = 5,
+  CT_MA_KAMA = 6,
+  CT_MA_MAMA = 7,
+  CT_MA_T3 = 8,
 } ctMaType_t;
 
 // All APIs copy host->device->host internally for ease of binding.
