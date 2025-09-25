@@ -173,6 +173,44 @@ SMA computed successfully!
 The library leaves trailing `NaN` values in place of samples that do not yet
 cover a full window so consumers can easily spot warm-up regions.
 
+### 📦 OHLCV Container
+
+#### C++
+```cpp
+#include <tacuda/OHLCVSeries.h>
+#include <tacuda.h>
+
+std::vector<float> open{1.0f, 2.0f, 1.5f};
+std::vector<float> high{1.2f, 2.3f, 1.6f};
+std::vector<float> low{0.9f, 1.9f, 1.3f};
+std::vector<float> close{1.1f, 2.1f, 1.4f};
+
+// Volume defaults to zero when omitted
+tacuda::OHLCVSeries candles(open, high, low, close);
+std::vector<float> imi(candles.size());
+ct_imi(candles.open_data(), candles.close_data(), imi.data(), static_cast<int>(candles.size()), 3);
+```
+
+#### Python
+```python
+from tacuda import OHLCV, imi
+
+ohlcv = OHLCV.from_columns(open, high, low, close, volume)
+result = imi(ohlcv.open, ohlcv.close, period=3)
+packed = ohlcv.column_major()  # [O1..On, H1..Hn, ...]
+```
+
+#### C#
+```csharp
+using Tacuda.Bindings;
+
+var candles = new OhlcvSeries(open, high, low, close);
+var output = new float[candles.Length];
+NativeMethods.ct_imi(candles.Open, candles.Close, output, candles.Length, period: 3);
+var columnMajor = candles.ToColumnMajor();
+```
+
+
 ### C# API
 
 ```csharp
@@ -356,31 +394,46 @@ def my_indicator(data, period=10, factor=1.0):
 
 ## ✅ Status & TODO
 
-- [x] CUDA implementations for moving averages, momentum, volatility, and price transforms (SMA/EMA/WMA, ROC family, StdDev, BBANDS, etc.)
-- [x] 140+ GPU kernels covering oscillators and candlestick patterns with TA-Lib compatible semantics
-- [x] Python (ctypes) and .NET 7 bindings generated from the public C ABI
-- [x] GoogleTest suite comparing against TA-Lib reference outputs and exercising the device buffer pool
-- [ ] Columnar OHLCV convenience container to avoid manual array packing in host APIs
-- [ ] Batched/multi-symbol execution entry points with stream-aware scheduling
-- [ ] Packaging for common ecosystems (PyPI wheel, NuGet, Conda, binary releases)
-- [ ] Documented production deployment guide and formalized C ABI stability window
+### ✅ Completed pillars
 
-## 🗺️ Roadmap
+- [x] CUDA implementations for moving averages, momentum, volatility, oscillators, candlestick recognition, and price transforms with TA-Lib compatible semantics backed by 140+ GPU kernels.
+- [x] Python (ctypes) and .NET 7 bindings generated from the shared C ABI via `bindings/generate_bindings.py`, with regeneration guards wired into CTest.
+- [x] GoogleTest regression suite cross-checking against TA-Lib reference data, including device buffer pool coverage and representative indicator families.
 
-### Short-term *(v0.2)*
-- Deliver native OHLCV helpers and update bindings to accept structured inputs
-- Expose batched indicator execution for processing portfolios on a single launch
-- Expand benchmark harness with reproducible datasets and publish comparative numbers
+### 🚧 Outstanding priorities
 
-### Mid-term *(v0.3)*
-- Ship prebuilt binaries for Linux and Windows with CI-based validation
-- Introduce CUDA stream pools and heuristics for overlapping transfers with compute
-- Provide optional cuDF / columnar dataframe adapters for RAPIDS ecosystems
+**Data ergonomics & throughput**
+- [ ] Columnar OHLCV host container plus binding updates so callers no longer hand-pack arrays.
+- [ ] Batched/multi-symbol execution entry points with stream-aware scheduling for portfolio-scale workloads.
 
-### Long-term *(v1.0)*
-- Guarantee a stable, versioned C ABI and semantic versioning policy
-- Release first-party packages to PyPI, Conda-Forge, and NuGet
-- Produce an operations guide covering deployment, monitoring, and upgrade strategies
+**Release readiness**
+- [ ] Packaging for common ecosystems (PyPI wheel, NuGet, Conda, binary releases) with automated CI publication.
+- [ ] Documented production deployment guide, ABI stability policy, and fill-in for the referenced `docs/` tree.
+
+**Benchmarking & validation**
+- [ ] Curated benchmark datasets and published comparative numbers covering CPU vs GPU baselines.
+
+## 🗓️ Proposed Sprint Plan
+
+### Sprint 1 – Data ergonomics foundation *(2 weeks)*
+- Design and implement an OHLCV columnar container usable from C++, Python, and .NET host APIs.
+- Update bindings to accept structured inputs and extend tests/benchmarks to exercise the new path.
+- Document migration guidance for existing users still relying on manual array packing.
+
+### Sprint 2 – Batched execution & scheduling *(2 weeks)*
+- Add multi-symbol/batched dispatchers with CUDA stream management hooks.
+- Extend the registry and bindings to accept portfolio requests, including stress tests and profiling scripts.
+- Prototype heuristics for overlapping host/device transfers and kernel launches.
+
+### Sprint 3 – Distribution pipeline *(2 weeks)*
+- Author reproducible benchmark datasets and integrate them into the benchmarking harness.
+- Stand up CI jobs producing PyPI wheels, Conda packages, NuGet packages, and binary tarballs.
+- Capture release criteria covering artifact validation, signing, and smoke tests.
+
+### Sprint 4 – Production readiness *(2 weeks)*
+- Build out the referenced documentation tree (API, user guide, performance, operations) and publish deployment runbooks.
+- Formalize ABI stability guarantees, including header versioning and changelog automation.
+- Prepare an adoption checklist covering monitoring, upgrade sequencing, and support escalation paths.
 
 ---
 
