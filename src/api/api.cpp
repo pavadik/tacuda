@@ -6,9 +6,11 @@
 
 #include "tacuda.h"
 #include <indicators/AD.h>
+#include <indicators/ACCBANDS.h>
 #include <indicators/ADOSC.h>
 #include <indicators/ADX.h>
 #include <indicators/ADXR.h>
+#include <indicators/AVGDEV.h>
 #include <indicators/APO.h>
 #include <indicators/ATR.h>
 #include <indicators/AbandonedBaby.h>
@@ -30,10 +32,12 @@
 #include <indicators/ConcealBabySwallow.h>
 #include <indicators/Correl.h>
 #include <indicators/CounterAttack.h>
+#include <indicators/CDL3OUTSIDE.h>
 #include <indicators/DEMA.h>
 #include <indicators/DX.h>
 #include <indicators/DarkCloudCover.h>
 #include <indicators/Doji.h>
+#include <indicators/IMI.h>
 #include <indicators/DojiStar.h>
 #include <indicators/DragonflyDoji.h>
 #include <indicators/EMA.h>
@@ -70,6 +74,7 @@
 #include <indicators/LongLeggedDoji.h>
 #include <indicators/LongLine.h>
 #include <indicators/MA.h>
+#include <indicators/MAVP.h>
 #include <indicators/MACD.h>
 #include <indicators/MACDEXT.h>
 #include <indicators/MACDFIX.h>
@@ -90,9 +95,11 @@
 #include <indicators/MinusDI.h>
 #include <indicators/MinusDM.h>
 #include <indicators/Momentum.h>
+#include <indicators/NVI.h>
 #include <indicators/MorningDojiStar.h>
 #include <indicators/MorningStar.h>
 #include <indicators/NATR.h>
+#include <indicators/PVI.h>
 #include <indicators/OBV.h>
 #include <indicators/OnNeck.h>
 #include <indicators/PPO.h>
@@ -417,6 +424,16 @@ ctStatus_t ct_ma(const float *host_input, float *host_output, int size,
   return run_indicator(ma, host_input, host_output, size, 1, stream);
 }
 
+ctStatus_t ct_mavp(const float *host_input, const float *host_periods,
+                   float *host_output, int size, int minPeriod, int maxPeriod,
+                   ctMaType_t type, cudaStream_t stream) {
+  tacuda::MAVP mavp(minPeriod, maxPeriod, static_cast<tacuda::MAType>(type));
+  std::vector<float> packed(2 * size);
+  std::memcpy(packed.data(), host_input, size * sizeof(float));
+  std::memcpy(packed.data() + size, host_periods, size * sizeof(float));
+  return run_indicator(mavp, packed.data(), host_output, size, 1, stream);
+}
+
 ctStatus_t ct_wma(const float *host_input, float *host_output, int size,
                   int period, cudaStream_t stream) {
   tacuda::WMA wma(period);
@@ -547,6 +564,12 @@ ctStatus_t ct_stddev(const float *host_input, float *host_output, int size,
                      int period, cudaStream_t stream) {
   tacuda::StdDev sd(period);
   return run_indicator(sd, host_input, host_output, size, 1, stream);
+}
+
+ctStatus_t ct_avgdev(const float *host_input, float *host_output, int size,
+                     int period, cudaStream_t stream) {
+  tacuda::AVGDEV avg(period);
+  return run_indicator(avg, host_input, host_output, size, 1, stream);
 }
 
 ctStatus_t ct_var(const float *host_input, float *host_output, int size,
@@ -816,6 +839,23 @@ ctStatus_t ct_pvo_device(const float *device_volume, float *device_output,
                          cudaStream_t stream) {
   tacuda::PVO pvo(fastPeriod, slowPeriod);
   return run_indicator_device(pvo, device_volume, device_output, size, stream);
+}
+
+ctStatus_t ct_accbands(const float *host_high, const float *host_low,
+                       const float *host_close, float *host_upper,
+                       float *host_middle, float *host_lower, int size,
+                       int period, cudaStream_t stream) {
+  tacuda::ACCBANDS acc(period);
+  std::vector<float> tmp(3 * size);
+  ctStatus_t rc = run_ohlc_indicator(acc, host_high, host_low, host_close,
+                                     tmp.data(), size, 3, stream);
+  if (rc != CT_STATUS_SUCCESS) {
+    return rc;
+  }
+  std::memcpy(host_upper, tmp.data(), size * sizeof(float));
+  std::memcpy(host_middle, tmp.data() + size, size * sizeof(float));
+  std::memcpy(host_lower, tmp.data() + 2 * size, size * sizeof(float));
+  return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_bbands(const float *host_input, float *host_upper,
@@ -1766,6 +1806,48 @@ ctStatus_t ct_mfi(const float *host_high, const float *host_low,
   return CT_STATUS_SUCCESS;
 }
 
+ctStatus_t ct_imi(const float *host_open, const float *host_close,
+                  float *host_output, int size, int period, cudaStream_t stream) {
+  tacuda::IMI imi(period);
+  DeviceBuffer d_open{nullptr}, d_close{nullptr}, d_out{nullptr};
+
+  if (!acquire_buffer(d_open, static_cast<size_t>(size)) ||
+      !acquire_buffer(d_close, static_cast<size_t>(size)) ||
+      !acquire_buffer(d_out, static_cast<size_t>(size))) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+
+  cudaError_t err = cudaMemcpyAsync(d_open.get(), host_open, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+  err = cudaMemcpyAsync(d_close.get(), host_close, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    imi.calculate(d_open.get(), d_close.get(), d_out.get(), size, stream);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpyAsync(host_output, d_out.get(), size * sizeof(float),
+                        cudaMemcpyDeviceToHost, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaStreamSynchronize(stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
+}
+
 ctStatus_t ct_obv(const float *host_price, const float *host_volume,
                   float *host_output, int size, cudaStream_t stream) {
   tacuda::OBV obv;
@@ -1812,6 +1894,24 @@ ctStatus_t ct_obv(const float *host_price, const float *host_volume,
   }
 
   return CT_STATUS_SUCCESS;
+}
+
+ctStatus_t ct_nvi(const float *host_close, const float *host_volume,
+                  float *host_output, int size, cudaStream_t stream) {
+  tacuda::NVI nvi;
+  std::vector<float> packed(2 * size);
+  std::memcpy(packed.data(), host_close, size * sizeof(float));
+  std::memcpy(packed.data() + size, host_volume, size * sizeof(float));
+  return run_indicator(nvi, packed.data(), host_output, size, 1, stream);
+}
+
+ctStatus_t ct_pvi(const float *host_close, const float *host_volume,
+                  float *host_output, int size, cudaStream_t stream) {
+  tacuda::PVI pvi;
+  std::vector<float> packed(2 * size);
+  std::memcpy(packed.data(), host_close, size * sizeof(float));
+  std::memcpy(packed.data() + size, host_volume, size * sizeof(float));
+  return run_indicator(pvi, packed.data(), host_output, size, 1, stream);
 }
 
 ctStatus_t ct_beta(const float *host_x, const float *host_y, float *host_output,
@@ -2057,6 +2157,14 @@ ctStatus_t ct_cdl_three_inside(const float *host_open, const float *host_high,
                                const float *host_low, const float *host_close,
                                float *host_output, int size, cudaStream_t stream) {
   tacuda::ThreeInside ind;
+  return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
+                            host_output, size, 1, stream);
+}
+
+ctStatus_t ct_cdl_three_outside(const float *host_open, const float *host_high,
+                                const float *host_low, const float *host_close,
+                                float *host_output, int size, cudaStream_t stream) {
+  tacuda::CDL3OUTSIDE ind;
   return run_ohlc_indicator(ind, host_open, host_high, host_low, host_close,
                             host_output, size, 1, stream);
 }

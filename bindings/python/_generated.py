@@ -44,6 +44,18 @@ FUNCTIONS = {
             ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
         ),
     ),
+    "mavp": FunctionSpec(
+        c_name="ct_mavp",
+        inputs=("host_input", "host_periods"),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="minPeriod", ctype="int"),
+            ScalarParam(name="maxPeriod", ctype="int"),
+            ScalarParam(name="type", ctype="ctMaType_t"),
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
     "wma": FunctionSpec(
         c_name="ct_wma",
         inputs=("host_input",),
@@ -237,6 +249,16 @@ FUNCTIONS = {
     ),
     "stddev": FunctionSpec(
         c_name="ct_stddev",
+        inputs=("host_input",),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="period", ctype="int"),
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
+    "avgdev": FunctionSpec(
+        c_name="ct_avgdev",
         inputs=("host_input",),
         outputs=("host_output",),
         size_param="size",
@@ -653,6 +675,16 @@ FUNCTIONS = {
             ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
         ),
     ),
+    "accbands": FunctionSpec(
+        c_name="ct_accbands",
+        inputs=("host_high", "host_low", "host_close"),
+        outputs=("host_upper", "host_middle", "host_lower"),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="period", ctype="int"),
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
     "bbands": FunctionSpec(
         c_name="ct_bbands",
         inputs=("host_input",),
@@ -809,9 +841,37 @@ FUNCTIONS = {
             ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
         ),
     ),
+    "imi": FunctionSpec(
+        c_name="ct_imi",
+        inputs=("host_open", "host_close"),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="period", ctype="int"),
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
     "obv": FunctionSpec(
         c_name="ct_obv",
         inputs=("host_price", "host_volume"),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
+    "nvi": FunctionSpec(
+        c_name="ct_nvi",
+        inputs=("host_close", "host_volume"),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
+    "pvi": FunctionSpec(
+        c_name="ct_pvi",
+        inputs=("host_close", "host_volume"),
         outputs=("host_output",),
         size_param="size",
         scalars=(
@@ -1094,6 +1154,15 @@ FUNCTIONS = {
     ),
     "cdl_three_inside": FunctionSpec(
         c_name="ct_cdl_three_inside",
+        inputs=("host_open", "host_high", "host_low", "host_close"),
+        outputs=("host_output",),
+        size_param="size",
+        scalars=(
+            ScalarParam(name="stream", ctype="cudaStream_t", default="0"),
+        ),
+    ),
+    "cdl_three_outside": FunctionSpec(
+        c_name="ct_cdl_three_outside",
         inputs=("host_open", "host_high", "host_low", "host_close"),
         outputs=("host_output",),
         size_param="size",

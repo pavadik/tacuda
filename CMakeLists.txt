@@ -9,11 +9,13 @@ option(BUILD_TESTING "Enable tests" ON)
 
 #Explicitly list indicator sources instead of globbing
 set(INDICATOR_SOURCES
+    src/indicators/ACCBANDS.cu
     src/indicators/MACD.cu
     src/indicators/MACDEXT.cu
     src/indicators/MACDFIX.cu
     src/indicators/detail/ema_common.cu
     src/indicators/Momentum.cu
+    src/indicators/MAVP.cu
     src/indicators/ROC.cu
     src/indicators/ROCP.cu
     src/indicators/ROCR.cu
@@ -25,6 +27,7 @@ set(INDICATOR_SOURCES
     src/indicators/TRIX.cu
     src/indicators/Change.cu
     src/indicators/StdDev.cu
+    src/indicators/AVGDEV.cu
     src/indicators/MA.cu
     src/indicators/MAX.cu
     src/indicators/MAXINDEX.cu
@@ -42,6 +45,7 @@ set(INDICATOR_SOURCES
     src/indicators/Aroon.cu
     src/indicators/ADOSC.cu
     src/indicators/MFI.cu
+    src/indicators/IMI.cu
     src/indicators/ULTOSC.cu
     src/indicators/AD.cu
     src/indicators/ADXR.cu
@@ -77,7 +81,9 @@ set(INDICATOR_SOURCES
     src/indicators/LINEARREG_INTERCEPT.cu
     src/indicators/LINEARREG_SLOPE.cu
     src/indicators/NATR.cu
+    src/indicators/NVI.cu
     src/indicators/PPO.cu
+    src/indicators/PVI.cu
     src/indicators/PVO.cu
     src/indicators/SUM.cu
     src/indicators/TRANGE.cu
@@ -107,6 +113,7 @@ set(INDICATOR_SOURCES
     src/indicators/ClosingMarubozu.cu
     src/indicators/ConcealBabySwallow.cu
     src/indicators/CounterAttack.cu
+    src/indicators/CDL3OUTSIDE.cu
     src/indicators/DarkCloudCover.cu
     src/indicators/DojiStar.cu
     src/indicators/DragonflyDoji.cu
