@@ -63,6 +63,19 @@ TEST(Tacuda, MAVP) {
 
     expect_approx_equal(out, ref);
   }
+  const int N = 5;
+  std::vector<float> data{1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+  std::vector<float> periods{2.0f, 2.5f, 3.0f, 3.0f, 2.0f};
+  std::vector<float> out(N, 0.0f);
+  ASSERT_EQ(ct_mavp(data.data(), periods.data(), out.data(), N, 2, 3, CT_MA_SMA),
+            CT_STATUS_SUCCESS);
+  std::vector<float> ref(N, std::numeric_limits<float>::quiet_NaN());
+  ref[0] = (data[0] + data[1]) / 2.0f;
+  ref[1] = (data[1] + data[2]) / 2.0f;
+  ref[2] = (data[2] + data[3] + data[4]) / 3.0f;
+  expect_approx_equal(out, ref);
+  EXPECT_TRUE(std::isnan(out[3]));
+  EXPECT_TRUE(std::isnan(out[4]));
 }
 
 TEST(Tacuda, NVI) {
