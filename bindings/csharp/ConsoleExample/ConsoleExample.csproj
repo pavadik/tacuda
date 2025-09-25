@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <Compile Include="..\Tacuda.Generated.cs" Link="Tacuda.Generated.cs" />
+    <Compile Include="..\OhlcvSeries.cs" Link="OhlcvSeries.cs" />
   </ItemGroup>
 </Project>
