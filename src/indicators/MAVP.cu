@@ -74,7 +74,10 @@ void tacuda::MAVP::calculate(const float* values, const float* periods, float* o
 
 void tacuda::MAVP::calculate(const float* input, float* output, int size,
                              cudaStream_t stream) noexcept(false) {
-    const float* values = input;
-    const float* periods = input + size;
-    calculate(values, periods, output, size, stream);
+    (void)input;
+    (void)output;
+    (void)size;
+    (void)stream;
+    throw std::logic_error(
+        "MAVP::calculate requires separate value and period buffers");
 }
