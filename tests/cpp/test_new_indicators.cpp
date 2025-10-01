@@ -28,54 +28,63 @@ TEST(Tacuda, AvgDev) {
 }
 
 TEST(Tacuda, MAVP) {
-  const int N = 8;
-  std::vector<float> data{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f};
-  std::vector<float> periods{2.0f, 3.0f, 4.0f, 2.0f, 3.0f, 4.0f, 2.0f, 1.0f};
-  const int minPeriod = 2;
-  const int maxPeriod = 4;
-  std::array<ctMaType_t, 9> types = {
-      CT_MA_SMA, CT_MA_EMA, CT_MA_WMA, CT_MA_DEMA, CT_MA_TEMA,
-      CT_MA_TRIMA, CT_MA_KAMA, CT_MA_MAMA, CT_MA_T3};
+  {
+    const int N = 8;
+    std::vector<float> data{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f};
+    std::vector<float> periods{1.0f, 3.0f, 5.0f, 2.0f, 4.5f, 10.0f, 2.0f, 1.0f};
+    const int minPeriod = 2;
+    const int maxPeriod = 4;
+    std::array<ctMaType_t, 9> types = {
+        CT_MA_SMA,  CT_MA_EMA,  CT_MA_WMA, CT_MA_DEMA, CT_MA_TEMA,
+        CT_MA_TRIMA, CT_MA_KAMA, CT_MA_MAMA, CT_MA_T3};
 
-  for (ctMaType_t type : types) {
-    std::vector<float> out(N, 0.0f);
-    ASSERT_EQ(ct_mavp(data.data(), periods.data(), out.data(), N,
-                      minPeriod, maxPeriod, type), CT_STATUS_SUCCESS);
+    for (ctMaType_t type : types) {
+      std::vector<float> out(N, 0.0f);
+      ASSERT_EQ(ct_mavp(data.data(), periods.data(), out.data(), N, minPeriod,
+                        maxPeriod, type),
+                CT_STATUS_SUCCESS);
 
-    std::vector<float> ma2(N, 0.0f), ma3(N, 0.0f), ma4(N, 0.0f);
-    ASSERT_EQ(ct_ma(data.data(), ma2.data(), N, 2, type), CT_STATUS_SUCCESS);
-    ASSERT_EQ(ct_ma(data.data(), ma3.data(), N, 3, type), CT_STATUS_SUCCESS);
-    ASSERT_EQ(ct_ma(data.data(), ma4.data(), N, 4, type), CT_STATUS_SUCCESS);
+      std::vector<float> ma2(N, 0.0f), ma3(N, 0.0f), ma4(N, 0.0f);
+      ASSERT_EQ(ct_ma(data.data(), ma2.data(), N, 2, type), CT_STATUS_SUCCESS);
+      ASSERT_EQ(ct_ma(data.data(), ma3.data(), N, 3, type), CT_STATUS_SUCCESS);
+      ASSERT_EQ(ct_ma(data.data(), ma4.data(), N, 4, type), CT_STATUS_SUCCESS);
 
-    std::vector<float> ref(N, std::numeric_limits<float>::quiet_NaN());
-    for (int i = 0; i < N; ++i) {
-      int p = static_cast<int>(periods[i]);
-      if (p < minPeriod) p = minPeriod;
-      if (p > maxPeriod) p = maxPeriod;
-      if (p == 2 && i <= N - p) {
-        ref[i] = ma2[i];
-      } else if (p == 3 && i <= N - p) {
-        ref[i] = ma3[i];
-      } else if (p == 4 && i <= N - p) {
-        ref[i] = ma4[i];
+      std::vector<float> ref(N, std::numeric_limits<float>::quiet_NaN());
+      for (int i = 0; i < N; ++i) {
+        int p = static_cast<int>(periods[i]);
+        if (p < minPeriod) p = minPeriod;
+        if (p > maxPeriod) p = maxPeriod;
+        if (p == 2 && i <= N - p) {
+          ref[i] = ma2[i];
+        } else if (p == 3 && i <= N - p) {
+          ref[i] = ma3[i];
+        } else if (p == 4 && i <= N - p) {
+          ref[i] = ma4[i];
+        }
       }
-    }
 
-    expect_approx_equal(out, ref);
+      expect_approx_equal(out, ref);
+      EXPECT_TRUE(std::isnan(out[5]));
+      EXPECT_TRUE(std::isnan(out[7]));
+    }
   }
-  const int N = 5;
-  std::vector<float> data{1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
-  std::vector<float> periods{2.0f, 2.5f, 3.0f, 3.0f, 2.0f};
-  std::vector<float> out(N, 0.0f);
-  ASSERT_EQ(ct_mavp(data.data(), periods.data(), out.data(), N, 2, 3, CT_MA_SMA),
-            CT_STATUS_SUCCESS);
-  std::vector<float> ref(N, std::numeric_limits<float>::quiet_NaN());
-  ref[0] = (data[0] + data[1]) / 2.0f;
-  ref[1] = (data[1] + data[2]) / 2.0f;
-  ref[2] = (data[2] + data[3] + data[4]) / 3.0f;
-  expect_approx_equal(out, ref);
-  EXPECT_TRUE(std::isnan(out[3]));
-  EXPECT_TRUE(std::isnan(out[4]));
+
+  {
+    const int N = 5;
+    std::vector<float> data{1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
+    std::vector<float> periods{2.0f, 2.5f, 3.0f, 3.0f, 2.0f};
+    std::vector<float> out(N, 0.0f);
+    ASSERT_EQ(ct_mavp(data.data(), periods.data(), out.data(), N, 2, 3,
+                      CT_MA_SMA),
+              CT_STATUS_SUCCESS);
+    std::vector<float> ref(N, std::numeric_limits<float>::quiet_NaN());
+    ref[0] = (data[0] + data[1]) / 2.0f;
+    ref[1] = (data[1] + data[2]) / 2.0f;
+    ref[2] = (data[2] + data[3] + data[4]) / 3.0f;
+    expect_approx_equal(out, ref);
+    EXPECT_TRUE(std::isnan(out[3]));
+    EXPECT_TRUE(std::isnan(out[4]));
+  }
 }
 
 TEST(Tacuda, NVI) {

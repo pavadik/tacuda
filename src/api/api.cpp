@@ -428,10 +428,44 @@ ctStatus_t ct_mavp(const float *host_input, const float *host_periods,
                    float *host_output, int size, int minPeriod, int maxPeriod,
                    ctMaType_t type, cudaStream_t stream) {
   tacuda::MAVP mavp(minPeriod, maxPeriod, static_cast<tacuda::MAType>(type));
-  std::vector<float> packed(2 * size);
-  std::memcpy(packed.data(), host_input, size * sizeof(float));
-  std::memcpy(packed.data() + size, host_periods, size * sizeof(float));
-  return run_indicator(mavp, packed.data(), host_output, size, 1, stream);
+
+  DeviceBuffer d_values{nullptr}, d_periods{nullptr}, d_out{nullptr};
+  if (!acquire_buffer(d_values, size) || !acquire_buffer(d_periods, size) ||
+      !acquire_buffer(d_out, size)) {
+    return CT_STATUS_ALLOC_FAILED;
+  }
+
+  cudaError_t err =
+      cudaMemcpyAsync(d_values.get(), host_input, size * sizeof(float),
+                      cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaMemcpyAsync(d_periods.get(), host_periods, size * sizeof(float),
+                        cudaMemcpyHostToDevice, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  try {
+    mavp.calculate(d_values.get(), d_periods.get(), d_out.get(), size, stream);
+  } catch (...) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  err = cudaMemcpyAsync(host_output, d_out.get(), size * sizeof(float),
+                        cudaMemcpyDeviceToHost, stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_COPY_FAILED;
+  }
+
+  err = cudaStreamSynchronize(stream);
+  if (err != cudaSuccess) {
+    return CT_STATUS_KERNEL_FAILED;
+  }
+
+  return CT_STATUS_SUCCESS;
 }
 
 ctStatus_t ct_wma(const float *host_input, float *host_output, int size,
